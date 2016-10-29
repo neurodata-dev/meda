@@ -25,6 +25,8 @@ Runs the kmeans algorithm with the kmeans++ initialization
 in a binary hieracrhical fasion.
 }
 \examples{
+\dontrun{
+require(meda)
 set.seed(13)
 z <- c(0,4,12,16)[sample(4, 1e3, replace=TRUE)]
 x <- rnorm(1e3, mean = z, sd = 1)
@@ -51,6 +53,7 @@ title('Clustered Data: Level 1')
 plot(xy, col = kdf2[,2], pch = 17)
 title('Clustered Data: Level 2')
 palette('default')
+}
 
 }
 \references{

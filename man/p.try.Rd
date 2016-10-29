@@ -10,6 +10,8 @@ p.try(FUN, dat, use.plotly = NULL)
 \item{FUN}{a p.* function from meda::}
 
 \item{dat}{data}
+
+\item{use.plotly}{Boolean for plotly use}
 }
 \value{
 The output of FUN or an error message.

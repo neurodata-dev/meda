@@ -35,7 +35,7 @@ print(paste("Are any values negative?:", negs))
 if(p <= 12) { print("Structure"); str(dat) }
 ```
 
-# Heatmap of scaled data
+# Heatmap
 ```{r cc-heatmap}
 if(use.plotly){
   p.try(p.heat, dat, TRUE)
@@ -44,7 +44,7 @@ if(use.plotly){
 }
 ```
 
-# Violin Plot
+# Jitter or Violin Plot
 ```{r cc-violin}
 if(use.plotly){
   tryCatch(ggplotly(p.try(p.violin, dat)))

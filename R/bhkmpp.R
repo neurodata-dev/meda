@@ -21,6 +21,8 @@
 #' \url{http://ilpubs.stanford.edu:8090/778/1/2006-13.pdf}
 #'
 #' @examples
+#' \dontrun{
+#' require(meda)
 #' set.seed(13)
 #' z <- c(0,4,12,16)[sample(4, 1e3, replace=TRUE)]
 #' x <- rnorm(1e3, mean = z, sd = 1)
@@ -47,10 +49,11 @@
 #' plot(xy, col = kdf2[,2], pch = 17)
 #' title('Clustered Data: Level 2')
 #' palette('default')
+#' }
 #'
 #' @export
 bhkmpp <- function(x, blevels) {
-    k0 <- kmpp(x, 2)
+    k0 <- kmpp(x, 2, runkm = TRUE)
     dx <- !is.null(dim(x))
     L <- data.frame(lv1 = k0$cluster)
     
@@ -62,9 +65,9 @@ bhkmpp <- function(x, blevels) {
     for (j in 1:(blevels - 1)) {
         for (i in sort(unique(L[[j]]))) {
             kv <- if (dx) {
-                kmpp(x[L[[j]] == i, ], k = 2)
+                kmpp(x[L[[j]] == i, ], k = 2, runkm = TRUE)
             } else {
-                kmpp(x[L[[j]] == i], k = 2)
+                kmpp(x[L[[j]] == i], k = 2, runkm = TRUE)
             }
             
             if (i != 1) {

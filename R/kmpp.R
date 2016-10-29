@@ -2,6 +2,10 @@
 #'
 #' @param x The data formatted as a matrix.
 #' @param k The number of clusters desired. \code{k < nrows(x) || length(x)}
+#' @param runkm a Boolean, if "TRUE," kmeans is run with the kmeans++
+#' initialization, if "FALSE," the kmeans++ initialization is run and
+#' returned.
+#' @param ... used to send arguments to kmeans
 #' 
 #' @return An object of class `'kmeans''.
 #'
@@ -14,6 +18,8 @@
 #' @seealso \code{\link[stats]{kmeans}, \link{bhkmpp}}
 #'
 #' @examples
+#' \dontrun{
+#' require(meda)
 #' set.seed(13)
 #' z <- c(0,4,12,16)[sample(4, 1e3, replace=TRUE)]
 #' x <- rnorm(1e3, mean = z, sd = 1)
@@ -37,6 +43,7 @@
 #' plot(xy, col = kdf2$cluster, pch = 17)
 #' title('Clustered Data')
 #' palette('default')
+#' }
 #'
 #' @references Arthur, David, and Sergei Vassilvitskii. 
 #' 'k-means++: The advantages of careful seeding.'
@@ -47,7 +54,7 @@
 #'
 #' @importFrom stats quantile complete.cases
 #' @export
-kmpp <- function(x, k = 2) {
+kmpp <- function(x, k = 2, runkm = FALSE, ...) {
     la2 <- function(a, b) {
         apply(t(apply(as.matrix(b), 1, function(rr) (rr - a)^2)), 1, sum)
     }
@@ -77,11 +84,11 @@ kmpp <- function(x, k = 2) {
             p <- apply(cbind(la1(x[cp], x), p), 1, min)
             P <- p/sum(p)
         }
-        
-        kObj <- stats::kmeans(x, centers = centers)
-        
-        return(kObj)
-        
+       
+        ifelse(runkm,
+               return(stats::kmeans(x, centers = centers, ...)),
+               return(centers))
+
     } else {
         
         ### Step 1a
@@ -108,10 +115,11 @@ kmpp <- function(x, k = 2) {
         }
         
         centers <- Reduce("rbind", centers)
+        rownames(centers) <- NULL
         
-        kObj <- stats::kmeans(x, centers = centers)
-        
-        return(kObj)
+        ifelse(runkm,
+               return(stats::kmeans(x, centers = centers, ...)),
+               return(centers))
     }  ### END ELSE
 }  ### END FUNCTION
 # Time: About 3-6 hours Working status: Works as expected.  Comments: Might need

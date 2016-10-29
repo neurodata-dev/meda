@@ -8,8 +8,6 @@ p.cor(dat)
 }
 \arguments{
 \item{dat}{data}
-
-\item{use.plotly}{Boolean to use plotly}
 }
 \value{
 A correlation plot

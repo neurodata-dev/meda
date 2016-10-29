@@ -6,9 +6,10 @@
 #' @param use.plotly A Boolean to specify if ggplotly is used.
 #' @param scale A Boolean to specify whether column-wise scaling is
 #' performed before analysis.
-#' @param samp An integer specifying the size of the random sample to be
-#' taken if the number of points exceeds 1e5.
-#' 
+#' @param dmethod a string denoting the method to use for dimension
+#' reduction 
+#' @param nmethod a string denoting the method to use for sample
+#' reduction 
 #' @return An html document via RMarkdown.
 #'
 #' @details Generates an html file of various exploratory plots via
@@ -21,42 +22,48 @@
 #' @importFrom grDevices gray.colors
 #' @importFrom rmarkdown render
 #' @importFrom plotly plot_ly
-#' @importFrom mclust bic Mclust
-#' @importFrom robustbase covMcd
 #' @import knitr
 #' @import ggplot2
 #' @import stats
 #' @import corrplot
+#' @import rCUR
 #'
 #' @examples
 #' require(meda)
 #' x <- iris[, -5]
 #' y <- data.frame(matrix(rnorm(1e3*24, mean = rep(c(1,4,2,5), each =
 #' 1e3), sd = 0.25), ncol = 24))
+#' load("~/neurodata/synaptome-stats/Code/cleanDataWithAttributes.RData")
+#' 
 #' outfile.1 <- paste0('~/Desktop/ex1.html')
-#' outfile.2 <- paste0(getwd(), '/ex2.html')
+#' outfile.2 <- paste0('~/Desktop/ex2.html')
+#' outfile.3 <- paste0('~/Desktop/ex3.html')
 #' use.plotly <- FALSE
 #' scale <- TRUE
 #' print("Now run 'genHTML(x, outfile, use.plotly, scale)'")
 #' \dontrun{
 #' x <- ex1[, 1:24, with = FALSE]
 #' genHTML(x, outfile.1, use.plotly, scale)
-#' genHTML(x, outfile.2, use.plotly, scale)
+#' genHTML(y, outfile.2, use.plotly, scale)
+#' genHTML(data01[, 1:24, with = FALSE], outfile.3, use.plotly, scale)
+#' p.heat(data01, FALSE, dmethod = "samp", nmethod = "kmpp")
+#' p.heat(iris[, -5], FALSE, dmethod = "cur", nmethod = "kmpp")
+#' cp <- comp(iris[, -5], dir = 2, nmethod='kmpp', nnum = 75)
 #' }
 #'
 #' @export
 
 
-genHTML <- function(x, outfile, use.plotly = TRUE, scale = TRUE, samp = 1e4) {
+genHTML <- function(x, outfile, use.plotly = TRUE, 
+                    scale = FALSE, dmethod = "pca", 
+                    nmethod = "samp") {
 
   use.plotly <<- use.plotly
   n <<- dim(x)[1]
   p <<- dim(x)[2]
 
-  if(n > 1e5) {
-    x <- x[sample(n, samp), ] 
-    n <<- samp
-  }
+  dmethod <- "pca"
+  nmethod <- "kmpp"
 
   if(scale){
     dat <<- scale(x, center = TRUE, scale = TRUE) 
@@ -79,13 +86,68 @@ genHTML <- function(x, outfile, use.plotly = TRUE, scale = TRUE, samp = 1e4) {
   render(rmd, output_file = outfile)
 }
 
+
+#' Data compression 
+#'
+#' @param dat data
+#' @param dir direction in which to compress, '1' indicates rows, '2'
+#' indicates columns, and '3' performs columns then rows. 
+#' @param nmethod a string specifying the method to use for compressing
+#' rows.
+#' @param dmethod a string specifying the method to use for compressing
+#' columns
+#' @param nnum a number indicating desired sample size.
+#' @param dnum a number indicating desired dimension. 
+#'
+#' @return a compressed version of the input data.
+#'
+#' @importFrom rCUR CUR
+#' 
+#' @export 
+### Data compression
+comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, dnum = 100){
+
+ X <- as.matrix(dat) 
+ nmethod <- tolower(nmethod)
+ dmethod <- tolower(dmethod)
+
+ dcomp <- function(dx, method){
+   s1d <- sample(1:dim(X)[2], dnum)
+   switch(method, 
+          samp = {out <- dx[, s1d]},
+          pca  = {out <- prcomp(dx, center = TRUE, scale = TRUE)$x}, 
+          cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@C[, 1:dnum]}
+          )
+   return(out)
+ } ##end dcomp
+
+ ncomp <- function(dx, method){
+   s1n <- sample(1:dim(X)[1], nnum)
+   switch(method, 
+          samp = {out <- dx[s1n,]},
+          kmpp = {out <- kmpp(dx, k = nnum, runkm = FALSE)}
+          )
+   return(out)
+ } ##end ncomp
+
+ compDat <- switch(dir, 
+                   ncomp(X, nmethod),
+                   dcomp(X, dmethod),
+                   ncomp(dcomp(X, dmethod), nmethod)
+                   )
+
+ return(compDat)
+} ###END comp
+
 #' Try to plot data
 #'
 #' @param FUN a p.* function from meda::
 #' @param dat data
+#' @param use.plotly Boolean for plotly use
 #' 
 #' @return The output of FUN or an error message.
 #'
+#' @export 
 ### Try to plot
 p.try <- function(FUN, dat, use.plotly = NULL) {
   out <- tryCatch(
@@ -111,22 +173,32 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 }
 
 
-
 #' Generate a heatmap plot
 #'
 #' @param dat data
 #' @param use.plotly Boolean to use plotly
+#' @param dmethod parameter passed to \code{\link{comp}}
+#' @param nmethod parameter passed to \code{\link{comp}}
 #' 
-#' @return A plot
+#' @return A heatmap plot of the data compressed if necessary.
 #'
+#' @export 
 ### Heatmaps 
-p.heat <- function(dat, use.plotly){
-  out <- 
+p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
+
+  n <- dim(dat)[1] > 1e3 
+  d <- dim(dat)[2] > 1e2
+
+  if(n | d){
+    case <- ifelse(n & d, 3, ifelse(d,2,1))
+    dat <- comp(dat, dir = case, dmethod = dmethod, nmethod = nmethod, dnum = 1e2, nnum = 1e3)
+  }
+
   if(use.plotly){ 
     plty.heat <- plot_ly(z = dat, type = 'heatmap')
     return(plty.heat)
   } else {
-
+ 
     mdat <- data.table::melt(as.data.frame(dat), id = NULL)
     rasf <- factor(rep(colnames(dat), each = dim(dat)[1]), levels = colnames(dat), ordered = TRUE)
     ras <- data.frame(x = rasf, y = 1:(dim(dat)[1]))
@@ -137,7 +209,7 @@ p.heat <- function(dat, use.plotly){
       geom_raster() + scale_y_reverse(expand = c(0,0)) + 
       scale_fill_gradientn(colours = gray.colors(255, start = 0)) +
       xlab("") + ylab("index") +
-      theme(axis.text.x = element_text(angle = 45, vjust = 0.5), 
+      theme(axis.text.x = element_text(angle = 0, vjust = 0.5), 
             panel.background = element_blank())
 
     return(gg.heat)
@@ -151,13 +223,15 @@ p.heat <- function(dat, use.plotly){
 #' 
 #' @return A heatmap plot
 #'
+#' @export 
 ### Violin or Jitter plots
 p.violin <- function(dat, use.plotly) {
+
   mdat <- data.table::melt(as.data.frame(dat), id = NULL)
   gg <- ggplot(mdat, aes(x = factor(variable), y = value)) +
           xlab("Var") + ylab("value")
 
-  gg.violin <- if(p > 8){
+  gg.violin <- if(n > 1000){
       gg + geom_violin() + coord_flip()
     } else {
       gg + 
@@ -171,10 +245,10 @@ p.violin <- function(dat, use.plotly) {
 #' Generate a correlation plot
 #'
 #' @param dat data
-#' @param use.plotly Boolean to use plotly
 #'
 #' @return A correlation plot
 #' @importFrom stats cor
+#' @export 
 ### Correlation plots 
 p.cor <- function(dat) {
   out <- list(corr = cor(dat), method = "color", tl.cex = 1)
@@ -192,6 +266,7 @@ p.cor <- function(dat) {
 #' @import ggplot2
 #' @importFrom robustbase covMcd
 #' @importFrom stats mahalanobis
+#' @export 
 ### Outlier plots
 p.outlier <- function(dat, alev = 0.01) {
 
@@ -234,6 +309,7 @@ p.outlier <- function(dat, alev = 0.01) {
 #' \url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
 #' @import ggplot2
 #' @importFrom stats prcomp
+#' @export 
 ### Cumulative variance
 p.cumvar <- function(dat){
   tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
@@ -267,13 +343,14 @@ p.cumvar <- function(dat){
 #'
 #' @return A pairs plot
 #' @importFrom stats prcomp
+#' @export 
 ### Pairs Plots
 p.pairs <- function(dat) {
   pca <- prcomp(dat, center = TRUE, scale = TRUE)
   du <- ifelse(dim(pca$x)[2] > 8, 8, dim(pca$x)[2])
   
-  t1 <-paste("pairs plot of first", dim(du)[2], "dimensions")
-  t2 <-paste("pairs plot of first", dim(du)[2], "PCs")
+  t1 <-paste("pairs plot of first", du, "dimensions")
+  t2 <-paste("pairs plot of first", du, "PCs")
 
   pairs(dat[, 1:du], pch = '.',  main = t1)
   pairs(pca$x[,1:du], pch = '.', main = t2)
@@ -287,6 +364,7 @@ p.pairs <- function(dat) {
 #'
 #' @return A BIC plot
 #' @importFrom mclust mclustBIC
+#' @export 
 ### BIC plot
 p.bic <- function(dat, timeLimit = 8*60 ) {
   local({
@@ -303,6 +381,7 @@ p.bic <- function(dat, timeLimit = 8*60 ) {
 #' @param dat data
 #'
 #' @return mclust classification output
+#' @export 
 ### Mclust Classifications 
 p.mclust <- function(dat) {
   if(dim(dat)[1] > 1e5 & dim(dat)[2] > 100){

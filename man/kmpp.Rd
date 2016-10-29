@@ -4,12 +4,18 @@
 \alias{kmpp}
 \title{K-Means++ initialization to K-means}
 \usage{
-kmpp(x, k = 2)
+kmpp(x, k = 2, runkm = FALSE, ...)
 }
 \arguments{
 \item{x}{The data formatted as a matrix.}
 
 \item{k}{The number of clusters desired. \code{k < nrows(x) || length(x)}}
+
+\item{runkm}{a Boolean, if "TRUE," kmeans is run with the kmeans++
+initialization, if "FALSE," the kmeans++ initialization is run and
+returned.}
+
+\item{...}{used to send arguments to kmeans}
 }
 \value{
 An object of class `'kmeans''.
@@ -24,6 +30,8 @@ The first center point is chosen at random.  Each subsequent center
 is chosen with probability \eqn{P = D(x')^2/( \sum_{x \in X} D(x)^2)} (see references)
 }
 \examples{
+\dontrun{
+require(meda)
 set.seed(13)
 z <- c(0,4,12,16)[sample(4, 1e3, replace=TRUE)]
 x <- rnorm(1e3, mean = z, sd = 1)
@@ -47,6 +55,7 @@ title('Original Data')
 plot(xy, col = kdf2$cluster, pch = 17)
 title('Clustered Data')
 palette('default')
+}
 
 }
 \references{
