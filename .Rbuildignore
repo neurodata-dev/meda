@@ -3,3 +3,4 @@
 ^.*\.ig$
 ^.*\inst\extdata\*.html
 ^examples*
+^python*
