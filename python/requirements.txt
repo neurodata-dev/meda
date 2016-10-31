@@ -1,0 +1,7 @@
+pickle
+plotly
+scipy
+pandas_datareader
+cufflinks
+pandas
+numpy
