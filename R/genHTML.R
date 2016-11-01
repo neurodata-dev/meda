@@ -39,7 +39,7 @@
 #' outfile.2 <- paste0('~/Desktop/ex2.html')
 #' outfile.3 <- paste0('~/Desktop/ex3.html')
 #' use.plotly <- FALSE
-#' scale <- TRUE
+#' scale <- FALSE
 #' print("Now run 'genHTML(x, outfile, use.plotly, scale)'")
 #' \dontrun{
 #' x <- ex1[, 1:24, with = FALSE]
@@ -59,8 +59,6 @@ genHTML <- function(x, outfile, use.plotly = TRUE,
                     nmethod = "samp") {
 
   use.plotly <<- use.plotly
-  n <<- dim(x)[1]
-  p <<- dim(x)[2]
 
   dmethod <- "pca"
   nmethod <- "kmpp"
@@ -226,7 +224,8 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
 #' @export 
 ### Violin or Jitter plots
 p.violin <- function(dat, use.plotly) {
-
+  
+  n <- dim(dat)[1]
   mdat <- data.table::melt(as.data.frame(dat), id = NULL)
   gg <- ggplot(mdat, aes(x = factor(variable), y = value)) +
           xlab("Var") + ylab("value")
@@ -259,45 +258,78 @@ p.cor <- function(dat) {
 #' Generate an outlier plot
 #'
 #' @param dat data
-#' @param alev alpha level
 #'
 #' @return An outlier plot
-#'
+#' @details For each datapoint the average distance of the sqrt(n)-nearest
+#' neighbors is computed. Call this set of points `mdk`. 
+#' Outliers are then points with value 3 standard
+#' deviations away from the mean(`mdk`). 
 #' @import ggplot2
-#' @importFrom robustbase covMcd
-#' @importFrom stats mahalanobis
+#' @importFrom stats dist
+#' @importFrom FastKNN k.nearest.neighbors
 #' @export 
+# @importFrom robustbase covMcd
+# @importFrom stats mahalanobis
 ### Outlier plots
-p.outlier <- function(dat, alev = 0.01) {
+#p.outlier <- function(dat, alev = 0.01) {
+#
+#  ## Create data.frame of robust distances (rd) 
+#  ## as in Hubert et al. 2008
+#  ## calculated with FAST MCD or covOGK
+#  mcd <- covMcd(dat)
+#  tmp <- 1:dim(dat)[1]
+#
+#  mx <- sqrt(mahalanobis(dat, center = mcd$center, cov = mcd$cov))
+#  RD <- data.frame(index = as.integer(tmp), rd = mx) 
+#
+#
+#  aline <- sqrt(qchisq(1 - alev / 100, p, ncp = 0, lower.tail = TRUE, log.p = FALSE))
+#
+#  RD$outlier <- factor(RD$rd < aline, labels = c("outlier", "inlier"))
+#
+#  tmp <- t(sapply(RD$rd, function(x) x < aline, simplify=TRUE))
+#
+#  gg.outlier <- 
+#    ggplot(data = RD, aes(x = index, y = rd, color = outlier )) + 
+#  	  geom_point() + 
+#      labs(list(color = 
+#        bquote(paste("Outliers at level ", alpha, "=", .(alev))))) +
+#      geom_hline(yintercept = aline) + 
+#      ggtitle("Robust Distances of the data") +
+#      ylab("Robust Distances")
+#
+#  return(gg.outlier)
+#  } ## END p.outlier
+#' 
+p.outlier <- function(dat) {
+  n <- dim(dat)[1]
+  if(n > 1e5){
+    stop()
+  } else {
+    d <- as.matrix(dist(dat))
+    knp <- list()
+    mdk <- c()
+    for(i in 1:n){
+      knp[[i]] <- 
+        k.nearest.neighbors(d,i=i,k = sqrt(n))
+      mdk[i] <- mean(d[i, knp[[i]]])
+    }
 
-  ## Create data.frame of robust distances (rd) 
-  ## as in Hubert et al. 2008
-  ## calculated with FAST MCD or covOGK
-  mcd <- covMcd(dat)
-  tmp <- 1:dim(dat)[1]
+  th <- list(a = mean(mdk) + 3*sd(mdk),
+             b = quantile(mdk,0.75) + 1.5*IQR(mdk)) 
 
-  mx <- sqrt(mahalanobis(dat, center = mcd$center, cov = mcd$cov))
-  RD <- data.frame(index = as.integer(tmp), rd = mx) 
+  md <- data.frame(x = 1:length(mdk), y = mdk, 
+                   outlier = factor(mdk > th$a, labels=c("inlier", "outlier")),
+                   outlier.tukey = factor(mdk > th$b, labels=c("inlier", "outlier")))
 
+  p <- ggplot(data = md, aes(x = x, y = y, color = outlier)) +
+    xlab("index") + ylab("Mean Distance of KNN") + geom_point() +
+    ggtitle("Mean Distance of KNN with K = sqrt(n)") + 
+    scale_color_manual(values = c("black", "red"))
 
-  aline <- sqrt(qchisq(1 - alev / 100, p, ncp = 0, lower.tail = TRUE, log.p = FALSE))
-
-  RD$outlier <- factor(RD$rd < aline, labels = c("outlier", "inlier"))
-
-  tmp <- t(sapply(RD$rd, function(x) x < aline, simplify=TRUE))
-
-  gg.outlier <- 
-    ggplot(data = RD, aes(x = index, y = rd, color = outlier )) + 
-  	  geom_point() + 
-      labs(list(color = 
-        bquote(paste("Outliers at level ", alpha, "=", .(alev))))) +
-      geom_hline(yintercept = aline) + 
-      ggtitle("Robust Distances of the data") +
-      ylab("Robust Distances")
-
-  return(gg.outlier)
-  } ## END p.outlier
-
+  return(p)
+  }
+}
 
 
 #' Generate a cumulative variance plot

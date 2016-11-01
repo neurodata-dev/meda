@@ -32,6 +32,8 @@ print(paste("Are there any NAs?:", nas))
 print(paste("Are any values negative?:", negs))
 ```
 ```{r cc-str3, results = 'hold'}
+n <<- dim(dat)[1]
+p <<- dim(dat)[2]
 if(p <= 12) { print("Structure"); str(dat) }
 ```
 

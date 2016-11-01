@@ -4,17 +4,21 @@
 \alias{p.outlier}
 \title{Generate an outlier plot}
 \usage{
-p.outlier(dat, alev = 0.01)
+p.outlier(dat)
 }
 \arguments{
 \item{dat}{data}
-
-\item{alev}{alpha level}
 }
 \value{
 An outlier plot
 }
 \description{
 Generate an outlier plot
+}
+\details{
+For each datapoint the average distance of the sqrt(n)-nearest
+neighbors is computed. Call this set of points `mdk`. 
+Outliers are then points with value 3 standard
+deviations away from the mean(`mdk`).
 }
 

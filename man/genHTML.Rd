@@ -46,7 +46,7 @@ outfile.1 <- paste0('~/Desktop/ex1.html')
 outfile.2 <- paste0('~/Desktop/ex2.html')
 outfile.3 <- paste0('~/Desktop/ex3.html')
 use.plotly <- FALSE
-scale <- TRUE
+scale <- FALSE
 print("Now run 'genHTML(x, outfile, use.plotly, scale)'")
 \dontrun{
 x <- ex1[, 1:24, with = FALSE]
