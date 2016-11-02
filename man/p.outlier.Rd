@@ -4,10 +4,14 @@
 \alias{p.outlier}
 \title{Generate an outlier plot}
 \usage{
-p.outlier(dat)
+p.outlier(dat, k = sqrt(dim(dat)[1]), ...)
 }
 \arguments{
 \item{dat}{data}
+
+\item{k}{number of neighbors if nrow(dat) in (1e4,1e5]}
+
+\item{...}{Unused}
 }
 \value{
 An outlier plot
@@ -16,9 +20,8 @@ An outlier plot
 Generate an outlier plot
 }
 \details{
-For each datapoint the average distance of the sqrt(n)-nearest
-neighbors is computed. Call this set of points `mdk`. 
-Outliers are then points with value 3 standard
-deviations away from the mean(`mdk`).
+For sample size <= 1e4 an outlier measure is calculated from the 
+randomForest package, points with measure greater than 3 sd from the
+mean are considred outliers.  Need to add case for n > 1e4.
 }
 

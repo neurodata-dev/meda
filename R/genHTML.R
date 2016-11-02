@@ -22,6 +22,7 @@
 #' @importFrom grDevices gray.colors
 #' @importFrom rmarkdown render
 #' @importFrom plotly plot_ly
+#' @importFrom stats cor
 #' @import knitr
 #' @import ggplot2
 #' @import stats
@@ -30,27 +31,16 @@
 #'
 #' @examples
 #' require(meda)
-#' x <- iris[, -5]
-#' y <- data.frame(matrix(rnorm(1e3*24, mean = rep(c(1,4,2,5), each =
-#' 1e3), sd = 0.25), ncol = 24))
-#' load("~/neurodata/synaptome-stats/Code/cleanDataWithAttributes.RData")
+#' dat <- iris[, -5]
+#' p.heat(dat, FALSE, dmethod = "samp", nmethod = "kmpp")
+#' p.violin(dat)
+#' p.outlier(dat)
+#' do.call(corrplot, p.cor(dat))
+#' p.cumvar(dat)
+#' p.pairs(dat)
+#' p.bic(dat)
+#' p.mclust(dat)
 #' 
-#' outfile.1 <- paste0('~/Desktop/ex1.html')
-#' outfile.2 <- paste0('~/Desktop/ex2.html')
-#' outfile.3 <- paste0('~/Desktop/ex3.html')
-#' use.plotly <- FALSE
-#' scale <- FALSE
-#' print("Now run 'genHTML(x, outfile, use.plotly, scale)'")
-#' \dontrun{
-#' x <- ex1[, 1:24, with = FALSE]
-#' genHTML(x, outfile.1, use.plotly, scale)
-#' genHTML(y, outfile.2, use.plotly, scale)
-#' genHTML(data01[, 1:24, with = FALSE], outfile.3, use.plotly, scale)
-#' p.heat(data01, FALSE, dmethod = "samp", nmethod = "kmpp")
-#' p.heat(iris[, -5], FALSE, dmethod = "cur", nmethod = "kmpp")
-#' cp <- comp(iris[, -5], dir = 2, nmethod='kmpp', nnum = 75)
-#' }
-#'
 #' @export
 
 
@@ -180,6 +170,7 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' 
 #' @return A heatmap plot of the data compressed if necessary.
 #'
+#' @importFrom data.table melt
 #' @export 
 ### Heatmaps 
 p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
@@ -246,7 +237,6 @@ p.violin <- function(dat, use.plotly) {
 #' @param dat data
 #'
 #' @return A correlation plot
-#' @importFrom stats cor
 #' @export 
 ### Correlation plots 
 p.cor <- function(dat) {
@@ -258,78 +248,78 @@ p.cor <- function(dat) {
 #' Generate an outlier plot
 #'
 #' @param dat data
-#'
+#' @param k number of neighbors if nrow(dat) in (1e4,1e5]
+#' @param ... Unused 
 #' @return An outlier plot
-#' @details For each datapoint the average distance of the sqrt(n)-nearest
-#' neighbors is computed. Call this set of points `mdk`. 
-#' Outliers are then points with value 3 standard
-#' deviations away from the mean(`mdk`). 
+#' @details
+#' For sample size <= 1e4 an outlier measure is calculated from the 
+#' randomForest package, points with measure greater than 3 sd from the
+#' mean are considred outliers.  Need to add case for n > 1e4.
 #' @import ggplot2
-#' @importFrom stats dist
-#' @importFrom FastKNN k.nearest.neighbors
+#' @importFrom randomForest randomForest outlier
+#' @importFrom rflann Neighbour
 #' @export 
-# @importFrom robustbase covMcd
-# @importFrom stats mahalanobis
 ### Outlier plots
-#p.outlier <- function(dat, alev = 0.01) {
-#
-#  ## Create data.frame of robust distances (rd) 
-#  ## as in Hubert et al. 2008
-#  ## calculated with FAST MCD or covOGK
-#  mcd <- covMcd(dat)
-#  tmp <- 1:dim(dat)[1]
-#
-#  mx <- sqrt(mahalanobis(dat, center = mcd$center, cov = mcd$cov))
-#  RD <- data.frame(index = as.integer(tmp), rd = mx) 
-#
-#
-#  aline <- sqrt(qchisq(1 - alev / 100, p, ncp = 0, lower.tail = TRUE, log.p = FALSE))
-#
-#  RD$outlier <- factor(RD$rd < aline, labels = c("outlier", "inlier"))
-#
-#  tmp <- t(sapply(RD$rd, function(x) x < aline, simplify=TRUE))
-#
-#  gg.outlier <- 
-#    ggplot(data = RD, aes(x = index, y = rd, color = outlier )) + 
-#  	  geom_point() + 
-#      labs(list(color = 
-#        bquote(paste("Outliers at level ", alpha, "=", .(alev))))) +
-#      geom_hline(yintercept = aline) + 
-#      ggtitle("Robust Distances of the data") +
-#      ylab("Robust Distances")
-#
-#  return(gg.outlier)
-#  } ## END p.outlier
-#' 
-p.outlier <- function(dat) {
+p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
+
   n <- dim(dat)[1]
-  if(n > 1e5){
-    stop()
-  } else {
-    d <- as.matrix(dist(dat))
-    knp <- list()
+  if(n <= 1e4) {
+    rf1 <- randomForest(dat, proximity = TRUE)
+    out <- outlier(rf1)
+   
+    l1 <- mean(out) + 3*sd(out)
+    status <- factor(out < l1, labels = c("outlier", "inlier"))
+    df1 <- data.frame(x = 1:length(out), outD = out, status = status) 
+    p <- 
+      ggplot(data = df1, aes(x = x, y = outD, color = status)) + 
+      geom_point() + geom_hline(yintercept = l1, aes(label = l1), show.legend = TRUE) + 
+      ylab("Outlier Measure") + xlab("index") + 
+      ggtitle("Outliers 3*sd from mean")
+      
+    return(p)
+  }
+
+  if(n > 1e4 & n <= 1e5) {
+    dat <- as.matrix(dat)
+    KNN <- Neighbour(dat, dat, k = (sqrt(nrow(dat))+1), build = 'kmeans', cores = 0, checks = 1)
+    KNN$indices <- KNN$indices[, -1] 
+    KNN$distances <- KNN$distances[, -1]
+
     mdk <- c()
-    for(i in 1:n){
-      knp[[i]] <- 
-        k.nearest.neighbors(d,i=i,k = sqrt(n))
-      mdk[i] <- mean(d[i, knp[[i]]])
+    for(i in 1:nrow(KNN$indices)){
+      ind <- c(i,KNN$indices[i,])
+      d2 <- as.matrix(dist(dat[ind, ]))[-1,1]^2
+      mdk[i] <- mean(d2)
     }
 
-  th <- list(a = mean(mdk) + 3*sd(mdk),
-             b = quantile(mdk,0.75) + 1.5*IQR(mdk)) 
+    l1 <- mean(mdk) + 3 * sd(mdk)
+    status <- factor(mdk < l1, labels = c("outlier", "inlier"))
+    df1 <- data.frame(x = 1:length(mdk), y = mdk, status = status)
 
-  md <- data.frame(x = 1:length(mdk), y = mdk, 
-                   outlier = factor(mdk > th$a, labels=c("inlier", "outlier")),
-                   outlier.tukey = factor(mdk > th$b, labels=c("inlier", "outlier")))
+    p <- 
+      ggplot(data = df1, aes(x = x, y = y, color = status)) + 
+      geom_point() + geom_hline(yintercept = l1, aes(label = l1), show.legend = TRUE) + 
+      ylab("Mean Difference from KNN") + xlab("index") + 
+      ggtitle("Outliers 3*sd from mean, K = sqrt(n)")
 
-  p <- ggplot(data = md, aes(x = x, y = y, color = outlier)) +
-    xlab("index") + ylab("Mean Distance of KNN") + geom_point() +
-    ggtitle("Mean Distance of KNN with K = sqrt(n)") + 
-    scale_color_manual(values = c("black", "red"))
-
-  return(p)
+    return(p)
+  } else {
+    tmp <- comp(dat, dir = 1, nmethod = "samp", nnum = 1e3)
+    rf1 <- randomForest(tmp, proximity = TRUE)
+    out <- outlier(rf1)
+   
+    l1 <- mean(out) + 3*sd(out)
+    status <- factor(out < l1, labels = c("outlier", "inlier"))
+    df1 <- data.frame(x = 1:length(out), outD = out, status = status) 
+    p <- 
+      ggplot(data = df1, aes(x = x, y = outD, color = status)) + 
+      geom_point() + geom_hline(yintercept = l1, aes(label = l1), show.legend = TRUE) + 
+      ylab("Outlier Measure") + xlab("index") + 
+      ggtitle("Outliers 3*sd from mean, using a sample")
+      
+    return(p)
   }
-}
+} ## END p.outlier
 
 
 #' Generate a cumulative variance plot
@@ -374,7 +364,6 @@ p.cumvar <- function(dat){
 #' @param dat data
 #'
 #' @return A pairs plot
-#' @importFrom stats prcomp
 #' @export 
 ### Pairs Plots
 p.pairs <- function(dat) {

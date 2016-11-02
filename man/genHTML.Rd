@@ -37,26 +37,15 @@ Tukey (Exploratory Data Analysis, p 43)
 }
 \examples{
 require(meda)
-x <- iris[, -5]
-y <- data.frame(matrix(rnorm(1e3*24, mean = rep(c(1,4,2,5), each =
-1e3), sd = 0.25), ncol = 24))
-load("~/neurodata/synaptome-stats/Code/cleanDataWithAttributes.RData")
-
-outfile.1 <- paste0('~/Desktop/ex1.html')
-outfile.2 <- paste0('~/Desktop/ex2.html')
-outfile.3 <- paste0('~/Desktop/ex3.html')
-use.plotly <- FALSE
-scale <- FALSE
-print("Now run 'genHTML(x, outfile, use.plotly, scale)'")
-\dontrun{
-x <- ex1[, 1:24, with = FALSE]
-genHTML(x, outfile.1, use.plotly, scale)
-genHTML(y, outfile.2, use.plotly, scale)
-genHTML(data01[, 1:24, with = FALSE], outfile.3, use.plotly, scale)
-p.heat(data01, FALSE, dmethod = "samp", nmethod = "kmpp")
-p.heat(iris[, -5], FALSE, dmethod = "cur", nmethod = "kmpp")
-cp <- comp(iris[, -5], dir = 2, nmethod='kmpp', nnum = 75)
-}
+dat <- iris[, -5]
+p.heat(dat, FALSE, dmethod = "samp", nmethod = "kmpp")
+p.violin(dat)
+p.outlier(dat)
+do.call(corrplot, p.cor(dat))
+p.cumvar(dat)
+p.pairs(dat)
+p.bic(dat)
+p.mclust(dat)
 
 }
 \seealso{
