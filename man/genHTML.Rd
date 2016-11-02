@@ -4,7 +4,7 @@
 \alias{genHTML}
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
-genHTML(x, outfile, use.plotly = TRUE, scale = FALSE, dmethod = "pca",
+genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "pca",
   nmethod = "samp")
 }
 \arguments{

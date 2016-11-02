@@ -44,7 +44,7 @@
 #' @export
 
 
-genHTML <- function(x, outfile, use.plotly = TRUE, 
+genHTML <- function(x, outfile, use.plotly = FALSE, 
                     scale = FALSE, dmethod = "pca", 
                     nmethod = "samp") {
 
