@@ -56,7 +56,7 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
   if(scale){
     dat <<- scale(x, center = TRUE, scale = TRUE) 
   } else {
-    dat <<- x
+    dat <<- as.matrix(x)
   }
  
   maxchar <- max(nchar(as.character(colnames(dat))))
@@ -198,7 +198,8 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
       geom_raster() + scale_y_reverse(expand = c(0,0)) + 
       scale_fill_gradientn(colours = gray.colors(255, start = 0)) +
       xlab("") + ylab("index") +
-      theme(axis.text.x = element_text(angle = 0, vjust = 0.5), 
+      theme(axis.text.x = element_blank(),
+            #element_text(angle = 0, vjust = 0.5), 
             panel.background = element_blank())
 
     return(gg.heat)
@@ -209,24 +210,48 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
 #'
 #' @param dat data
 #' @param use.plotly Boolean to use plotly
+#' @param dmethod a string specifying the method to use for compressing
+#' columns if d > 30.
 #' 
-#' @return A heatmap plot
+#' @seealso \code{\link{comp}}
+#' 
+#' @return A jitter/violin plot
 #'
 #' @export 
 ### Violin or Jitter plots
-p.violin <- function(dat, use.plotly) {
+p.violin <- function(dat, use.plotly, dmethod = "cur") {
   
   n <- dim(dat)[1]
+
+  if(dim(dat)[2] > 30){
+    dat <- comp(dat, dir = 2, dmethod = dmethod, dnum = 30)
+    }
+  
   mdat <- data.table::melt(as.data.frame(dat), id = NULL)
+
   gg <- ggplot(mdat, aes(x = factor(variable), y = value)) +
           xlab("Var") + ylab("value")
 
   gg.violin <- if(n > 1000){
-      gg + geom_violin() + coord_flip()
+    samp <- lapply(unique(mdat$variable), function(x){ 
+                     out <- NULL
+                     if(nrow(mdat[mdat$variable == x, ]) > 1e2){
+                       sm <- sample(nrow(mdat[mdat$variable == x,]), 1e2)
+                       out <- mdat[mdat$variable == x,][sm,]
+                     }
+                     return(out)
+              })
+    smdat <- Reduce("rbind", samp)
+    gg + 
+      geom_jitter(data = smdat, aes(x = factor(variable), y = value), 
+                  shape = 19, size = 1, alpha = 1/10, 
+                  width = 0.2) +
+      geom_violin(alpha = 0.15, colour = 'red3') + 
+      coord_flip()
     } else {
       gg + 
-        geom_point(alpha=0.3) + 
-        geom_jitter(width = .6) 
+        geom_jitter(shape = 19, alpha = 0.25, width = .6) + 
+        geom_violin(alpha = 0.25, color = 'red3')
     }
   return(gg.violin)
 }
@@ -367,14 +392,12 @@ p.cumvar <- function(dat){
 #' @export 
 ### Pairs Plots
 p.pairs <- function(dat) {
-  pca <- prcomp(dat, center = TRUE, scale = TRUE)
-  du <- ifelse(dim(pca$x)[2] > 8, 8, dim(pca$x)[2])
+
+  du <- ifelse(dim(dat)[2] > 8, 8, dim(dat)[2])
   
   t1 <-paste("pairs plot of first", du, "dimensions")
-  t2 <-paste("pairs plot of first", du, "PCs")
 
-  pairs(dat[, 1:du], pch = '.',  main = t1)
-  pairs(pca$x[,1:du], pch = '.', main = t2)
+  pairs(as.matrix(dat)[, 1:du], pch = 19,  main = t1)
 }
 
 

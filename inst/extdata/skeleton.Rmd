@@ -38,6 +38,11 @@ if(p <= 12) { print("Structure"); str(dat) }
 ```
 
 # Heatmap
+The heatmap below is a representation of the data with values shown in
+color according to magnitude. Mouse hover for column names.
+
+[Heatmap](https://en.wikipedia.org/wiki/Heat_map)
+
 ```{r cc-heatmap}
 if(use.plotly){
   p.try(p.heat, dat, TRUE)
@@ -46,7 +51,16 @@ if(use.plotly){
 }
 ```
 
-# Jitter or Violin Plot
+# Violin Plot with jittered points
+
+The violin plot combines a kernel density estimate with a boxplot for a
+more detailed vizualization.  A jittered scatter plot of the points is overlaid.
+The jittering helps reduce effects of overplotting. 
+
+1. [Box plots](https://dx.doi.org/10.2307%2F2683468)
+2. [Kernel Density Estimate](https://en.wikipedia.org/wiki/Kernel_density_estimation)
+3. [Violin Plots](https://dx.doi.org/10.1080%2F00031305.1998.10480559)
+
 ```{r cc-violin}
 if(use.plotly){
   tryCatch(ggplotly(p.try(p.violin, dat)))
@@ -56,11 +70,33 @@ if(use.plotly){
 ```
 
 # Correlation Plot
+
+The correlation between two random variables is a measure of a specific
+type of dependence that involes not only the two variables themseleves
+but also a random component.  It measures to what degree a linear
+relationship exists between then two random variables, where 1 is
+corresponds to a direct linear relationship, 0 corresponds to no linear
+relationship, and -1 corresponds to an inverse linear relationship.  
+
+1. [Correlation](https://www.encyclopediaofmath.org/index.php/Correlation_(in_statistics))
+2. [Correlation and dependence](https://en.wikipedia.org/wiki/Correlation_and_dependence)
+3. [Example graphic](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Correlation_examples2.svg/506px-Correlation_examples2.svg.png)
+
 ```{r cc-corr}
 tryCatch(do.call(corrplot, p.cor(dat)))
 ```
 
 # Outlier Plots
+
+An outlier is a datapoint that lives relatively far away from the bulk
+of other observations.  Outliers can have unwanted effects on data analysis
+and therfore should be analyized themselves. 
+
+We use the built-in method from the `randomForest` package in `R`.
+
+1. [randomForest](https://cran.r-project.org/web/packages/randomForest/index.html)
+1. [Outlier](https://en.wikipedia.org/wiki/Outlier)
+
 ```{r cc-outlier}
 if(use.plotly){
   ggplotly(p.try(p.outlier, dat))
@@ -70,6 +106,23 @@ if(use.plotly){
 ```
 
 # Cumulative Variance 
+
+The variance measure how spread out the data are from their mean.
+Cumulative variance measures, as a percentage, how much variation 
+each dimenison contributes to the dataset. 
+
+In this implementation we use principal components analysis to select
+linear combinations of the features that explain the dataset best in
+low dimensions. 
+
+The plot below shows how much variance is explianed when adding columns
+one at a time.  The elbows denote good "cut-off" points for dimension
+selection. 
+
+1. [Variance](https://www.encyclopediaofmath.org/index.php/Variance)
+2. [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis)
+3. [Elbows](http://dx.doi.org/10.1016/j.csda.2005.09.010)
+
 ```{r cc-cumsum}
 if(use.plotly){
   tryCatch(ggplotly(p.try(p.cumvar, dat)))
@@ -79,6 +132,12 @@ if(use.plotly){
 ```
 
 # Pairs Plots 
+A pairs plot is a popular way of plotting high-dimensional data.  
+For every pair of dimensions are plotted showing the specific projection of
+the data along those two dimensions. 
+
+For readability a maximum of 8 dimensions are plotted. 
+
 ```{r cc-pairs, fig.height = 8, fig.width = 8}
 p.try(p.pairs, dat)
 ```
