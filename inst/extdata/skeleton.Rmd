@@ -32,9 +32,9 @@ print(paste("Are there any NAs?:", nas))
 print(paste("Are any values negative?:", negs))
 ```
 ```{r cc-str3, results = 'hold'}
-n <<- dim(dat)[1]
-p <<- dim(dat)[2]
-if(p <= 12) { print("Structure"); str(dat) }
+n <- dim(dat)[1]
+d <- dim(dat)[2]
+if(d <= 12) { print("Structure"); str(dat) }
 ```
 
 # Heatmap
@@ -72,7 +72,7 @@ if(use.plotly){
 # Correlation Plot
 
 The correlation between two random variables is a measure of a specific
-type of dependence that involes not only the two variables themseleves
+type of dependence that involves not only the two variables themselves
 but also a random component.  It measures to what degree a linear
 relationship exists between then two random variables, where 1 is
 corresponds to a direct linear relationship, 0 corresponds to no linear
@@ -89,8 +89,9 @@ tryCatch(do.call(corrplot, p.cor(dat)))
 # Outlier Plots
 
 An outlier is a datapoint that lives relatively far away from the bulk
-of other observations.  Outliers can have unwanted effects on data analysis
-and therfore should be analyized themselves. 
+of other observations. 
+Outliers can have unwanted effects on data analysis
+and therefore should be considered carefully. 
 
 We use the built-in method from the `randomForest` package in `R`.
 
@@ -109,13 +110,13 @@ if(use.plotly){
 
 The variance measure how spread out the data are from their mean.
 Cumulative variance measures, as a percentage, how much variation 
-each dimenison contributes to the dataset. 
+each dimension contributes to the dataset. 
 
 In this implementation we use principal components analysis to select
 linear combinations of the features that explain the dataset best in
 low dimensions. 
 
-The plot below shows how much variance is explianed when adding columns
+The plot below shows how much variance is explained when adding columns
 one at a time.  The elbows denote good "cut-off" points for dimension
 selection. 
 
@@ -149,7 +150,8 @@ p.try(p.bic, dat)
 
 # Mclust classifications
 ```{r cc-mclust}
-p.try(p.mclust, dat)
+out <- p.bic(dat)
+try(p.mclust(out$data, out$bic))
 ```
 
 

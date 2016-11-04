@@ -4,15 +4,14 @@
 \alias{p.violin}
 \title{Generate violin/jitter plot of data}
 \usage{
-p.violin(dat, use.plotly, dmethod = "cur")
+p.violin(dat, use.plotly, ...)
 }
 \arguments{
 \item{dat}{data}
 
 \item{use.plotly}{Boolean to use plotly}
 
-\item{dmethod}{a string specifying the method to use for compressing
-columns if d > 30.}
+\item{...}{used to pass arguments to \code{\link{comp}}}
 }
 \value{
 A jitter/violin plot

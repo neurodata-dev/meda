@@ -12,9 +12,12 @@ p.bic(dat, timeLimit = 8 * 60)
 \item{timeLimit}{Time limit for bic computation.}
 }
 \value{
-A BIC plot
+A BIC plot and as a side-effect
 }
 \description{
 Generate a BIC plot
+}
+\examples{
+out <- p.bic(iris[, -5])
 }
 

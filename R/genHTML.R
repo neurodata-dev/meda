@@ -38,8 +38,8 @@
 #' do.call(corrplot, p.cor(dat))
 #' p.cumvar(dat)
 #' p.pairs(dat)
-#' p.bic(dat)
-#' p.mclust(dat)
+#' out <- p.bic(dat)
+#' p.mclust(out$dat, out$bicO)
 #' 
 #' @export
 
@@ -48,20 +48,18 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
                     scale = FALSE, dmethod = "pca", 
                     nmethod = "samp") {
 
-  use.plotly <<- use.plotly
+  use.plotly <- use.plotly
 
   dmethod <- "pca"
   nmethod <- "kmpp"
 
   if(scale){
-    dat <<- scale(x, center = TRUE, scale = TRUE) 
+    dat <- scale(x, center = TRUE, scale = TRUE) 
   } else {
-    dat <<- as.matrix(x)
+    dat <- as.matrix(x)
   }
  
   maxchar <- max(nchar(as.character(colnames(dat))))
-  #ifelse(maxchar > 8, 
-
 
   ### Structure of Data
   colStr <- table(Reduce(c,lapply(as.data.frame(dat), class)))
@@ -113,7 +111,8 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
    s1n <- sample(1:dim(X)[1], nnum)
    switch(method, 
           samp = {out <- dx[s1n,]},
-          kmpp = {out <- kmpp(dx, k = nnum, runkm = FALSE)}
+          kmpp = {out <- kmpp(dx, k = nnum, runkm = FALSE)},
+          cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@R[1:nnum, ]}
           )
    return(out)
  } ##end ncomp
@@ -210,8 +209,7 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
 #'
 #' @param dat data
 #' @param use.plotly Boolean to use plotly
-#' @param dmethod a string specifying the method to use for compressing
-#' columns if d > 30.
+#' @param ... used to pass arguments to \code{\link{comp}}
 #' 
 #' @seealso \code{\link{comp}}
 #' 
@@ -219,12 +217,12 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
 #'
 #' @export 
 ### Violin or Jitter plots
-p.violin <- function(dat, use.plotly, dmethod = "cur") {
+p.violin <- function(dat, use.plotly, ...) {
   
   n <- dim(dat)[1]
 
   if(dim(dat)[2] > 30){
-    dat <- comp(dat, dir = 2, dmethod = dmethod, dnum = 30)
+    dat <- comp(dat, dir = 2, ..., dnum = 30)
     }
   
   mdat <- data.table::melt(as.data.frame(dat), id = NULL)
@@ -265,6 +263,9 @@ p.violin <- function(dat, use.plotly, dmethod = "cur") {
 #' @export 
 ### Correlation plots 
 p.cor <- function(dat) {
+  if(nrow(dat) > 1e5){
+    dat <- comp(dat, dir = 1, nmethod = nmethod, nnum = 1e3)
+  }
   out <- list(corr = cor(dat), method = "color", tl.cex = 1)
   return(out)
 }
@@ -288,6 +289,11 @@ p.cor <- function(dat) {
 p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 
   n <- dim(dat)[1]
+
+  if(n > 1e5){
+    dat <- comp(dat, dir = 1, nmethod = "samp", nnum = 1e4)
+  }
+
   if(n <= 1e4) {
     rf1 <- randomForest(dat, proximity = TRUE)
     out <- outlier(rf1)
@@ -360,6 +366,8 @@ p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 ### Cumulative variance
 p.cumvar <- function(dat){
   tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
+  
+  n  <- dim(dat)[1]
 
   pca <- prcomp(dat, center = TRUE, scale = TRUE)
   tryCatch(elb <- getElbows(pca$sdev, plot = FALSE))
@@ -406,33 +414,58 @@ p.pairs <- function(dat) {
 #' @param dat data
 #' @param timeLimit Time limit for bic computation.
 #'
-#' @return A BIC plot
+#' @return A BIC plot and as a side-effect
 #' @importFrom mclust mclustBIC
+#' @examples
+#' out <- p.bic(iris[, -5])
 #' @export 
 ### BIC plot
 p.bic <- function(dat, timeLimit = 8*60 ) {
-  local({
-    setTimeLimit(cpu = timeLimit, transient = FALSE)
-    bicO <<- mclust::mclustBIC(dat, G = 1:10)
-  })
+
+  n <- nrow(dat)
+  d <- ncol(dat)
+
+  if(d > 100){
+    dat <- comp(dat, dir=2, dnum = 100, dmethod = "cur")
+  }
+
+  if(n > 1e5){
+    dat <- comp(dat, dir = 1, nnum = 1e3, nmethod = 'samp')
+  }
+  out <- NULL
+
+  setTimeLimit(cpu = timeLimit, transient = FALSE)
+  bicO <- mclust::mclustBIC(dat, G = 1:10)
+  out <- list(bic = bicO, data = dat)
+
   print(summary(bicO))
   plot(bicO) 
+  return(out)
 }
 
 
 #' Generate mclust output
 #'
-#' @param dat data
+#' @param dat data that p.bic has been run on
+#' @param bic output from p.bic or \code{\link[mclust]{mclustBIC}}
 #'
 #' @return mclust classification output
+#' @examples
+#' out <- p.bic(iris[, -5])
+#' p.mclust(out$dat, out$bicO)
 #' @export 
 ### Mclust Classifications 
-p.mclust <- function(dat) {
-  if(dim(dat)[1] > 1e5 & dim(dat)[2] > 100){
-    stop("Dimensions are too large.")
-    } else {
-     mod1 <- Mclust(dat, x = bicO)
-     plot(mod1, "classification") 
-    }
+p.mclust <- function(dat, bic) {
+
+  n <- nrow(dat)
+  d <- ncol(dat)
+
+  mod1 <- Mclust(dat, x = bic)
+
+  if(d > 8){
+    pairs(as.data.frame(dat)[, 1:8], col = mod1$classification, pch = 19)
+  } else {
+    pairs(as.data.frame(dat), col = mod1$classification, pch = 19)
+  }
 }
 

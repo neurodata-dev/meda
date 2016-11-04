@@ -4,15 +4,21 @@
 \alias{p.mclust}
 \title{Generate mclust output}
 \usage{
-p.mclust(dat)
+p.mclust(dat, bic)
 }
 \arguments{
-\item{dat}{data}
+\item{dat}{data that p.bic has been run on}
+
+\item{bic}{output from p.bic or \code{\link[mclust]{mclustBIC}}}
 }
 \value{
 mclust classification output
 }
 \description{
 Generate mclust output
+}
+\examples{
+out <- p.bic(iris[, -5])
+p.mclust(out$dat, out$bicO)
 }
 

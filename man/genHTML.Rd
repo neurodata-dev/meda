@@ -44,8 +44,8 @@ p.outlier(dat)
 do.call(corrplot, p.cor(dat))
 p.cumvar(dat)
 p.pairs(dat)
-p.bic(dat)
-p.mclust(dat)
+out <- p.bic(dat)
+p.mclust(out$dat, out$bicO)
 
 }
 \seealso{
