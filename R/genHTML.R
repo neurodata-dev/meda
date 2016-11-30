@@ -413,6 +413,7 @@ p.pairs <- function(dat) {
 #'
 #' @param dat data
 #' @param timeLimit Time limit for bic computation.
+#' @param print boolean for printing and plotting output.
 #'
 #' @return A BIC plot and as a side-effect
 #' @importFrom mclust mclustBIC
@@ -420,7 +421,7 @@ p.pairs <- function(dat) {
 #' out <- p.bic(iris[, -5])
 #' @export 
 ### BIC plot
-p.bic <- function(dat, timeLimit = 8*60 ) {
+p.bic <- function(dat, timeLimit = 8*60, print = TRUE) {
 
   n <- nrow(dat)
   d <- ncol(dat)
@@ -438,8 +439,10 @@ p.bic <- function(dat, timeLimit = 8*60 ) {
   bicO <- mclust::mclustBIC(dat, G = 1:10)
   out <- list(bic = bicO, data = dat)
 
-  print(summary(bicO))
+  if(print) print(summary(bicO))
+
   plot(bicO) 
+
   return(out)
 }
 
@@ -448,24 +451,95 @@ p.bic <- function(dat, timeLimit = 8*60 ) {
 #'
 #' @param dat data that p.bic has been run on
 #' @param bic output from p.bic or \code{\link[mclust]{mclustBIC}}
+#' @param truth true labels if any
 #'
 #' @return mclust classification output
 #' @examples
 #' out <- p.bic(iris[, -5])
-#' p.mclust(out$dat, out$bicO)
+#' truth <- iris[, 5]
+#' p.mclust(out$dat, out$bicO, truth)
 #' @export 
 ### Mclust Classifications 
-p.mclust <- function(dat, bic) {
+p.mclust <- function(dat, bic, truth = NULL) {
 
   n <- nrow(dat)
   d <- ncol(dat)
 
   mod1 <- Mclust(dat, x = bic)
+  print(mod1$parameters[[3]])
+
+  shape <- if(exists('truth') && !is.null(truth)){
+    as.numeric(factor(truth))
+  } else {
+    19
+  }
 
   if(d > 8){
-    pairs(as.data.frame(dat)[, 1:8], col = mod1$classification, pch = 19)
+    pairs(as.data.frame(dat)[, 1:8], 
+          col = mod1$classification, 
+          pch = shape,
+          main = "Shape is truth, if given; color is classification")
   } else {
-    pairs(as.data.frame(dat), col = mod1$classification, pch = 19)
+    pairs(as.data.frame(dat), 
+          col = mod1$classification, 
+          pch = shape,
+          main = "Shape is truth, if given; color is classification")
   }
 }
+
+#' Generate binary hierarchical mclust output
+#'
+#' @param dat data that p.bic has been run on
+#' @param truth true labels if any
+#'
+#' @return binary hierarchical mclust classification output
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- iris[,5]
+#' p.hmclust(dat, truth)
+#' @export 
+### Binary Hierarchical Mclust Classifications 
+p.hmclust <- function(dat, truth = NULL) {
+
+  dat <- as.matrix(dat)
+  d <- ncol(dat)
+  n <- nrow(dat)
+ 
+  shape <- if(!is.null(truth)){ 
+    as.numeric(factor(truth))
+  } else {
+    20
+  }
+  
+
+  if(d > 8){
+    lab <- hmc(dat[, 1:8])
+    labL <- lab[, dim(lab)[2]]
+    pairs(dat[, 1:8], 
+          pch = shape, 
+          col =  labL, 
+          main = "Shape is truth, if given; color is classification")
+  } else {
+    lab <- hmc(dat)
+    labL <- lab[, dim(lab)[2]]
+    pairs(dat, 
+          pch = shape, 
+          col =  labL, 
+          main = "Shape is truth, if given; color is classification")
+  }
+
+
+  #out <- lapply(unique(labL), function(x){ 
+  #                list(class = labL,
+  #                     mean = apply(dat[labL == x,], 2, mean),
+  #                     cov = cov(dat[labL == x,])
+  #                     )
+  #        }
+  #)
+  #return(out)
+
+}
+
+
+
 

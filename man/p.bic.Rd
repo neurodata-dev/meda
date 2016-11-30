@@ -4,12 +4,14 @@
 \alias{p.bic}
 \title{Generate a BIC plot}
 \usage{
-p.bic(dat, timeLimit = 8 * 60)
+p.bic(dat, timeLimit = 8 * 60, print = TRUE)
 }
 \arguments{
 \item{dat}{data}
 
 \item{timeLimit}{Time limit for bic computation.}
+
+\item{print}{boolean for printing and plotting output.}
 }
 \value{
 A BIC plot and as a side-effect

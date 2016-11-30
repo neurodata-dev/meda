@@ -4,12 +4,14 @@
 \alias{p.mclust}
 \title{Generate mclust output}
 \usage{
-p.mclust(dat, bic)
+p.mclust(dat, bic, truth = NULL)
 }
 \arguments{
 \item{dat}{data that p.bic has been run on}
 
 \item{bic}{output from p.bic or \code{\link[mclust]{mclustBIC}}}
+
+\item{truth}{true labels if any}
 }
 \value{
 mclust classification output
@@ -19,6 +21,7 @@ Generate mclust output
 }
 \examples{
 out <- p.bic(iris[, -5])
-p.mclust(out$dat, out$bicO)
+truth <- iris[, 5]
+p.mclust(out$dat, out$bicO, truth)
 }
 

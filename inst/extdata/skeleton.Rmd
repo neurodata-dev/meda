@@ -145,15 +145,18 @@ p.try(p.pairs, dat)
 
 # BIC Plots 
 ```{r cc-bic}
-p.try(p.bic, dat)
+out <- p.try(p.bic, dat)
 ```
 
 # Mclust classifications
 ```{r cc-mclust}
-out <- p.bic(dat)
 try(p.mclust(out$data, out$bic))
 ```
 
+# Binary Hierarhical Mclust classifications
+```{r cc-hmclust}
+try(p.hmclust(dat))
+```
 
 
 
