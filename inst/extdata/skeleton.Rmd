@@ -83,7 +83,7 @@ relationship, and -1 corresponds to an inverse linear relationship.
 3. [Example graphic](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Correlation_examples2.svg/506px-Correlation_examples2.svg.png)
 
 ```{r cc-corr}
-tryCatch(do.call(corrplot, p.cor(dat)))
+tryCatch(do.call(corrplot, p.cor(dat, nmethod = nmethod, dmethod = dmethod)))
 ```
 
 # Outlier Plots

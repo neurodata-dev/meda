@@ -38,7 +38,7 @@ Tukey (Exploratory Data Analysis, p 43)
 \examples{
 require(meda)
 dat <- iris[, -5]
-p.heat(dat, FALSE, dmethod = "samp", nmethod = "kmpp")
+p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "kmpp")
 p.violin(dat)
 p.outlier(dat)
 do.call(corrplot, p.cor(dat))

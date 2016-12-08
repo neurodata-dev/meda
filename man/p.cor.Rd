@@ -4,10 +4,16 @@
 \alias{p.cor}
 \title{Generate a correlation plot}
 \usage{
-p.cor(dat)
+p.cor(dat, nmethod = "samp", dmethod = "samp")
 }
 \arguments{
 \item{dat}{data}
+
+\item{nmethod}{a string specifying the method to use for compressing
+rows.}
+
+\item{dmethod}{a string specifying the method to use for compressing
+columns}
 }
 \value{
 A correlation plot

@@ -32,7 +32,7 @@
 #' @examples
 #' require(meda)
 #' dat <- iris[, -5]
-#' p.heat(dat, FALSE, dmethod = "samp", nmethod = "kmpp")
+#' p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "kmpp")
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -49,9 +49,6 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
                     nmethod = "samp") {
 
   use.plotly <- use.plotly
-
-  dmethod <- "pca"
-  nmethod <- "kmpp"
 
   if(scale){
     dat <- scale(x, center = TRUE, scale = TRUE) 
@@ -258,11 +255,15 @@ p.violin <- function(dat, use.plotly, ...) {
 #' Generate a correlation plot
 #'
 #' @param dat data
+#' @param nmethod a string specifying the method to use for compressing
+#' rows.
+#' @param dmethod a string specifying the method to use for compressing
+#' columns
 #'
 #' @return A correlation plot
 #' @export 
 ### Correlation plots 
-p.cor <- function(dat) {
+p.cor <- function(dat, nmethod = "samp", dmethod = "samp") {
   if(nrow(dat) > 1e5){
     dat <- comp(dat, dir = 1, nmethod = nmethod, nnum = 1e3)
   }
