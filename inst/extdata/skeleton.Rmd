@@ -37,6 +37,19 @@ d <- dim(dat)[2]
 if(d <= 12) { print("Structure"); str(dat) }
 ```
 
+## Compress data if dimensions are too big.
+```{r cc-comp}
+if(d > 1e2) { 
+  origDat <- as.data.table(dat) 
+  dat <- comp(dat, 2, dmethod='cur', dnum = 100)
+}
+
+if(n > 1e3) { 
+  if(!exists("origDat")) origDat <- as.data.table(dat)
+  dat <- comp(dat, 1, nmethod='cur', nnum = 1e3)
+}
+```
+
 # Heatmap
 The heatmap below is a representation of the data with values shown in
 color according to magnitude. Mouse hover for column names.

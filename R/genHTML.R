@@ -24,6 +24,7 @@
 #' @importFrom plotly plot_ly
 #' @importFrom stats cor
 #' @import knitr
+#' @import irlba
 #' @import ggplot2
 #' @import stats
 #' @import corrplot
@@ -32,7 +33,7 @@
 #' @examples
 #' require(meda)
 #' dat <- iris[, -5]
-#' p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "kmpp")
+#' p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "samp")
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -55,7 +56,7 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
   } else {
     dat <- as.matrix(x)
   }
- 
+   
   maxchar <- max(nchar(as.character(colnames(dat))))
 
   ### Structure of Data
@@ -76,40 +77,57 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
 #' @param dir direction in which to compress, '1' indicates rows, '2'
 #' indicates columns, and '3' performs columns then rows. 
 #' @param nmethod a string specifying the method to use for compressing
-#' rows.
+#' rows. See details for options.
 #' @param dmethod a string specifying the method to use for compressing
-#' columns
+#' columns. See details for options.
 #' @param nnum a number indicating desired sample size.
 #' @param dnum a number indicating desired dimension. 
 #'
 #' @return a compressed version of the input data.
 #'
+#' @details Data compression:  
+#' nmethod: \code{samp} random sampling, \code{kmpp} kmeans++
+#' initialization, \code{cur} CUR decomposition.    
+#' dmethod: \code{samp} random sampling, \code{pca} pca, \code{irlba}
+#' irlba to compute parital svd, \code{cur} CUR decomposition.  
+#'
 #' @importFrom rCUR CUR
-#' 
+#'
+#' @examples
+#' require(meda)
+#' tmp <- iris[,-5]
+#' dat <- comp(tmp,2,dmethod = 'cur', dnum=2,nnum=150)
+#' tmp <- comp(dat1, 2, dmethod = 'cur', dnum = 10)
 #' @export 
 ### Data compression
 comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, dnum = 100){
 
  X <- as.matrix(dat) 
+ if(nnum >= nrow(X)) stop("nnum >= nrow(dat), recheck your dimensions!")
+ if(dnum >= ncol(X)) stop("dnum >= ncol(dat), recheck your dimensions!")
+
  nmethod <- tolower(nmethod)
  dmethod <- tolower(dmethod)
 
+ if(dmethod == 'pca' && nrow(X) >= 400 && ncol(X) > dnum) dmethod <- "irlba"
+
  dcomp <- function(dx, method){
-   s1d <- sample(1:dim(X)[2], dnum)
    switch(method, 
-          samp = {out <- dx[, s1d]},
+          samp = {out <- dx[, sample(1:dim(X)[2], dnum)]},
           pca  = {out <- prcomp(dx, center = TRUE, scale = TRUE)$x}, 
+          irlba = {out <- dx %*% irlba(dx, nv=dnum, center = apply(dx,2,mean), scale = apply(dx,2,sd))$v;
+                   colnames(out) <- paste0("PC", 1:ncol(out))},
           cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@C[, 1:dnum]}
           )
    return(out)
  } ##end dcomp
 
  ncomp <- function(dx, method){
-   s1n <- sample(1:dim(X)[1], nnum)
    switch(method, 
-          samp = {out <- dx[s1n,]},
+          samp = {out <- dx[sample(1:dim(X)[1], nnum),]},
           kmpp = {out <- kmpp(dx, k = nnum, runkm = FALSE)},
-          cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@R[1:nnum, ]}
+          cur  = {out <- rCUR::CUR(dx, r = nnum, k = dnum, method = 'random')@R}
+          #cur  = { out <- rCUR::CUR(dx, r = nnum, k = dnum, method = 'random')@R [1:nnum, ]}
           )
    return(out)
  } ##end ncomp
@@ -120,7 +138,7 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
                    ncomp(dcomp(X, dmethod), nmethod)
                    )
 
- return(compDat)
+ return(as.data.table(compDat))
 } ###END comp
 
 #' Try to plot data

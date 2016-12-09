@@ -9,6 +9,7 @@ Depends:
   data.table,
   foreach,
   ggplot2,
+  irlba,
   knitr,
   mclust,
   plotly,
