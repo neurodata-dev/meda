@@ -33,7 +33,7 @@
 #' @examples
 #' require(meda)
 #' dat <- iris[, -5]
-#' p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "samp")
+#' p.heat(dat, use.plotly = FALSE)
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -41,13 +41,14 @@
 #' p.pairs(dat)
 #' out <- p.bic(dat)
 #' p.mclust(out$dat, out$bicO)
+#' p.hmclust(dat)
 #' 
 #' @export
 
 
 genHTML <- function(x, outfile, use.plotly = FALSE, 
-                    scale = FALSE, dmethod = "pca", 
-                    nmethod = "samp") {
+                    scale = FALSE, dmethod = "cur", 
+                    nmethod = "cur") {
 
   use.plotly <- use.plotly
 
@@ -95,16 +96,13 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
 #'
 #' @examples
 #' require(meda)
-#' tmp <- iris[,-5]
-#' dat <- comp(tmp,2,dmethod = 'cur', dnum=2,nnum=150)
-#' tmp <- comp(dat1, 2, dmethod = 'cur', dnum = 10)
+#' dat <- iris[,-5]
+#' dat <- comp(dat,2,dmethod = 'cur', dnum=2)
 #' @export 
 ### Data compression
 comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, dnum = 100){
 
  X <- as.matrix(dat) 
- if(nnum >= nrow(X)) stop("nnum >= nrow(dat), recheck your dimensions!")
- if(dnum >= ncol(X)) stop("dnum >= ncol(dat), recheck your dimensions!")
 
  nmethod <- tolower(nmethod)
  dmethod <- tolower(dmethod)
@@ -112,6 +110,7 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
  if(dmethod == 'pca' && nrow(X) >= 400 && ncol(X) > dnum) dmethod <- "irlba"
 
  dcomp <- function(dx, method){
+   if(dnum >= ncol(X)) stop("dnum >= ncol(dat), recheck your dimensions!")
    switch(method, 
           samp = {out <- dx[, sample(1:dim(X)[2], dnum)]},
           pca  = {out <- prcomp(dx, center = TRUE, scale = TRUE)$x}, 
@@ -123,6 +122,7 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
  } ##end dcomp
 
  ncomp <- function(dx, method){
+   if(nnum >= nrow(X)) stop("nnum >= nrow(dat), recheck your dimensions!")
    switch(method, 
           samp = {out <- dx[sample(1:dim(X)[1], nnum),]},
           kmpp = {out <- kmpp(dx, k = nnum, runkm = FALSE)},
@@ -138,7 +138,7 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
                    ncomp(dcomp(X, dmethod), nmethod)
                    )
 
- return(as.data.table(compDat))
+ return(compDat)
 } ###END comp
 
 #' Try to plot data
@@ -189,13 +189,13 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 ### Heatmaps 
 p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
 
-  n <- dim(dat)[1] > 1e3 
-  d <- dim(dat)[2] > 1e2
+  #n <- dim(dat)[1] > 1e3 
+  #d <- dim(dat)[2] > 1e2
 
-  if(n | d){
-    case <- ifelse(n & d, 3, ifelse(d,2,1))
-    dat <- comp(dat, dir = case, dmethod = dmethod, nmethod = nmethod, dnum = 1e2, nnum = 1e3)
-  }
+  #if(n | d){
+  #  case <- ifelse(n & d, 3, ifelse(d,2,1))
+  #  dat <- comp(dat, dir = case, dmethod = dmethod, nmethod = nmethod, dnum = 1e2, nnum = 1e3)
+  #}
 
   if(use.plotly){ 
     plty.heat <- plot_ly(z = dat, type = 'heatmap')
@@ -236,9 +236,9 @@ p.violin <- function(dat, use.plotly, ...) {
   
   n <- dim(dat)[1]
 
-  if(dim(dat)[2] > 30){
-    dat <- comp(dat, dir = 2, ..., dnum = 30)
-    }
+  #if(dim(dat)[2] > 30){
+  #  dat <- comp(dat, dir = 2, ..., dnum = 30)
+  #  }
   
   mdat <- data.table::melt(as.data.frame(dat), id = NULL)
 
@@ -282,9 +282,9 @@ p.violin <- function(dat, use.plotly, ...) {
 #' @export 
 ### Correlation plots 
 p.cor <- function(dat, nmethod = "samp", dmethod = "samp") {
-  if(nrow(dat) > 1e5){
-    dat <- comp(dat, dir = 1, nmethod = nmethod, nnum = 1e3)
-  }
+  #if(nrow(dat) > 1e5){
+  #  dat <- comp(dat, dir = 1, nmethod = nmethod, nnum = 1e3)
+  #}
   out <- list(corr = cor(dat), method = "color", tl.cex = 1)
   return(out)
 }
@@ -309,9 +309,9 @@ p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 
   n <- dim(dat)[1]
 
-  if(n > 1e5){
-    dat <- comp(dat, dir = 1, nmethod = "samp", nnum = 1e4)
-  }
+  #if(n > 1e5){
+  #  dat <- comp(dat, dir = 1, nmethod = "samp", nnum = 1e4)
+  #}
 
   if(n <= 1e4) {
     rf1 <- randomForest(dat, proximity = TRUE)
@@ -388,20 +388,20 @@ p.cumvar <- function(dat){
   
   n  <- dim(dat)[1]
 
-  pca <- prcomp(dat, center = TRUE, scale = TRUE)
-  tryCatch(elb <- getElbows(pca$sdev, plot = FALSE))
+  sv <- svd(dat, nu = 0, nv = 0)$d
+  tryCatch(elb <- getElbows(sv, plot = FALSE))
 
-  CS <- data.frame(index = 1:(dim(pca$x)[2]), cs = (100*cumsum(pca$sdev / sum(pca$sdev))))
+  CS <- data.frame(index = 1:length(sv), cs = (100*cumsum(sv / sum(sv))))
   CS$col <- "" 
   tryCatch(CS$col[elb] <- "elbow")
   CS$col <- as.factor(CS$col)
-
    
   gg.cumvar <- 
     ggplot(CS, aes(x = index, y = cs)) + 
     scale_color_manual(values = c("black", "red")) + 
     geom_line() + 
-    geom_point(aes(color = col, size = col)) + 
+    geom_point(aes(size = as.integer(col), color = col)) + 
+    scale_size_continuous(guide = FALSE) + 
     ylab("% Cumulative Variance") + 
     ggtitle("Cumulative Sum of variace in PC's")
 
@@ -442,16 +442,6 @@ p.pairs <- function(dat) {
 ### BIC plot
 p.bic <- function(dat, timeLimit = 8*60, print = TRUE) {
 
-  n <- nrow(dat)
-  d <- ncol(dat)
-
-  if(d > 100){
-    dat <- comp(dat, dir=2, dnum = 100, dmethod = "cur")
-  }
-
-  if(n > 1e5){
-    dat <- comp(dat, dir = 1, nnum = 1e3, nmethod = 'samp')
-  }
   out <- NULL
 
   setTimeLimit(cpu = timeLimit, transient = FALSE)

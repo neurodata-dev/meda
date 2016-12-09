@@ -4,8 +4,8 @@
 \alias{genHTML}
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
-genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "pca",
-  nmethod = "samp")
+genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "cur",
+  nmethod = "cur")
 }
 \arguments{
 \item{x}{data}
@@ -38,7 +38,7 @@ Tukey (Exploratory Data Analysis, p 43)
 \examples{
 require(meda)
 dat <- iris[, -5]
-p.heat(dat, use.plotly = FALSE, dmethod = "samp", nmethod = "kmpp")
+p.heat(dat, use.plotly = FALSE)
 p.violin(dat)
 p.outlier(dat)
 do.call(corrplot, p.cor(dat))
@@ -46,6 +46,7 @@ p.cumvar(dat)
 p.pairs(dat)
 out <- p.bic(dat)
 p.mclust(out$dat, out$bicO)
+p.hmclust(dat)
 
 }
 \seealso{

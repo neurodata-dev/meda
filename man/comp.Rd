@@ -14,10 +14,10 @@ comp(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1000,
 indicates columns, and '3' performs columns then rows.}
 
 \item{nmethod}{a string specifying the method to use for compressing
-rows.}
+rows. See details for options.}
 
 \item{dmethod}{a string specifying the method to use for compressing
-columns}
+columns. See details for options.}
 
 \item{nnum}{a number indicating desired sample size.}
 
@@ -28,5 +28,17 @@ a compressed version of the input data.
 }
 \description{
 Data compression
+}
+\details{
+Data compression:  
+nmethod: \code{samp} random sampling, \code{kmpp} kmeans++
+initialization, \code{cur} CUR decomposition.    
+dmethod: \code{samp} random sampling, \code{pca} pca, \code{irlba}
+irlba to compute parital svd, \code{cur} CUR decomposition.
+}
+\examples{
+require(meda)
+dat <- iris[,-5]
+dat <- comp(dat,2,dmethod = 'cur', dnum=2)
 }
 

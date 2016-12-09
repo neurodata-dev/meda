@@ -41,14 +41,18 @@ if(d <= 12) { print("Structure"); str(dat) }
 ```{r cc-comp}
 if(d > 1e2) { 
   origDat <- as.data.table(dat) 
-  dat <- comp(dat, 2, dmethod='cur', dnum = 100)
+  dat <- comp(dat, 2, dmethod=dnethod, dnum = 100)
 }
 
 if(n > 1e3) { 
   if(!exists("origDat")) origDat <- as.data.table(dat)
-  dat <- comp(dat, 1, nmethod='cur', nnum = 1e3)
+  dat <- comp(dat, 1, nmethod=nmethod, nnum = 1e3)
 }
 ```
+
+If $d > 100$ we reduce the number of columns using CUR decomposition. And if $n
+> 1e3$ we reduce the number of rows using CUR decoposition.  
+Other methods are available. 
 
 # Heatmap
 The heatmap below is a representation of the data with values shown in
