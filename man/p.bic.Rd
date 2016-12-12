@@ -4,7 +4,7 @@
 \alias{p.bic}
 \title{Generate a BIC plot}
 \usage{
-p.bic(dat, timeLimit = 8 * 60, print = TRUE)
+p.bic(dat, timeLimit = 8 * 60, print = FALSE)
 }
 \arguments{
 \item{dat}{data}

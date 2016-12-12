@@ -41,7 +41,7 @@ if(d <= 12) { print("Structure"); str(dat) }
 ```{r cc-comp}
 if(d > 1e2) { 
   origDat <- as.data.table(dat) 
-  dat <- comp(dat, 2, dmethod=dnethod, dnum = 100)
+  dat <- comp(dat, 2, dmethod=dmethod, dnum = 100)
 }
 
 if(n > 1e3) { 
@@ -167,7 +167,7 @@ out <- p.try(p.bic, dat)
 
 # Mclust classifications
 ```{r cc-mclust}
-try(p.mclust(out$data, out$bic))
+try(p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
 ```
 
 # Binary Hierarhical Mclust classifications

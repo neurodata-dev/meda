@@ -116,7 +116,8 @@ comp <- function(dat, dir = 2, nmethod = "samp", dmethod = "samp", nnum = 1e3, d
           pca  = {out <- prcomp(dx, center = TRUE, scale = TRUE)$x}, 
           irlba = {out <- dx %*% irlba(dx, nv=dnum, center = apply(dx,2,mean), scale = apply(dx,2,sd))$v;
                    colnames(out) <- paste0("PC", 1:ncol(out))},
-          cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@C[, 1:dnum]}
+          cur  = {out <- rCUR::CUR(dx, k = dnum, method = 'random')@C[, 1:dnum];
+                   colnames(out) <- paste0("CUR", 1:ncol(out))}
           )
    return(out)
  } ##end dcomp
@@ -440,7 +441,7 @@ p.pairs <- function(dat) {
 #' out <- p.bic(iris[, -5])
 #' @export 
 ### BIC plot
-p.bic <- function(dat, timeLimit = 8*60, print = TRUE) {
+p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 
   out <- NULL
 
@@ -461,6 +462,7 @@ p.bic <- function(dat, timeLimit = 8*60, print = TRUE) {
 #' @param dat data that p.bic has been run on
 #' @param bic output from p.bic or \code{\link[mclust]{mclustBIC}}
 #' @param truth true labels if any
+#' @param print Boolean to print parameter estimates.
 #'
 #' @return mclust classification output
 #' @examples
@@ -469,13 +471,13 @@ p.bic <- function(dat, timeLimit = 8*60, print = TRUE) {
 #' p.mclust(out$dat, out$bicO, truth)
 #' @export 
 ### Mclust Classifications 
-p.mclust <- function(dat, bic, truth = NULL) {
+p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 
   n <- nrow(dat)
   d <- ncol(dat)
 
   mod1 <- Mclust(dat, x = bic)
-  print(mod1$parameters[[3]])
+  if(print) print(mod1$parameters[[3]])
 
   shape <- if(exists('truth') && !is.null(truth)){
     as.numeric(factor(truth))
@@ -487,7 +489,7 @@ p.mclust <- function(dat, bic, truth = NULL) {
     pairs(as.data.frame(dat)[, 1:8], 
           col = mod1$classification, 
           pch = shape,
-          main = "Shape is truth, if given; color is classification")
+          main = "Shape is truth, if given; color is classification\n Pairs plot of first 8 dimensions")
   } else {
     pairs(as.data.frame(dat), 
           col = mod1$classification, 

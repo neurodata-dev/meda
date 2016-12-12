@@ -4,7 +4,7 @@
 \alias{p.mclust}
 \title{Generate mclust output}
 \usage{
-p.mclust(dat, bic, truth = NULL)
+p.mclust(dat, bic, truth = NULL, print = FALSE)
 }
 \arguments{
 \item{dat}{data that p.bic has been run on}
@@ -12,6 +12,8 @@ p.mclust(dat, bic, truth = NULL)
 \item{bic}{output from p.bic or \code{\link[mclust]{mclustBIC}}}
 
 \item{truth}{true labels if any}
+
+\item{print}{Boolean to print parameter estimates.}
 }
 \value{
 mclust classification output
