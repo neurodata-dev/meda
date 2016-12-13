@@ -12,6 +12,20 @@ To download and install run the following in R:
 devtools::install_github("neurodata/meda")
 ```
 
+To run `meda` on your own data do the following.
+Supposing your data is in a csv file with a header:
+
+```R
+require(meda)
+dat <- read.csv("fileName.csv", header=TRUE)
+outFile <- "output.html"
+
+meda::genHTML(dat, outFile)
+```
+
+
+
+
 ----------------
 
 ### Given a new set of n samples in R^d
