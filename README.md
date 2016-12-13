@@ -9,9 +9,11 @@ data in the form of matrices.
 To download and install run the following in R:
 
 ```R
+require(devtools)
 devtools::install_github("neurodata/meda")
 ```
 
+## Run on your own data
 To run `meda` on your own data do the following.
 Supposing your data is in a csv file with a header:
 
