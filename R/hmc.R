@@ -77,7 +77,8 @@ hmc <- function(dat){
       tmp <- L[, dim(L)[2]]
       for(i in sort(unique(L[,dim(L)[2]][L$continue == TRUE]))){
 
-        if(nrow(dat[L[,dim(L)[2]] == i & L$continue == TRUE,]) > 1){
+        cont <- L[,dim(L)[2]] == i & L$continue == TRUE
+        if(sum(cont) > 5){
           bicP <- mclust::mclustBIC(dat[L[,dim(L)[2]] == i & L$continue == TRUE,], G = 1:2)
           mcP <- mclust::Mclust(dat[L[, dim(L)[2]] == i & L$continue == TRUE,], x = bicP)
         } else {

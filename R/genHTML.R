@@ -202,7 +202,11 @@ p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
     plty.heat <- plot_ly(z = dat, type = 'heatmap')
     return(plty.heat)
   } else {
- 
+
+    if(is.null(dim(dat))){
+      dat <- rbind(dat,dat)
+    }
+
     mdat <- data.table::melt(as.data.frame(dat), id = NULL)
     rasf <- factor(rep(colnames(dat), each = dim(dat)[1]), levels = colnames(dat), ordered = TRUE)
     ras <- data.frame(x = rasf, y = 1:(dim(dat)[1]))
@@ -445,7 +449,7 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 
   out <- NULL
 
-  setTimeLimit(cpu = timeLimit, transient = FALSE)
+  #setTimeLimit(cpu = timeLimit, transient = FALSE)
   bicO <- mclust::mclustBIC(dat, G = 1:10)
   out <- list(bic = bicO, data = dat)
 
@@ -540,14 +544,14 @@ p.hmclust <- function(dat, truth = NULL) {
   }
 
 
-  #out <- lapply(unique(labL), function(x){ 
-  #                list(class = labL,
-  #                     mean = apply(dat[labL == x,], 2, mean),
-  #                     cov = cov(dat[labL == x,])
-  #                     )
-  #        }
-  #)
-  #return(out)
+  out <- lapply(unique(labL), function(x){ 
+                  list(class = labL,
+                       mean = apply(dat[labL == x,], 2, mean),
+                       cov = cov(dat[labL == x,])
+                       )
+          }
+  )
+  return(out)
 
 }
 
