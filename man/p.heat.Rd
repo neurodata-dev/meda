@@ -4,16 +4,10 @@
 \alias{p.heat}
 \title{Generate a heatmap plot}
 \usage{
-p.heat(dat, use.plotly, dmethod = "samp", nmethod = "samp")
+p.heat(dat)
 }
 \arguments{
 \item{dat}{data}
-
-\item{use.plotly}{Boolean to use plotly}
-
-\item{dmethod}{parameter passed to \code{\link{comp}}}
-
-\item{nmethod}{parameter passed to \code{\link{comp}}}
 }
 \value{
 A heatmap plot of the data compressed if necessary.

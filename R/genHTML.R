@@ -10,6 +10,8 @@
 #' reduction 
 #' @param nmethod a string denoting the method to use for sample
 #' reduction 
+#' @param truth an n length vector of integer values corresponding to
+#' the true classes of the data.
 #' @return An html document via RMarkdown.
 #'
 #' @details Generates an html file of various exploratory plots via
@@ -33,7 +35,7 @@
 #' @examples
 #' require(meda)
 #' dat <- iris[, -5]
-#' p.heat(dat, use.plotly = FALSE)
+#' do.call(heatmap.2,p.heat(dat))
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -41,14 +43,14 @@
 #' p.pairs(dat)
 #' out <- p.bic(dat)
 #' p.mclust(out$dat, out$bicO)
-#' p.hmclust(dat)
+#' p.hmclust(dat, truth = iris[,5]) 
 #' 
 #' @export
 
 
 genHTML <- function(x, outfile, use.plotly = FALSE, 
                     scale = FALSE, dmethod = "cur", 
-                    nmethod = "cur") {
+                    nmethod = "cur", truth = NULL) {
 
   use.plotly <- use.plotly
 
@@ -179,50 +181,38 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' Generate a heatmap plot
 #'
 #' @param dat data
-#' @param use.plotly Boolean to use plotly
-#' @param dmethod parameter passed to \code{\link{comp}}
-#' @param nmethod parameter passed to \code{\link{comp}}
 #' 
 #' @return A heatmap plot of the data compressed if necessary.
 #'
-#' @importFrom data.table melt
+#' @importFrom gplots heatmap.2
 #' @export 
 ### Heatmaps 
-p.heat <- function(dat, use.plotly, dmethod = "samp", nmethod = "samp"){
+p.heat <- function(dat){
 
-  #n <- dim(dat)[1] > 1e3 
-  #d <- dim(dat)[2] > 1e2
+  if(is.null(dim(dat))){
+    dat <- cbind(dat,dat)
+  }
 
-  #if(n | d){
-  #  case <- ifelse(n & d, 3, ifelse(d,2,1))
-  #  dat <- comp(dat, dir = case, dmethod = dmethod, nmethod = nmethod, dnum = 1e2, nnum = 1e3)
-  #}
+  rSz <- 0.8
 
-  if(use.plotly){ 
-    plty.heat <- plot_ly(z = dat, type = 'heatmap')
-    return(plty.heat)
-  } else {
+  if(!is.null(colnames(dat))){
+    cs <- max(nchar(colnames(dat)))
 
-    if(is.null(dim(dat))){
-      dat <- rbind(dat,dat)
-    }
+    rSz <- switch(which(c(cs < 10, cs > 10 & cs < 15, cs > 15)),
+           0.8,
+           0.65,
+           0.25)
+  }
 
-    mdat <- data.table::melt(as.data.frame(dat), id = NULL)
-    rasf <- factor(rep(colnames(dat), each = dim(dat)[1]), levels = colnames(dat), ordered = TRUE)
-    ras <- data.frame(x = rasf, y = 1:(dim(dat)[1]))
-    ras$z <- mdat$value 
+  h <- list(x = as.matrix(dat), 
+            trace = "none", 
+            col = gray.colors(255),
+            key = FALSE, 
+            cexRow = ifelse(dim(dat)[1] > 75, 0.25, 0.8),
+            cexCol = rSz,
+            scale="none")
 
-    gg.heat <- 
-      ggplot(ras, aes(x = x, y = y, fill = z)) + 
-      geom_raster() + scale_y_reverse(expand = c(0,0)) + 
-      scale_fill_gradientn(colours = gray.colors(255, start = 0)) +
-      xlab("") + ylab("index") +
-      theme(axis.text.x = element_blank(),
-            #element_text(angle = 0, vjust = 0.5), 
-            panel.background = element_blank())
-
-    return(gg.heat)
-    }
+  return(h)
 }
 
 #' Generate violin/jitter plot of data
@@ -544,15 +534,14 @@ p.hmclust <- function(dat, truth = NULL) {
   }
 
 
-  out <- lapply(unique(labL), function(x){ 
+  out <<- lapply(unique(labL), function(x){ 
                   list(class = labL,
                        mean = apply(dat[labL == x,], 2, mean),
                        cov = cov(dat[labL == x,])
                        )
           }
   )
-  return(out)
-
+  #return(out)
 }
 
 

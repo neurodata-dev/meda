@@ -5,7 +5,7 @@
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
 genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "cur",
-  nmethod = "cur")
+  nmethod = "cur", truth = NULL)
 }
 \arguments{
 \item{x}{data}
@@ -23,6 +23,9 @@ reduction}
 
 \item{nmethod}{a string denoting the method to use for sample
 reduction}
+
+\item{truth}{an n length vector of integer values corresponding to
+the true classes of the data.}
 }
 \value{
 An html document via RMarkdown.
@@ -38,7 +41,7 @@ Tukey (Exploratory Data Analysis, p 43)
 \examples{
 require(meda)
 dat <- iris[, -5]
-p.heat(dat, use.plotly = FALSE)
+do.call(heatmap.2,p.heat(dat))
 p.violin(dat)
 p.outlier(dat)
 do.call(corrplot, p.cor(dat))
@@ -46,7 +49,7 @@ p.cumvar(dat)
 p.pairs(dat)
 out <- p.bic(dat)
 p.mclust(out$dat, out$bicO)
-p.hmclust(dat)
+p.hmclust(dat, truth = iris[,5]) 
 
 }
 \seealso{

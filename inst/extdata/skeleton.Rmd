@@ -60,12 +60,8 @@ color according to magnitude. Mouse hover for column names.
 
 [Heatmap](https://en.wikipedia.org/wiki/Heat_map)
 
-```{r cc-heatmap}
-if(use.plotly){
-  p.try(p.heat, dat, TRUE)
-} else {
-  tryCatch(ggplotly(p.try(p.heat, dat, FALSE)))
-}
+```{r cc-heatmap, fig.h = 12}
+tryCatch(do.call(heatmap.2, p.heat(dat)))
 ```
 
 # Violin Plot with jittered points
@@ -172,7 +168,7 @@ try(p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
 
 # Binary Hierarhical Mclust classifications
 ```{r cc-hmclust}
-try(p.hmclust(dat))
+try(p.hmclust(dat, truth = truth))
 ```
 
 
