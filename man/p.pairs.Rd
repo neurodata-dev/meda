@@ -2,7 +2,7 @@
 % Please edit documentation in R/genHTML.R
 \name{p.pairs}
 \alias{p.pairs}
-\title{Generate a pairs plot}
+\title{Generate a pairs hex binned plot}
 \usage{
 p.pairs(dat)
 }
@@ -10,9 +10,9 @@ p.pairs(dat)
 \item{dat}{data}
 }
 \value{
-A pairs plot
+A lattice splom
 }
 \description{
-Generate a pairs plot
+Generate a pairs hex binned plot
 }
 
