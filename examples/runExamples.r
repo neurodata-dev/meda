@@ -2,10 +2,10 @@
 require(meda)
 load('~/neurodata/synaptome-stats/Code/cleanDataWithAttributes.RData')
 
-outfile0 <- "FisherIrisData.html"
-outfile1 <- "SynDataRaw.html"
-outfile2 <- "SynDataLog.html"
-outfile3 <- "SynData01e3.html"
+outfile0 <- "~/neurodata/GH-pages/meda-gh/examples/FisherIrisData.html"
+outfile1 <- "~/neurodata/GH-pages/meda-gh/examples/SynDataRaw.html"
+outfile2 <- "~/neurodata/GH-pages/meda-gh/examples/SynDataLog.html"
+outfile3 <- "~/neurodata/GH-pages/meda-gh/examples/SynData01e3.html"
 
 #set.seed(2^13)
 set.seed(1234)
@@ -17,7 +17,8 @@ datLog <- transformData(dat, type = c("log10"))$log10
 dat01e3 <- transformData(dat, type = c("1e3"))$d01e3
 
 
-genHTML(iris[,-5], outfile0, truth = iris[,5])
+genHTML(iris[,-5], outfile = outfile0, truth = iris[, 5])
+#system(paste("open", outfile0))
 genHTML(datRaw, outfile1)
 #system(paste("open", outfile1))
 genHTML(datLog, outfile2)
