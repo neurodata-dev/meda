@@ -41,7 +41,9 @@ Tukey (Exploratory Data Analysis, p 43)
 \examples{
 require(meda)
 dat <- iris[, -5]
-do.call(heatmap.2,p.heat(dat))
+truth <- as.numeric(iris[, 5])
+featCol <- c("red", "purple", "darkgreen")
+#p.heat(dat)
 p.violin(dat)
 p.outlier(dat)
 do.call(corrplot, p.cor(dat))

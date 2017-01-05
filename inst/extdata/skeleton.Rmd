@@ -61,7 +61,7 @@ color according to magnitude. Mouse hover for column names.
 [Heatmap](https://en.wikipedia.org/wiki/Heat_map)
 
 ```{r cc-heatmap, fig.h = 12}
-tryCatch(do.call(heatmap.2, p.heat(dat)))
+tryCatch(p.heat(dat))
 ```
 
 # Violin Plot with jittered points

@@ -12,6 +12,7 @@
 #' reduction 
 #' @param truth an n length vector of integer values corresponding to
 #' the true classes of the data.
+#' 
 #' @return An html document via RMarkdown.
 #'
 #' @details Generates an html file of various exploratory plots via
@@ -35,7 +36,9 @@
 #' @examples
 #' require(meda)
 #' dat <- iris[, -5]
-#' do.call(heatmap.2,p.heat(dat))
+#' truth <- as.numeric(iris[, 5])
+#' featCol <- c("red", "purple", "darkgreen")
+#' #p.heat(dat)
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -184,36 +187,14 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' 
 #' @return A heatmap plot of the data compressed if necessary.
 #'
-#' @importFrom gplots heatmap.2
+#' @importFrom heatmaply heatmaply
 #' @export 
 ### Heatmaps 
 p.heat <- function(dat){
-
-  if(is.null(dim(dat))){
-    dat <- cbind(dat,dat)
-  }
-
-  rSz <- 0.8
-
-  if(!is.null(colnames(dat))){
-    cs <- max(nchar(colnames(dat)))
-
-    rSz <- switch(which(c(cs < 10, cs > 10 & cs < 15, cs > 15)),
-           0.8,
-           0.65,
-           0.25)
-  }
-
-  h <- list(x = as.matrix(dat), 
-            trace = "none", 
-            col = gray.colors(255),
-            key = FALSE, 
-            cexRow = ifelse(dim(dat)[1] > 75, 0.25, 0.8),
-            cexCol = rSz,
-            scale="none")
-
-  return(h)
+  tmp <- dat
+  heatmaply(tmp)
 }
+
 
 #' Generate violin/jitter plot of data
 #'
@@ -434,13 +415,12 @@ p.pairs <- function(dat) {
    diag.panel.splom(x, ...)
    },
    lower.panel = function(x, y, ...){
-   panel.hexbinplot(x, y, ...)
+   panel.hexbinplot(x, y, colorkey = TRUE, ...)
    panel.loess(x, y, ..., col = 'red')
    panel.lmline(x, y, ..., col = 'orange')
    },
    pscale=0, varname.cex=0.7
    )
-
 } ## END FUNCTION
 
 
@@ -567,4 +547,33 @@ p.hmclust <- function(dat, truth = NULL) {
 
 
 
+#' Generate jittered scatter plots colored by class / cluster
+#'
+#' @param dat data 
+#' @param truth true labels if any
+#'
+#' @return A jittered scatter plot
+#' @importFrom RColorBrewer brewer.pal
+#' @export 
+### Jittered scatter plots
 
+p.jitter <- function(dat, truth) {
+
+  l <- length(unique(truth))
+  ggCol <- brewer.pal(min(length(unique(truth)),9),"Set1")
+  
+
+  ggJ1 <- 
+    ggplot(data = ggJdat, aes(x = ind, y = values, 
+                           color = as.factor(lv1))) +
+    scale_color_manual(values=ggCol, name="Cluster") + 
+    geom_point(alpha=0.25, position=position_jitterdodge()) + 
+    geom_boxplot(alpha =0.35, outlier.color = 'NA') + 
+    annotate("text", x = levels(ggJdat$ind)[c(2,20)], y = 1.15*max(ggJdat$values), 
+             label= cf1[1:2,]) + 
+    theme(axis.title.x = element_blank()) + 
+    theme(axis.text.x = element_text(color = ccol[ford], 
+                                     angle=45,
+                                     vjust = 0.5))
+  
+}
