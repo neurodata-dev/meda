@@ -440,6 +440,9 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 
   out <- NULL
 
+  sv <- svd(dat, nu = 0, nv = 0)$d
+  tryCatch(elb <- getElbows(sv, plot = FALSE))
+
   #setTimeLimit(cpu = timeLimit, transient = FALSE)
   bicO <- mclust::mclustBIC(dat, G = 1:10)
   out <- list(bic = bicO, data = dat)
