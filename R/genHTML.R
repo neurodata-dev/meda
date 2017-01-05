@@ -549,7 +549,6 @@ p.hmclust <- function(dat, truth = NULL) {
 }
 
 
-
 #' Generate jittered scatter plots colored by class / cluster
 #'
 #' @param dat data 
@@ -557,26 +556,31 @@ p.hmclust <- function(dat, truth = NULL) {
 #'
 #' @return A jittered scatter plot
 #' @importFrom RColorBrewer brewer.pal
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- iris[, 5]
+#' p.jitter(dat, clusterLab = truth)
 #' @export 
 ### Jittered scatter plots
 
-p.jitter <- function(dat, truth) {
+p.jitter <- function(dat, clusterLab = NULL) {
 
+  if(is.null(clusterLab)){
+    clusterLab <- rep(1, dim(dat)[1])
+  }
   l <- length(unique(truth))
   ggCol <- brewer.pal(min(length(unique(truth)),9),"Set1")
+  ggCol <- "black"
   
+  cLab <- factor(clusterLab, ordered = FALSE) 
+  gdat <- data.frame(stack(dat), cLab)
 
-  ggJ1 <- 
-    ggplot(data = ggJdat, aes(x = ind, y = values, 
-                           color = as.factor(lv1))) +
+  ggJ <- 
+    ggplot(data = gdat, aes(x = ind, y = values, color = cLab)) +
     scale_color_manual(values=ggCol, name="Cluster") + 
-    geom_point(alpha=0.25, position=position_jitterdodge()) + 
-    geom_boxplot(alpha =0.35, outlier.color = 'NA') + 
-    annotate("text", x = levels(ggJdat$ind)[c(2,20)], y = 1.15*max(ggJdat$values), 
-             label= cf1[1:2,]) + 
-    theme(axis.title.x = element_blank()) + 
-    theme(axis.text.x = element_text(color = ccol[ford], 
-                                     angle=45,
-                                     vjust = 0.5))
+    geom_point(alpha=0.25, position=position_jitterdodge()) +
+    geom_boxplot(alpha =0.35, outlier.color = 'salmon') +
+    #geom_violin(alpha = 0.15, colour = 'red3') + 
+    xlab("") + ylab("")
   
 }
