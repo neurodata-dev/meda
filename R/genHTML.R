@@ -1,4 +1,4 @@
-#' Generate an Rmarkdown with exploratory plots 
+#' Generate an Rmarkdown with exploratory plots
 #'
 #' @param x data 
 #' @param outfile A string denoting the location to put the output html
@@ -431,12 +431,16 @@ p.pairs <- function(dat) {
 #' @param print boolean for printing and plotting output.
 #'
 #' @return A BIC plot and as a side-effect
+#' @details Uses getElbows from
+#' \url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
+#'
 #' @importFrom mclust mclustBIC
 #' @examples
 #' out <- p.bic(iris[, -5])
 #' @export 
 ### BIC plot
 p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
+  tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
 
   out <- NULL
 
@@ -538,7 +542,7 @@ p.hmclust <- function(dat, truth = NULL) {
   }
 
 
-  out <<- lapply(unique(labL), function(x){ 
+  outHMCclusters <<- lapply(unique(labL), function(x){ 
                   list(class = labL,
                        mean = apply(dat[labL == x,], 2, mean),
                        cov = cov(dat[labL == x,])
@@ -552,14 +556,15 @@ p.hmclust <- function(dat, truth = NULL) {
 #' Generate jittered scatter plots colored by class / cluster
 #'
 #' @param dat data 
-#' @param truth true labels if any
+#' @param clusterLab true or predicted labels if any
 #'
 #' @return A jittered scatter plot
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom utils stack 
 #' @examples
 #' dat <- iris[, -5]
-#' truth <- iris[, 5]
-#' p.jitter(dat, clusterLab = truth)
+#' clusterLab <- iris[, 5]
+#' p.jitter(dat, clusterLab)
 #' @export 
 ### Jittered scatter plots
 
@@ -568,19 +573,20 @@ p.jitter <- function(dat, clusterLab = NULL) {
   if(is.null(clusterLab)){
     clusterLab <- rep(1, dim(dat)[1])
   }
-  l <- length(unique(truth))
-  ggCol <- brewer.pal(min(length(unique(truth)),9),"Set1")
-  ggCol <- "black"
+
+  dat <- as.data.frame(dat)
+  l <- length(unique(clusterLab))
+  ggCol <- brewer.pal(min(length(unique(clusterLab)),9),"Set1")
   
   cLab <- factor(clusterLab, ordered = FALSE) 
   gdat <- data.frame(stack(dat), cLab)
 
-  ggJ <- 
+  gg.jitter <- 
     ggplot(data = gdat, aes(x = ind, y = values, color = cLab)) +
-    scale_color_manual(values=ggCol, name="Cluster") + 
+    scale_color_discrete(name="Cluster") + 
     geom_point(alpha=0.25, position=position_jitterdodge()) +
-    geom_boxplot(alpha =0.35, outlier.color = 'salmon') +
-    #geom_violin(alpha = 0.15, colour = 'red3') + 
+    geom_boxplot(alpha =0.35, outlier.color = NULL) +
     xlab("") + ylab("")
-  
+
+  return(gg.jitter)
 }

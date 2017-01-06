@@ -19,6 +19,10 @@ A BIC plot and as a side-effect
 \description{
 Generate a BIC plot
 }
+\details{
+Uses getElbows from
+\url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
+}
 \examples{
 out <- p.bic(iris[, -5])
 }

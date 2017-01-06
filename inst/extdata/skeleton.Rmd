@@ -171,6 +171,16 @@ try(p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
 try(p.hmclust(dat, truth = truth))
 ```
 
+# Jittered Scatter Plot with classifications
+```{r cc-jitter}
+if(exists('outHMCclusters')){
+  cLab <- outHMCclusters[[length(outHMCclusters)]]$class
+} else {
+  cLab <- NULL
+}
+
+try(p.jitter(dat, clusterLab = cLab))
+```
 
 
 
