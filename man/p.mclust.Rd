@@ -22,8 +22,9 @@ mclust classification output
 Generate mclust output
 }
 \examples{
-out <- p.bic(iris[, -5])
+dat <- iris[, -5]
+out <- p.bic(dat)
 truth <- iris[, 5]
-p.mclust(out$dat, out$bicO, truth)
+p.mclust(out$dat, out$bicO, truth = NULL)
 }
 

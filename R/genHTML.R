@@ -12,6 +12,8 @@
 #' reduction 
 #' @param truth an n length vector of integer values corresponding to
 #' the true classes of the data.
+#' @param colCol an n length vector of column colors.
+#' @param colRow an n length vector of column colors.
 #' 
 #' @return An html document via RMarkdown.
 #'
@@ -53,7 +55,8 @@
 
 genHTML <- function(x, outfile, use.plotly = FALSE, 
                     scale = FALSE, dmethod = "cur", 
-                    nmethod = "cur", truth = NULL) {
+                    nmethod = "cur", truth = NULL, 
+                    colCol = NULL, colRow = NULL) {
 
   use.plotly <- use.plotly
 
@@ -468,9 +471,10 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 #'
 #' @return mclust classification output
 #' @examples
-#' out <- p.bic(iris[, -5])
+#' dat <- iris[, -5]
+#' out <- p.bic(dat)
 #' truth <- iris[, 5]
-#' p.mclust(out$dat, out$bicO, truth)
+#' p.mclust(out$dat, out$bicO, truth = NULL)
 #' @export 
 ### Mclust Classifications 
 p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
@@ -487,15 +491,19 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
     19
   }
 
+  size <- max(min(1/log(n), 1), 0.05)
+
   if(d > 8){
     pairs(as.data.frame(dat)[, 1:8], 
           col = mod1$classification, 
           pch = shape,
+          cex = size,
           main = "Shape is truth, if given; color is classification\n Pairs plot of first 8 dimensions")
   } else {
     pairs(as.data.frame(dat), 
           col = mod1$classification, 
           pch = shape,
+          cex = size, 
           main = "Shape is truth, if given; color is classification")
   }
 }
@@ -518,6 +526,8 @@ p.hmclust <- function(dat, truth = NULL) {
   d <- ncol(dat)
   n <- nrow(dat)
  
+  size <- max(min(1/log(n), 1), 0.05)
+
   shape <- if(!is.null(truth)){ 
     as.numeric(factor(truth))
   } else {
@@ -531,6 +541,7 @@ p.hmclust <- function(dat, truth = NULL) {
     pairs(dat[, 1:8], 
           pch = shape, 
           col =  labL, 
+          cex = size,
           main = "Shape is truth, if given; color is classification")
   } else {
     lab <- hmc(dat)
@@ -538,6 +549,7 @@ p.hmclust <- function(dat, truth = NULL) {
     pairs(dat, 
           pch = shape, 
           col =  labL, 
+          cex = size, 
           main = "Shape is truth, if given; color is classification")
   }
 
@@ -590,3 +602,42 @@ p.jitter <- function(dat, clusterLab = NULL) {
 
   return(gg.jitter)
 }
+
+
+#' Generate 3D pca of correlation matrix
+#'
+#' @param dat data 
+#' @param colCol colors for the columns of the data matrix
+#'
+#' @return a 3d scatter plot of first three PCs.
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- iris[, 5]
+#' colCol <- c("red", "green", "blue", "purple")
+#' p.3dpca(dat, colCol)
+#' @export 
+### Mclust Classifications 
+p.3dpca <- function(dat, colCol = NULL) {
+
+  dat <- as.matrix(dat)
+  cor <- cor(dat)
+  if(is.null(colCol)){ colCol <- "darkblue" }
+
+  W <- svd(cor, nv = 3, nu = 0)$v
+  pca <- cor %*% W
+  
+  rgl::plot3d(pca[,1],pca[,2],pca[,3],type='s', 
+              col = colCol, xlab = "PC1", 
+              ylab = "PC2", zlab = "PC3")
+
+  rgl::rgl.texts(pca[,1],pca[,2],pca[,3],
+                 col = colCol,
+                 abbreviate(rownames(pca)),
+                 adj=c(0,2))
+
+  subid <- currentSubscene3d()
+  rglwidget(elementId="rgl-pca0",width=720,height=720)
+  
+} ## END p.3dpca
+
+

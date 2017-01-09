@@ -5,7 +5,7 @@
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
 genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "cur",
-  nmethod = "cur", truth = NULL)
+  nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL)
 }
 \arguments{
 \item{x}{data}
@@ -26,6 +26,10 @@ reduction}
 
 \item{truth}{an n length vector of integer values corresponding to
 the true classes of the data.}
+
+\item{colCol}{an n length vector of column colors.}
+
+\item{colRow}{an n length vector of column colors.}
 }
 \value{
 An html document via RMarkdown.

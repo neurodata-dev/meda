@@ -171,6 +171,11 @@ try(p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
 try(p.hmclust(dat, truth = truth))
 ```
 
+# 3D pca of correlation matrix
+```{r cc-3dpca}
+try(p.3dpca(dat, colCol = NULL))
+```
+
 # Jittered Scatter Plot with classifications
 ```{r cc-jitter}
 if(exists('outHMCclusters')){
