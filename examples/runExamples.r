@@ -3,7 +3,8 @@ require(meda)
 require(rhdf5)
 
 outfile0 <- "~/neurodata/GH-pages/meda-gh/examples/FisherIrisData.html"
-genHTML(iris[,-5], outfile = outfile0, truth = iris[, 5])
+colCol <- c("red", "green", "blue", "purple")
+genHTML(iris[,-5], outfile = outfile0, truth = iris[, 5], colCol = colCol)
 system(paste("open", outfile0))
 
 rm(list = ls())
@@ -55,14 +56,22 @@ datRaw <- dat
 datLog <- transformData(dat, type = c("log10"))$log10
 dat01e3 <- transformData(dat, type = c("1e3"))$d01e3
 
+ 
+ccolEx <- 
+  c("#197300", "#197300", "#197300", "#cc0000", "#cc0000", "#cc0000", 
+    "#cc0000", "#197300", "#0000cd", "#197300", "#197300", "#197300", 
+    "#0000cd", "#0000cd", "#197300", "#cc0000", "#cc0000", "#cc0000", 
+    "#197300", "#0000cd", "#197300", "#0000cd", "#0000cd", "#0000cd", 
+    "#0000cd", "#0000cd", "#0000cd", "#0000cd", "#0000cd")
+
 outfile4 <- "~/neurodata/GH-pages/meda-gh/examples/Ex10R55_Raw.html"
 outfile5 <- "~/neurodata/GH-pages/meda-gh/examples/Ex10R55_Log10.html"
 outfile6 <- "~/neurodata/GH-pages/meda-gh/examples/Ex10R55_01e3.html"
 
-genHTML(datRaw, outfile4, colCol = NULL)
+genHTML(datRaw, outfile4, colCol = ccolEx)
 system(paste("open", outfile4))
-genHTML(datLog, outfile5, colCol = NULL)
+genHTML(datLog, outfile5, colCol = ccolEx)
 system(paste("open", outfile5))
-genHTML(dat01e3, outfile6, colCol = NULL)
+genHTML(dat01e3, outfile6, colCol = ccolEx)
 system(paste("open", outfile6))
 
