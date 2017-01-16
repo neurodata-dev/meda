@@ -5,3 +5,4 @@
 ^.*\inst\extdata\*.html
 ^examples*
 ^python*
+^rNd*

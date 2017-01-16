@@ -4,10 +4,12 @@
 \alias{p.heat}
 \title{Generate a heatmap plot}
 \usage{
-p.heat(dat)
+p.heat(dat, ...)
 }
 \arguments{
 \item{dat}{data}
+
+\item{...}{used to send options to heatmaply}
 }
 \value{
 A heatmap plot of the data compressed if necessary.

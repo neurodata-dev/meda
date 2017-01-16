@@ -31,6 +31,7 @@ print(paste("Are all rows complete?:", complete))
 print(paste("Are there any NAs?:", nas))
 print(paste("Are any values negative?:", negs))
 ```
+
 ```{r cc-str3, results = 'hold'}
 n <- dim(dat)[1]
 d <- dim(dat)[2]
@@ -82,6 +83,15 @@ if(use.plotly){
 }
 ```
 
+# 1D Heatmap
+
+For each feature column, the data are binned and a heatmap is produced
+with each bin colored according to count.
+
+```{r cc-1dheat}
+tryCatch(p.1dheat(dat))
+```
+
 # Correlation Plot
 
 The correlation between two random variables is a measure of a specific
@@ -96,7 +106,7 @@ relationship, and -1 corresponds to an inverse linear relationship.
 3. [Example graphic](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Correlation_examples2.svg/506px-Correlation_examples2.svg.png)
 
 ```{r cc-corr}
-tryCatch(do.call(corrplot, p.cor(dat, nmethod = nmethod, dmethod = dmethod)))
+tryCatch(do.call(corrplot, p.cor(dat, colCol = colCol)))
 ```
 
 # Outlier Plots
@@ -145,6 +155,15 @@ if(use.plotly){
 }
 ```
 
+# Cumulative sum (Correlation Matrix)
+```{r cc-Cor-cumsum}
+if(use.plotly){
+  tryCatch(ggplotly(p.try(p.cumvar, dat)))
+} else {
+  p.try(p.cumvar, cor(dat))
+}
+```
+
 # Pairs Plots 
 A pairs plot is a popular way of plotting high-dimensional data.  
 For every pair of dimensions are plotted showing the specific projection of
@@ -173,7 +192,7 @@ try(p.hmclust(dat, truth = truth))
 
 # 3D pca of correlation matrix
 ```{r cc-3dpca}
-try(p.3dpca(dat, colCol = NULL))
+try(p.3dpca(dat, colCol = colCol))
 ```
 
 # Jittered Scatter Plot with classifications

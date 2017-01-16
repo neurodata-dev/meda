@@ -76,6 +76,11 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
 
   rmd <- system.file("extdata", "skeleton.Rmd", package = "meda")
 
+  ## Colors adn such 
+  if(!exists("colCol") || is.null(colCol)){
+    colCol <- "black"
+  }
+
   render(rmd, output_file = outfile)
 }
 
@@ -187,15 +192,15 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' Generate a heatmap plot
 #'
 #' @param dat data
-#' 
+#' @param ... used to send options to heatmaply
 #' @return A heatmap plot of the data compressed if necessary.
 #'
 #' @importFrom heatmaply heatmaply
 #' @export 
 ### Heatmaps 
-p.heat <- function(dat){
+p.heat <- function(dat, ...){
   tmp <- dat
-  heatmaply(tmp)
+  heatmaply(tmp, ...)
 }
 
 
@@ -209,6 +214,7 @@ p.heat <- function(dat){
 #' 
 #' @return A jitter/violin plot
 #'
+#' @importFrom reshape2 melt
 #' @export 
 ### Violin or Jitter plots
 p.violin <- function(dat, use.plotly, ...) {
@@ -219,7 +225,7 @@ p.violin <- function(dat, use.plotly, ...) {
   #  dat <- comp(dat, dir = 2, ..., dnum = 30)
   #  }
   
-  mdat <- data.table::melt(as.data.frame(dat), id = NULL)
+  mdat <- reshape2::melt(as.data.frame(dat), id = NULL)
 
   gg <- ggplot(mdat, aes(x = factor(variable), y = value)) +
           xlab("Var") + ylab("value")
@@ -249,22 +255,98 @@ p.violin <- function(dat, use.plotly, ...) {
 }
 
 
+#' Generate 1d heatmaps
+#'
+#' @param dat the data
+#' @param breaks see \code{\link[graphics]{hist}}
+#' @param trunc98 if TRUE that data are truncated to the inner 98
+#' percent.
+#' 
+#' @return a ggplot object 
+#'
+#' @details For each feature column a 1D heatmap is generated and
+#' plotted as a geom_tile object.
+#'
+#'
+#' @import ggplot2 
+#' @importFrom gplots colorpanel
+#' @importFrom reshape2 melt
+#' @importFrom data.table data.table 
+#'
+#' @examples
+#' dat <- iris[, -5]
+#' p.1dheat(dat)
+#'
+#' @export 
+### 1D heatmap
+p.1dheat <- function(dat, breaks = "Scott", trunc98 = FALSE){
+
+  mycol <- colorpanel(254, "lightgreen", "#094620")
+  sc <- scale_fill_gradientn(colours = mycol)
+  
+  if(trunc98) {
+    tmp <- lapply(as.data.frame(dat), function(x) {
+                    x[x < quantile(x,p=.99) & x > quantile(x, p=0.01)]
+                 }
+    ) 
+    mt <- data.table(reshape2::melt(tmp))
+    names(mt) <- c("value", "variable")
+  } else {
+    mt <- reshape2::melt(dat, measure = 1:ncol(dat))
+  }
+
+  H <- hist(mt$value, breaks = 50, plot = FALSE)
+  df <- expand.grid(x = H$mids, y = names(dat))
+
+  bn <- if(trunc98){
+    lapply(lapply(tmp, hist, breaks = H$breaks, plot = FALSE), 
+      function(x) x$counts )
+  } else {
+    lapply(apply(dat, 2, hist, breaks = H$breaks, plot = FALSE), 
+      function(x) x$counts )
+  }
+              
+  X <- list()
+  for(i in 1:length(bn)){
+    x <- bn[[i]]
+    y <- which(x == 0)
+    x[y] <- NA
+  
+    X[[i]] <- x
+  }
+
+  df$Count <- Reduce(c, X)
+              
+  p <- 
+    ggplot(df, aes(x, y, fill = Count)) + 
+      geom_tile(colour = "black", lwd = 1) + 
+      theme(axis.title = element_blank()) + 
+      #coord_flip() + 
+      sc
+
+  cnts <- Reduce(data.frame, X)
+  colnames(cnts) <- names(dat)
+              
+  out <- list(p = p, cnts = cnts, breaks = H$breaks)
+
+  return(p)
+}
+### END p.1dheat
+
 #' Generate a correlation plot
 #'
 #' @param dat data
-#' @param nmethod a string specifying the method to use for compressing
-#' rows.
-#' @param dmethod a string specifying the method to use for compressing
-#' columns
+#' @param colCol colors for column labels
 #'
 #' @return A correlation plot
+#' @examples 
+#' dat <- iris[, -5]
+#' colCol <- c("green", "red", "blue", "purple")
+#' do.call(corrplot, p.cor(dat, colCol))
 #' @export 
 ### Correlation plots 
-p.cor <- function(dat, nmethod = "samp", dmethod = "samp") {
-  #if(nrow(dat) > 1e5){
-  #  dat <- comp(dat, dir = 1, nmethod = nmethod, nnum = 1e3)
-  #}
-  out <- list(corr = cor(dat), method = "color", tl.cex = 1)
+p.cor <- function(dat, colCol = NULL) {
+  out <- list(corr = cor(dat), method = "color", tl.cex = 1, tl.col = colCol)
   return(out)
 }
 
@@ -474,7 +556,7 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 #' dat <- iris[, -5]
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
-#' p.mclust(out$dat, out$bicO, truth = NULL)
+#' p.mclust(out$dat, out$bicO, truth = truth)
 #' @export 
 ### Mclust Classifications 
 p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
@@ -491,20 +573,20 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
     19
   }
 
-  size <- max(min(1/log(n), 1), 0.05)
+  size <- max(min(1.5/log10(n), 1.25), 0.05)
 
   if(d > 8){
     pairs(as.data.frame(dat)[, 1:8], 
           col = mod1$classification, 
           pch = shape,
           cex = size,
-          main = "Shape is truth, if given; color is classification\n Pairs plot of first 8 dimensions")
+          main = "Color is classification; if present, shape is truth\n Pairs plot of first 8 dimensions")
   } else {
     pairs(as.data.frame(dat), 
           col = mod1$classification, 
           pch = shape,
           cex = size, 
-          main = "Shape is truth, if given; color is classification")
+          main = "Color is classification; if present, shape is truth")
   }
 }
 
@@ -526,7 +608,7 @@ p.hmclust <- function(dat, truth = NULL) {
   d <- ncol(dat)
   n <- nrow(dat)
  
-  size <- max(min(1/log(n), 1), 0.05)
+  size <- max(min(1.5/log10(n), 1.25), 0.05)
 
   shape <- if(!is.null(truth)){ 
     as.numeric(factor(truth))
@@ -542,7 +624,7 @@ p.hmclust <- function(dat, truth = NULL) {
           pch = shape, 
           col =  labL, 
           cex = size,
-          main = "Shape is truth, if given; color is classification")
+          main = "Color is classification; if present, shape is truth\n Pairs plot of first 8 dimensions")
   } else {
     lab <- hmc(dat)
     labL <- lab[, dim(lab)[2]]
@@ -550,12 +632,12 @@ p.hmclust <- function(dat, truth = NULL) {
           pch = shape, 
           col =  labL, 
           cex = size, 
-          main = "Shape is truth, if given; color is classification")
+          main = "Color is classification; if present, shape is truth")
   }
 
 
   outHMCclusters <<- lapply(unique(labL), function(x){ 
-                  list(class = labL,
+                  list(class = x,
                        mean = apply(dat[labL == x,], 2, mean),
                        cov = cov(dat[labL == x,])
                        )
@@ -582,15 +664,15 @@ p.hmclust <- function(dat, truth = NULL) {
 
 p.jitter <- function(dat, clusterLab = NULL) {
 
-  if(is.null(clusterLab)){
+  if(!is.null(clusterLab)){
+    ggCol <- brewer.pal(min(length(unique(clusterLab)),9),"Set1")
+  } else {
     clusterLab <- rep(1, dim(dat)[1])
   }
 
-  dat <- as.data.frame(dat)
-  l <- length(unique(clusterLab))
-  ggCol <- brewer.pal(min(length(unique(clusterLab)),9),"Set1")
-  
   cLab <- factor(clusterLab, ordered = FALSE) 
+  dat <- as.data.frame(dat)
+  
   gdat <- data.frame(stack(dat), cLab)
 
   gg.jitter <- 
@@ -610,13 +692,19 @@ p.jitter <- function(dat, clusterLab = NULL) {
 #' @param colCol colors for the columns of the data matrix
 #'
 #' @return a 3d scatter plot of first three PCs.
+#'
+#' @importFrom rgl plot3d
+#' @importFrom rgl rgl.texts
+#' @importFrom rgl currentSubscene3d
+#' @importFrom rglwidget rglwidget
+#'
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' colCol <- c("red", "green", "blue", "purple")
 #' p.3dpca(dat, colCol)
 #' @export 
-### Mclust Classifications 
+### 3D pca
 p.3dpca <- function(dat, colCol = NULL) {
 
   dat <- as.matrix(dat)
@@ -625,13 +713,18 @@ p.3dpca <- function(dat, colCol = NULL) {
 
   W <- svd(cor, nv = 3, nu = 0)$v
   pca <- cor %*% W
+
+  n <- dim(pca)[1]
+
+  size <- max(min(1.5/log10(n), 1.25), 0.05)
   
   rgl::plot3d(pca[,1],pca[,2],pca[,3],type='s', 
               col = colCol, xlab = "PC1", 
+              size = size,
               ylab = "PC2", zlab = "PC3")
 
   rgl::rgl.texts(pca[,1],pca[,2],pca[,3],
-                 col = colCol,
+                 col = colCol, cex = size,
                  abbreviate(rownames(pca)),
                  adj=c(0,2))
 
@@ -639,5 +732,4 @@ p.3dpca <- function(dat, colCol = NULL) {
   rglwidget(elementId="rgl-pca0",width=720,height=720)
   
 } ## END p.3dpca
-
 

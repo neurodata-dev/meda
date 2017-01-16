@@ -4,21 +4,22 @@
 \alias{p.cor}
 \title{Generate a correlation plot}
 \usage{
-p.cor(dat, nmethod = "samp", dmethod = "samp")
+p.cor(dat, colCol = NULL)
 }
 \arguments{
 \item{dat}{data}
 
-\item{nmethod}{a string specifying the method to use for compressing
-rows.}
-
-\item{dmethod}{a string specifying the method to use for compressing
-columns}
+\item{colCol}{colors for column labels}
 }
 \value{
 A correlation plot
 }
 \description{
 Generate a correlation plot
+}
+\examples{
+dat <- iris[, -5]
+colCol <- c("green", "red", "blue", "purple")
+do.call(corrplot, p.cor(dat, colCol))
 }
 
