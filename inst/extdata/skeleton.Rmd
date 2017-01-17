@@ -89,7 +89,11 @@ For each feature column, the data are binned and a heatmap is produced
 with each bin colored according to count.
 
 ```{r cc-1dheat}
-tryCatch(p.1dheat(dat))
+if(dim(dat)[2] < 8){
+  tryCatch(p.1dheat(dat) + coord_flip())
+  } else {
+  tryCatch(p.1dheat(dat))
+}
 ```
 
 # Correlation Plot

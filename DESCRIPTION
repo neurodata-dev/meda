@@ -20,7 +20,6 @@ Depends:
   randomForest,
   RColorBrewer,
   rCUR,
-  reshape2,
   rflann,
   rgl,
   rglwidget,

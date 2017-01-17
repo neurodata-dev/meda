@@ -214,7 +214,7 @@ p.heat <- function(dat, ...){
 #' 
 #' @return A jitter/violin plot
 #'
-#' @importFrom reshape2 melt
+#' @importFrom data.table melt
 #' @export 
 ### Violin or Jitter plots
 p.violin <- function(dat, use.plotly, ...) {
@@ -225,7 +225,7 @@ p.violin <- function(dat, use.plotly, ...) {
   #  dat <- comp(dat, dir = 2, ..., dnum = 30)
   #  }
   
-  mdat <- reshape2::melt(as.data.frame(dat), id = NULL)
+  mdat <- data.table::melt(as.data.frame(dat), id = NULL)
 
   gg <- ggplot(mdat, aes(x = factor(variable), y = value)) +
           xlab("Var") + ylab("value")
@@ -254,7 +254,6 @@ p.violin <- function(dat, use.plotly, ...) {
   return(gg.violin)
 }
 
-
 #' Generate 1d heatmaps
 #'
 #' @param dat the data
@@ -267,71 +266,43 @@ p.violin <- function(dat, use.plotly, ...) {
 #' @details For each feature column a 1D heatmap is generated and
 #' plotted as a geom_tile object.
 #'
-#'
 #' @import ggplot2 
 #' @importFrom gplots colorpanel
-#' @importFrom reshape2 melt
 #' @importFrom data.table data.table 
+#' @importFrom data.table melt
 #'
 #' @examples
 #' dat <- iris[, -5]
 #' p.1dheat(dat)
+#' p.1dheat(dat) + coord_flip()
 #'
 #' @export 
 ### 1D heatmap
-p.1dheat <- function(dat, breaks = "Scott", trunc98 = FALSE){
+p.1dheat <- function(dat, breaks = "Scott", trunc98 = FALSE) {
 
-  mycol <- colorpanel(254, "lightgreen", "#094620")
+  dat <- data.frame(apply(dat, 2, as.numeric))
+  mycol <- colorpanel(255, "white", "#094620")
   sc <- scale_fill_gradientn(colours = mycol)
   
-  if(trunc98) {
-    tmp <- lapply(as.data.frame(dat), function(x) {
-                    x[x < quantile(x,p=.99) & x > quantile(x, p=0.01)]
-                 }
-    ) 
-    mt <- data.table(reshape2::melt(tmp))
-    names(mt) <- c("value", "variable")
-  } else {
-    mt <- reshape2::melt(dat, measure = 1:ncol(dat))
-  }
+  mt <- data.table::melt(dat, measure = 1:ncol(dat))
 
   H <- hist(mt$value, breaks = 50, plot = FALSE)
   df <- expand.grid(x = H$mids, y = names(dat))
 
-  bn <- if(trunc98){
-    lapply(lapply(tmp, hist, breaks = H$breaks, plot = FALSE), 
-      function(x) x$counts )
-  } else {
-    lapply(apply(dat, 2, hist, breaks = H$breaks, plot = FALSE), 
-      function(x) x$counts )
-  }
-              
-  X <- list()
-  for(i in 1:length(bn)){
-    x <- bn[[i]]
-    y <- which(x == 0)
-    x[y] <- NA
-  
-    X[[i]] <- x
-  }
+  bn <- lapply(apply(dat, 2, hist, breaks = H$breaks, plot = FALSE), 
+               function(x) { x$counts }) 
 
-  df$Count <- Reduce(c, X)
+  df$Count <- Reduce(c, bn)
               
-  p <- 
-    ggplot(df, aes(x, y, fill = Count)) + 
-      geom_tile(colour = "black", lwd = 1) + 
-      theme(axis.title = element_blank()) + 
-      #coord_flip() + 
-      sc
-
-  cnts <- Reduce(data.frame, X)
-  colnames(cnts) <- names(dat)
-              
-  out <- list(p = p, cnts = cnts, breaks = H$breaks)
+  p <- ggplot(df, aes(x, y, fill = Count)) + 
+         geom_tile() + 
+         theme(axis.title = element_blank()) + 
+         sc
 
   return(p)
 }
 ### END p.1dheat
+
 
 #' Generate a correlation plot
 #'
