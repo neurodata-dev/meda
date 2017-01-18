@@ -4,15 +4,12 @@
 \alias{p.1dheat}
 \title{Generate 1d heatmaps}
 \usage{
-p.1dheat(dat, breaks = "Scott", trunc98 = FALSE)
+p.1dheat(dat, breaks = "Scott")
 }
 \arguments{
 \item{dat}{the data}
 
 \item{breaks}{see \code{\link[graphics]{hist}}}
-
-\item{trunc98}{if TRUE that data are truncated to the inner 98
-percent.}
 }
 \value{
 a ggplot object

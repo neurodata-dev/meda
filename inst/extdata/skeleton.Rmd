@@ -65,6 +65,27 @@ color according to magnitude. Mouse hover for column names.
 tryCatch(p.heat(dat))
 ```
 
+# Location Estimates
+
+The column means and medians are presented in a heatmap below.
+
+```{r cc-locations}
+tryCatch(p.location(dat))
+```
+
+# Histogram (1D Heatmap)
+
+For each feature column, the data are binned and a heatmap is produced
+with each bin colored according to count.
+
+```{r cc-1dheat}
+if(dim(dat)[2] < 8){
+  tryCatch(p.1dheat(dat) + coord_flip())
+  } else {
+  tryCatch(p.1dheat(dat))
+}
+```
+
 # Violin Plot with jittered points
 
 The violin plot combines a kernel density estimate with a boxplot for a
@@ -79,22 +100,14 @@ The jittering helps reduce effects of overplotting.
 if(use.plotly){
   tryCatch(ggplotly(p.try(p.violin, dat)))
 } else {
-  p.try(p.violin, dat)
-}
-```
-
-# 1D Heatmap
-
-For each feature column, the data are binned and a heatmap is produced
-with each bin colored according to count.
-
-```{r cc-1dheat}
-if(dim(dat)[2] < 8){
-  tryCatch(p.1dheat(dat) + coord_flip())
+  if(dim(dat)[2] < 8){
+    p.try(p.violin, dat)
   } else {
-  tryCatch(p.1dheat(dat))
+    p.try(p.violin, dat) + coord_flip()
+  }
 }
 ```
+
 
 # Correlation Plot
 

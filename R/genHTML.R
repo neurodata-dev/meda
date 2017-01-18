@@ -41,6 +41,7 @@
 #' truth <- as.numeric(iris[, 5])
 #' featCol <- c("red", "purple", "darkgreen")
 #' #p.heat(dat)
+#' p.1dheat(dat)
 #' p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
@@ -188,6 +189,39 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
   return(out)
 }
 
+#' Generate location estimates
+#'
+#' @param dat data
+#'
+#' @return a heatmap of means and medians
+#' 
+#' @importFrom gplots colorpanel
+#' 
+#' @examples
+#' dat <- iris[, -5]
+#' p.location(dat)
+#' @export 
+### Location Estimates 
+p.location <- function(dat){
+
+  mycol <- if(is.null(col)){ 
+             colorpanel(255, "gray98", "darkgreen")
+           } else {
+             col 
+           }
+
+  means <- apply(dat, 2, mean)
+  medians <- apply(dat, 2, median)
+
+  dm <- melt(cbind(means, medians))
+
+  p <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
+         geom_raster() + coord_flip() + 
+         theme(panel.background = element_blank(), 
+               axis.title = element_blank())
+  return(p)
+} ### END p.location
+
 
 #' Generate a heatmap plot
 #'
@@ -243,12 +277,12 @@ p.violin <- function(dat, use.plotly, ...) {
     gg + 
       geom_jitter(data = smdat, aes(x = factor(variable), y = value), 
                   shape = 19, size = 1, alpha = 1/10, 
-                  width = 0.2) +
+                  width = 0.3) +
       geom_violin(alpha = 0.15, colour = 'red3') + 
       coord_flip()
     } else {
       gg + 
-        geom_jitter(shape = 19, alpha = 0.25, width = .6) + 
+        geom_jitter(shape = 19, alpha = 0.25, width = .4) + 
         geom_violin(alpha = 0.25, color = 'red3')
     }
   return(gg.violin)
@@ -258,8 +292,6 @@ p.violin <- function(dat, use.plotly, ...) {
 #'
 #' @param dat the data
 #' @param breaks see \code{\link[graphics]{hist}}
-#' @param trunc98 if TRUE that data are truncated to the inner 98
-#' percent.
 #' 
 #' @return a ggplot object 
 #'
@@ -278,10 +310,12 @@ p.violin <- function(dat, use.plotly, ...) {
 #'
 #' @export 
 ### 1D heatmap
-p.1dheat <- function(dat, breaks = "Scott", trunc98 = FALSE) {
+p.1dheat <- function(dat, breaks = "Scott") {
 
   dat <- data.frame(apply(dat, 2, as.numeric))
+
   mycol <- colorpanel(255, "white", "#094620")
+
   sc <- scale_fill_gradientn(colours = mycol)
   
   mt <- data.table::melt(dat, measure = 1:ncol(dat))
@@ -312,7 +346,7 @@ p.1dheat <- function(dat, breaks = "Scott", trunc98 = FALSE) {
 #' @return A correlation plot
 #' @examples 
 #' dat <- iris[, -5]
-#' colCol <- c("green", "red", "blue", "purple")
+#' colCol <- c("darkgreen", "red", "green", "red")
 #' do.call(corrplot, p.cor(dat, colCol))
 #' @export 
 ### Correlation plots 

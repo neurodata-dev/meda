@@ -19,7 +19,7 @@ Generate a correlation plot
 }
 \examples{
 dat <- iris[, -5]
-colCol <- c("green", "red", "blue", "purple")
+colCol <- c("darkgreen", "red", "green", "red")
 do.call(corrplot, p.cor(dat, colCol))
 }
 

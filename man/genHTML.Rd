@@ -48,6 +48,7 @@ dat <- iris[, -5]
 truth <- as.numeric(iris[, 5])
 featCol <- c("red", "purple", "darkgreen")
 #p.heat(dat)
+p.1dheat(dat)
 p.violin(dat)
 p.outlier(dat)
 do.call(corrplot, p.cor(dat))
