@@ -1,9 +1,15 @@
 #! /usr/local/bin/Rscript
+require(devtools)
+devtools::document('~/neurodata/meda/R')
+devtools::build("~/neurodata/meda/")
+devtools::check("~/neurodata/meda/")
+devtools::install("~/neurodata/meda/", dependancies = FALSE)
+
 require(meda)
 require(rhdf5)
 
 outfile0 <- "~/neurodata/GH-pages/meda-gh/examples/FisherIrisData.html"
-colCol <- c("red", "green", "blue", "purple")
+colCol <- c("red", "green", "blue", "red")
 genHTML(iris[,-5], outfile = outfile0, truth = iris[, 5], colCol = colCol)
 system(paste("open", outfile0))
 
@@ -52,17 +58,24 @@ d <- c(3,26,1,25, 27:29)
 d <- c(d,setdiff(1:29, d))
 dat <- datRawEx[,d]
 
-datRaw <- dat
-datLog <- transformData(dat, type = c("log10"))$log10
-dat01e3 <- transformData(dat, type = c("1e3"))$d01e3
-
- 
 ccolEx <- 
   c("#197300", "#197300", "#197300", "#cc0000", "#cc0000", "#cc0000", 
     "#cc0000", "#197300", "#0000cd", "#197300", "#197300", "#197300", 
     "#0000cd", "#0000cd", "#197300", "#cc0000", "#cc0000", "#cc0000", 
     "#197300", "#0000cd", "#197300", "#0000cd", "#0000cd", "#0000cd", 
     "#0000cd", "#0000cd", "#0000cd", "#0000cd", "#0000cd")
+
+fac <- factor(ccolEx, levels = c("#197300", "#cc0000", "#0000cd"), 
+       ordered = TRUE)
+
+dat <- dat[, order(fac)]
+ccolEx <- ccolEx[order(fac)]
+
+datRaw <- dat
+datLog <- transformData(dat, type = c("log10"))$log10
+dat01e3 <- transformData(dat, type = c("1e3"))$d01e3
+
+
 
 outfile4 <- "~/neurodata/GH-pages/meda-gh/examples/Ex10R55_Raw.html"
 outfile5 <- "~/neurodata/GH-pages/meda-gh/examples/Ex10R55_Log10.html"
