@@ -67,10 +67,14 @@ tryCatch(p.heat(dat))
 
 # Location Estimates
 
-The column means and medians are presented in a heatmap below.
+The column means and medians are presented in a lineplot below.
 
 ```{r cc-locations}
-tryCatch(p.location(dat))
+if(dim(dat)[2] > 10){
+  tryCatch(p.location(dat) + coord_flip())
+  } else {
+  tryCatch(p.location(dat))
+}
 ```
 
 # Histogram (1D Heatmap)

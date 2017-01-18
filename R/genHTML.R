@@ -210,16 +210,22 @@ p.location <- function(dat){
              col 
            }
 
-  means <- apply(dat, 2, mean)
-  medians <- apply(dat, 2, median)
+  Mean <- apply(dat, 2, mean)
+  Median <- apply(dat, 2, median)
 
-  dm <- melt(cbind(means, medians))
+  dm <- melt(cbind(Mean, Median))
 
-  p <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
-         geom_raster() + coord_flip() + 
-         theme(panel.background = element_blank(), 
-               axis.title = element_blank())
-  return(p)
+  #p1 <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
+  #       geom_raster() + coord_flip() + 
+  #       theme(panel.background = element_blank(), 
+  #             axis.title = element_blank())
+
+  p2 <- ggplot(dm, aes(x = Var1, y = value, group = Var2, color = Var2)) + 
+          geom_line(alpha = 0.7, size = 1) + 
+          theme(legend.title = element_blank(),
+                axis.title = element_blank())
+
+  return(p2)
 } ### END p.location
 
 
