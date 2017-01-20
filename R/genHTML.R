@@ -75,7 +75,7 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
   nas <- anyNA(dat)
   negs <- any(dat < 0)
 
-  rmd <- system.file("extdata", "skeleton.Rmd", package = "meda")
+  rmd <- system.file("extdata", "MEDA.Rmd", package = "meda")
 
   ## Colors adn such 
   if(!exists("colCol") || is.null(colCol)){
@@ -85,6 +85,22 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
   render(rmd, output_file = outfile)
 }
 
+#' Summary of data types
+#'
+#' @param dat data
+#'
+#' @return Summary Histogram
+#' 
+#' @examples
+#' dat <- iris[, -5]
+#' 
+#' @export 
+
+### Location Estimates 
+p.summary <- function(dat){
+  st <- as.factor(sapply(dat, class))
+  
+} ### END p.summary
 
 #' Data compression 
 #'
@@ -193,14 +209,18 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #'
 #' @param dat data
 #'
-#' @return a heatmap of means and medians
+#' @return a list of ggplot objects, see details. 
+#' @details
 #' 
 #' @importFrom gplots colorpanel
+#' @importFrom gridExtra grid.arrange
 #' 
 #' @examples
 #' dat <- iris[, -5]
-#' p.location(dat)
+#' l1 <- p.location(dat)
+#' grid.arrange(l1[[1]],l1[[2]], ncol = 2)
 #' @export 
+
 ### Location Estimates 
 p.location <- function(dat){
 
@@ -215,17 +235,23 @@ p.location <- function(dat){
 
   dm <- melt(cbind(Mean, Median))
 
-  #p1 <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
-  #       geom_raster() + coord_flip() + 
-  #       theme(panel.background = element_blank(), 
-  #             axis.title = element_blank())
+  p1 <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
+         geom_raster() +# coord_flip() + 
+         theme(panel.background = element_blank(), 
+               axis.title = element_blank())
 
   p2 <- ggplot(dm, aes(x = Var1, y = value, group = Var2, color = Var2)) + 
           geom_line(alpha = 0.7, size = 1) + 
           theme(legend.title = element_blank(),
                 axis.title = element_blank())
 
-  return(p2)
+  if(dim(dat)[2] > 8){
+    p1 <- p1 + coord_flip()
+    p2 <- p2 + coord_flip()
+  }
+
+  lout <- list(pheat = p1, pline = p2)
+  return(lout)
 } ### END p.location
 
 
@@ -362,6 +388,58 @@ p.cor <- function(dat, colCol = NULL) {
 }
 
 
+#' Generate an energy distance heatmap 
+#'
+#' @param dat data
+#' @param colCol colors for column labels
+#'
+#' @return A correlation plot
+#' @details Takes a random sample of 1000 rows and computes
+#'   energy statistics with p-values.
+#' @import foreach
+#' @importFrom energy dcor.ttest
+#' 
+#' @examples 
+#' dat <- iris[, -5]
+#' colCol <- c("darkgreen", "red", "green", "red")
+#' @export 
+### Correlation plots 
+p.energy <- function(dat, colCol = NULL) {
+
+  if(dim(dat)[1] > 1e3){
+     dat <- data.frame(dat[sample(dim(dat)[1],1e3),])
+  }
+
+  combcols <- t(combn(dim(dat)[2],2))
+  
+  dc <- foreach(i = 1:dim(combcols)[1]) %do% {
+         set.seed(331*i)
+         dcor.ttest(x=dat[,combcols[i,1]],y=dat[,combcols[i,2]])
+         }
+  
+  ms <- matrix(as.numeric(0),dim(dat)[2],dim(dat)[2])
+  mp <- matrix(as.numeric(0),dim(dat)[2],dim(dat)[2])
+  
+  for(i in 1:length(dc)){
+      ms[combcols[i,1],combcols[i,2]] <- dc[[i]]$statistic
+      ms[combcols[i,2],combcols[i,1]] <- dc[[i]]$statistic
+      mp[combcols[i,1],combcols[i,2]] <- dc[[i]]$p.val
+      mp[combcols[i,2],combcols[i,1]] <- dc[[i]]$p.val
+  }
+  
+  rownames(ms) <- colnames(dat)
+  rownames(mp) <- colnames(dat)
+  colnames(ms) <- colnames(dat)
+  colnames(mp) <- colnames(dat)
+  
+  diag(ms) <- as.numeric(0)
+  diag(mp) <- as.numeric(1)
+
+  out <- list(statistic = ms, pval = mp)
+  return(out)
+} ### END p.energy
+
+
 #' Generate an outlier plot
 #'
 #' @param dat data
@@ -489,6 +567,9 @@ p.cumvar <- function(dat){
 #' @importFrom hexbin BTC
 #' @importFrom lattice splom
 #'
+#' @examples
+#' dat <- iris[,-5]
+#' p.pairs(dat)
 #' @export 
 ### Pairs Plots
 p.pairs <- function(dat) {
@@ -567,7 +648,7 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 #' dat <- iris[, -5]
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
-#' p.mclust(out$dat, out$bicO, truth = truth)
+#' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 #' @export 
 ### Mclust Classifications 
 p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
@@ -599,6 +680,7 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
           cex = size, 
           main = "Color is classification; if present, shape is truth")
   }
+  invisible(mod1)
 }
 
 #' Generate binary hierarchical mclust output
@@ -657,6 +739,44 @@ p.hmclust <- function(dat, truth = NULL) {
   #return(out)
 }
 
+#' Generate cluster parameter plots
+#'
+#' @param mod mclust output
+#'
+#' @return heatmap of cluster means
+#' @examples
+#' dat <- iris[, -5]
+#' out <- p.bic(dat)
+#' truth <- iris[, 5]
+#' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
+#' mod <- md1 
+#' p <- p.mcparam(mod)
+#' grid.arrange(p[[1]], p[[2]], ncol = 2)
+#' @export 
+### Model Parameter Plots
+p.mcparam <- function(mod) {
+  means <- mod$parameters$mean
+  colnames(means) <- paste0("C", 1:ncol(means))
+  d1 <- melt(means)
+
+  g1 <- ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
+    geom_raster() + 
+    theme(axis.title = element_blank())
+
+  g2 <- ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2))) + 
+    geom_line() + 
+    scale_color_discrete(name = "Cluster") + 
+    theme(axis.title.x = element_blank())
+          
+
+  if(dim(d1)[1] > 8){
+    g1 <- g1 + coord_flip()
+    g2 <- g2 + coord_flip()
+  }
+
+  out <- list(pheat = g1, pline = g2)
+  invisible(out)
+} ### END p.mcparam
 
 #' Generate jittered scatter plots colored by class / cluster
 #'

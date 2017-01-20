@@ -25,6 +25,6 @@ Generate mclust output
 dat <- iris[, -5]
 out <- p.bic(dat)
 truth <- iris[, 5]
-p.mclust(out$dat, out$bicO, truth = truth)
+tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 }
 

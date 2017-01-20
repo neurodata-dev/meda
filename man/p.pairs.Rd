@@ -15,4 +15,8 @@ A lattice splom
 \description{
 Generate a pairs hex binned plot
 }
+\examples{
+dat <- iris[,-5]
+p.pairs(dat)
+}
 
