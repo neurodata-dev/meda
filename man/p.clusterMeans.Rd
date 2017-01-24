@@ -4,7 +4,7 @@
 \alias{p.clusterMeans}
 \title{Generate cluster parameter plots}
 \usage{
-p.clusterMeans(mod)
+p.clusterMeans(mod, ccol = "black")
 }
 \arguments{
 \item{mod}{mclust output}

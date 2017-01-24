@@ -4,10 +4,12 @@
 \alias{p.clusterCov}
 \title{Generate cluster covariance plots}
 \usage{
-p.clusterCov(mod)
+p.clusterCov(mod, ccol = "black")
 }
 \arguments{
 \item{mod}{mclust output}
+
+\item{ccol}{feature colors}
 }
 \value{
 heatmap and line plot of cluster means

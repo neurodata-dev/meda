@@ -4,7 +4,7 @@
 \alias{p.1dheat}
 \title{Generate 1d heatmaps}
 \usage{
-p.1dheat(dat, breaks = "Scott")
+p.1dheat(dat, breaks = "Scott", ccol = "black")
 }
 \arguments{
 \item{dat}{the data}
@@ -23,8 +23,7 @@ plotted as a geom_tile object.
 }
 \examples{
 dat <- iris[, -5]
-p.1dheat(dat)
-p.1dheat(dat) + coord_flip()
+p.1dheat(dat, ccol = ccol)
 
 }
 

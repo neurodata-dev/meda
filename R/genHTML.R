@@ -79,7 +79,7 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
 
   rmd <- system.file("extdata", "MEDA.Rmd", package = "meda")
 
-  ## Colors adn such 
+  ## Colors and such 
   if(!exists("colCol") || is.null(colCol)){
     colCol <- "black"
   }
@@ -220,36 +220,40 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' @examples
 #' dat <- iris[, -5]
 #' l1 <- p.location(dat)
+#' l2 <- p.location(dat, ccol)
 #' grid.arrange(l1[[1]],l1[[2]], ncol = 2)
+#' grid.arrange(l2[[1]],l2[[2]], ncol = 2)
 #' @export 
 
 ### Location Estimates 
-p.location <- function(dat){
-
-  mycol <- if(is.null(col)){ 
-             colorpanel(255, "gray98", "darkgreen")
-           } else {
-             col 
-           }
+p.location <- function(dat, ccol = NULL){
 
   Mean <- apply(dat, 2, mean)
   Median <- apply(dat, 2, median)
 
   dm <- melt(cbind(Mean, Median))
 
-  p1 <- ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
-         geom_raster() +# coord_flip() + 
-         theme(panel.background = element_blank(), 
-               axis.title = element_blank())
+  p1 <- 
+    ggplot(dm, aes(x = Var1, y = Var2, fill = value)) +  
+      geom_raster() +# coord_flip() + 
+      theme(panel.background = element_blank(), 
+            axis.title = element_blank())
 
-  p2 <- ggplot(dm, aes(x = Var1, y = value, group = Var2, color = Var2)) + 
+  p2 <- 
+    ggplot(dm, aes(x = Var1, y = value, 
+                   group = Var2, color = Var2)) + 
           geom_line(alpha = 0.7, size = 1) + 
           theme(legend.title = element_blank(),
                 axis.title = element_blank())
 
   if(dim(dat)[2] > 8){
-    p1 <- p1 + coord_flip()
-    p2 <- p2 + coord_flip()
+    p1 <- p1 + coord_flip() + 
+      theme(axis.text.y=element_text(color=ccol))
+    p2 <- p2 + coord_flip() +
+      theme(axis.text.y=element_text(color=ccol))
+  } else {
+    p1 <- p1 + theme(axis.text.x=element_text(color=ccol))
+    p2 <- p2 + theme(axis.text.x=element_text(color=ccol))
   }
 
   lout <- list(pheat = p1, pline = p2)
@@ -339,12 +343,11 @@ p.violin <- function(dat, use.plotly, ...) {
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' p.1dheat(dat)
-#' p.1dheat(dat) + coord_flip()
+#' p.1dheat(dat, ccol = ccol)
 #'
 #' @export 
 ### 1D heatmap
-p.1dheat <- function(dat, breaks = "Scott") {
+p.1dheat <- function(dat, breaks = "Scott", ccol = "black") {
 
   dat <- data.frame(apply(dat, 2, as.numeric))
 
@@ -364,7 +367,8 @@ p.1dheat <- function(dat, breaks = "Scott") {
               
   p <- ggplot(df, aes(x, y, fill = Count)) + 
          geom_tile() + 
-         theme(axis.title = element_blank()) + 
+         theme(axis.title = element_blank(),
+               axis.text.y=element_text(color=ccol)) + 
          sc
 
   return(p)
@@ -761,25 +765,24 @@ p.hmclust <- function(dat, truth = NULL) {
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
 #' @export 
 ### Model Parameter Plots
-p.clusterMeans <- function(mod) {
+p.clusterMeans <- function(mod, ccol = "black") {
   means <- mod$parameters$mean
   colnames(means) <- paste0("C", 1:ncol(means))
   d1 <- melt(means)
 
   g1 <- ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
-    theme(axis.title = element_blank())
+    coord_flip() + 
+    theme(axis.title = element_blank(), 
+          axis.text.y = element_text(color = ccol))
 
   g2 <- ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2))) + 
     geom_line(lwd = 1) + 
+    coord_flip() + 
     scale_color_discrete(name = "Cluster") + 
-    theme(axis.title = element_blank())
+    theme(axis.title = element_blank(), 
+          axis.text.y = element_text(color = ccol))
           
-
-  if(dim(d1)[1] > 8){
-    g1 <- g1 + coord_flip()
-    g2 <- g2 + coord_flip()
-  }
 
   out <- list(pheat = g1, pline = g2)
   invisible(out)
@@ -788,6 +791,7 @@ p.clusterMeans <- function(mod) {
 #' Generate cluster covariance plots
 #'
 #' @param mod mclust output
+#' @param ccol feature colors
 #'
 #' @return heatmap and line plot of cluster means
 #' @examples
@@ -800,7 +804,7 @@ p.clusterMeans <- function(mod) {
 #' 
 #' @export 
 ### Cluster Covariance Plots
-p.clusterCov <- function(mod) {
+p.clusterCov <- function(mod, ccol = "black") {
   ccov <- mod$parameters$variance$sigma
 
   m1 <- melt(ccov)
@@ -815,7 +819,8 @@ p.clusterCov <- function(mod) {
     scale_fill_gradientn(colors = c("darkred","gray98", "darkblue"), space="Lab") + 
     facet_wrap(~ Var3, ncol = 2) + 
     theme(axis.title = element_blank(),
-          axis.text.x = element_text(angle = 90))
+          axis.text.x = element_text(angle = 90),
+          axis.text = element_text(color = ccol))
 
   out <- g1
   return(out)
@@ -860,7 +865,7 @@ p.jitter <- function(dat, clusterLab = NULL) {
   return(gg.jitter)
 }
 
-#' Generate eigen vector plots
+#' Generate singular vector plots
 #'
 #' @param dat data 
 #'
@@ -891,7 +896,7 @@ p.eig <- function(dat) {
 
   g1 <- ggplot(mv, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
-    sc + xlab("Dimension") + ylab("Right Singular Values") + 
+    sc + xlab("Dimension") + ylab("Right Singular Vectors") + 
     theme(panel.background = element_rect(fill = "gray75")) +
     theme(panel.grid = element_blank())
 

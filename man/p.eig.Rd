@@ -2,7 +2,7 @@
 % Please edit documentation in R/genHTML.R
 \name{p.eig}
 \alias{p.eig}
-\title{Generate eigen vector plots}
+\title{Generate singular vector plots}
 \usage{
 p.eig(dat)
 }
@@ -13,7 +13,7 @@ p.eig(dat)
 pairs plot and heatmap of right singular vectors
 }
 \description{
-Generate eigen vector plots
+Generate singular vector plots
 }
 \examples{
 dat <- iris[, -5]
