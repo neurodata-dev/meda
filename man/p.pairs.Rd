@@ -4,10 +4,16 @@
 \alias{p.pairs}
 \title{Generate a pairs hex binned plot}
 \usage{
-p.pairs(dat)
+p.pairs(dat, colramp = BTC, loess = TRUE, lmline = TRUE)
 }
 \arguments{
 \item{dat}{data}
+
+\item{colramp}{Color Ramp used, BTC or BTY}
+
+\item{loess}{boolean for loess curve}
+
+\item{loem}{boolean for lm line}
 }
 \value{
 A lattice splom
@@ -17,6 +23,7 @@ Generate a pairs hex binned plot
 }
 \examples{
 dat <- iris[,-5]
-p.pairs(dat)
+p.pairs(dat, colramp = magent)
+p.pairs(dat, colramp = BTC)
 }
 

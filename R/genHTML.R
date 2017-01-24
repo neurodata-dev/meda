@@ -40,15 +40,17 @@
 #' dat <- iris[, -5]
 #' truth <- as.numeric(iris[, 5])
 #' featCol <- c("red", "purple", "darkgreen")
-#' #p.heat(dat)
+#' ## p.heat(dat)
 #' p.1dheat(dat)
-#' p.violin(dat)
+#' ## p.violin(dat)
 #' p.outlier(dat)
 #' do.call(corrplot, p.cor(dat))
 #' p.cumvar(dat)
+#' p.cumvar(cor(dat))
 #' p.pairs(dat)
 #' out <- p.bic(dat)
-#' p.mclust(out$dat, out$bicO)
+#' mc1 <- p.mclust(out$dat, out$bicO)
+#' p <- p.clusterMeans(mc1); grid.arrange(p[[1]], p[[2]], ncol = 2)
 #' p.hmclust(dat, truth = iris[,5]) 
 #' 
 #' @export
@@ -562,6 +564,9 @@ p.cumvar <- function(dat){
 #' Generate a pairs hex binned plot
 #'
 #' @param dat data
+#' @param colramp Color Ramp used, BTC or BTY
+#' @param loess boolean for loess curve
+#' @param loem boolean for lm line
 #'
 #' @return A lattice splom
 #' @importFrom hexbin BTC
@@ -569,10 +574,11 @@ p.cumvar <- function(dat){
 #'
 #' @examples
 #' dat <- iris[,-5]
-#' p.pairs(dat)
+#' p.pairs(dat, colramp = magent)
+#' p.pairs(dat, colramp = BTC)
 #' @export 
 ### Pairs Plots
-p.pairs <- function(dat) {
+p.pairs <- function(dat, colramp = BTC, loess = TRUE, lmline = TRUE) {
 
   du <- ifelse(dim(dat)[2] > 8, 8, dim(dat)[2])
   t1 <-paste("pairs hex binned plot of first", du, "dimensions")
@@ -583,7 +589,8 @@ p.pairs <- function(dat) {
   ### the following from https://procomun.wordpress.com/2011/03/18/splomr/
   splom(tmp,
    panel=panel.hexbinplot,
-   colramp=BTC,
+   colramp=colramp,
+   #style = "nested.centroids",
    diag.panel = function(x, ...){
    yrng <- current.panel.limits()$ylim
    d <- density(x, na.rm=TRUE)
@@ -593,8 +600,8 @@ p.pairs <- function(dat) {
    },
    lower.panel = function(x, y, ...){
    panel.hexbinplot(x, y, colorkey = TRUE, ...)
-   panel.loess(x, y, ..., col = 'red')
-   panel.lmline(x, y, ..., col = 'orange')
+   if(loess) panel.loess(x, y, ..., col = 'red')
+   if(lmline) panel.lmline(x, y, ..., col = 'orange')
    },
    pscale=0, varname.cex=0.7
    )
@@ -743,18 +750,18 @@ p.hmclust <- function(dat, truth = NULL) {
 #'
 #' @param mod mclust output
 #'
-#' @return heatmap of cluster means
+#' @return heatmap and line plot of cluster means
 #' @examples
 #' dat <- iris[, -5]
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 #' mod <- md1 
-#' p <- p.mcparam(mod)
+#' p <- p.clusterMeans(mod)
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
 #' @export 
 ### Model Parameter Plots
-p.mcparam <- function(mod) {
+p.clusterMeans <- function(mod) {
   means <- mod$parameters$mean
   colnames(means) <- paste0("C", 1:ncol(means))
   d1 <- melt(means)
@@ -764,9 +771,9 @@ p.mcparam <- function(mod) {
     theme(axis.title = element_blank())
 
   g2 <- ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2))) + 
-    geom_line() + 
+    geom_line(lwd = 1) + 
     scale_color_discrete(name = "Cluster") + 
-    theme(axis.title.x = element_blank())
+    theme(axis.title = element_blank())
           
 
   if(dim(d1)[1] > 8){
@@ -776,7 +783,44 @@ p.mcparam <- function(mod) {
 
   out <- list(pheat = g1, pline = g2)
   invisible(out)
-} ### END p.mcparam
+} ### END p.clusterMeans
+
+#' Generate cluster covariance plots
+#'
+#' @param mod mclust output
+#'
+#' @return heatmap and line plot of cluster means
+#' @examples
+#' dat <- iris[, -5]
+#' out <- p.bic(dat)
+#' truth <- iris[, 5]
+#' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
+#' mod <- md1 
+#' p.clusterCov(mod)
+#' 
+#' @export 
+### Cluster Covariance Plots
+p.clusterCov <- function(mod) {
+  ccov <- mod$parameters$variance$sigma
+
+  m1 <- melt(ccov)
+  m1$Var2 <- ordered(m1$Var2, levels = rev(levels(m1$Var1)))
+  m1$Var3 <- factor(sprintf("Cluster_%02d", m1$Var3))
+ 
+  m1v <- max(abs(m1$value))
+
+  g1 <-
+    ggplot(m1, aes(x = Var1, y = Var2, group = Var3, fill = value)) + 
+    geom_raster() + 
+    scale_fill_gradientn(colors = c("darkred","gray98", "darkblue"), space="Lab") + 
+    facet_wrap(~ Var3, ncol = 2) + 
+    theme(axis.title = element_blank(),
+          axis.text.x = element_text(angle = 90))
+
+  out <- g1
+  return(out)
+} ### END p.clusterMeans
+
 
 #' Generate jittered scatter plots colored by class / cluster
 #'
@@ -816,6 +860,69 @@ p.jitter <- function(dat, clusterLab = NULL) {
   return(gg.jitter)
 }
 
+#' Generate eigen vector plots
+#'
+#' @param dat data 
+#'
+#' @return pairs plot and heatmap of right singular vectors
+#'
+#' @examples
+#' dat <- iris[, -5]
+#' p1 <- p.eig(dat)
+#' ## grid.arrange(p1[[1]], p1[[2]], nrow = 2)
+#' p1[[1]]
+#' p1[[2]]
+#' @export 
+### Spectral plots, singularvectors 
+p.eig <- function(dat) {
+  dm <- as.matrix(dat) 
+  covM <- cov(dm)
+
+  v <- svd(covM)$v
+
+  colnames(v) <- sprintf(paste0("rsv%0",nchar(ncol(v)), "d"), 1:ncol(v))
+  mv <- melt(v)
+  
+  mv$Var2 <- ordered(mv$Var2, levels = rev(levels(mv$Var2)))
+
+  mycol <- colorpanel(255, "darkred", "gray95", "darkblue")
+
+  sc <- scale_fill_gradientn(colours = mycol)
+
+  g1 <- ggplot(mv, aes(x = Var1, y = Var2, fill = value)) + 
+    geom_raster() + 
+    sc + xlab("Dimension") + ylab("Right Singular Values") + 
+    theme(panel.background = element_rect(fill = "gray75")) +
+    theme(panel.grid = element_blank())
+
+  if(dim(v)[2] > 10){
+    g1 <- g1 + 
+      scale_x_continuous(breaks = c(seq(1,9,1), seq(10,dim(v)[2], 2)))
+  } 
+
+  vP <- if(dim(v)[2] > 8){
+    v[, 1:8]
+  } else {
+    v
+  }
+
+  g2 <- 
+    splom(vP,
+     panel=panel.xyplot,
+     diag.panel = function(x, ...){
+     yrng <- current.panel.limits()$ylim
+     d <- density(x, na.rm=TRUE)
+     d$y <- with(d, yrng[1] + 0.95 * diff(yrng) * y / max(y) )
+     panel.lines(d)
+     diag.panel.splom(x, ...)
+     },
+     pch = 19,
+     pscale=0, varname.cex=0.7
+     )
+
+  lout <- list(g1 = g1, g2 = g2)
+  return(lout)
+} ## END p.eig
 
 #' Generate 3D pca of correlation matrix
 #'
