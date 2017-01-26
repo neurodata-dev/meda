@@ -20,6 +20,6 @@ Generate binary hierarchical mclust output
 \examples{
 dat <- iris[, -5]
 truth <- iris[,5]
-p.hmclust(dat, truth)
+L <- p.hmclust(dat, truth)
 }
 

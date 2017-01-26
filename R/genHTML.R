@@ -569,6 +569,7 @@ p.cumvar <- function(dat){
 #'
 #' @param dat data
 #' @param colramp Color Ramp used, BTC or BTY
+#' @param ccol colors for features
 #' @param loess boolean for loess curve
 #' @param loem boolean for lm line
 #'
@@ -578,17 +579,24 @@ p.cumvar <- function(dat){
 #'
 #' @examples
 #' dat <- iris[,-5]
-#' p.pairs(dat, colramp = magent)
+#' p.pairs(dat, colramp = magent, ccol = c("blue", "red"))
 #' p.pairs(dat, colramp = BTC)
 #' @export 
 ### Pairs Plots
-p.pairs <- function(dat, colramp = BTC, loess = TRUE, lmline = TRUE) {
+p.pairs <- function(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = TRUE) {
 
   du <- ifelse(dim(dat)[2] > 8, 8, dim(dat)[2])
-  t1 <-paste("pairs hex binned plot of first", du, "dimensions")
+  if(dim(dat)[2] > 8){
+    du <- 8
+    tmp <- dat[, 1:du]
+    t1 <-paste("pairs hex binned plot of first", du, "dimensions")
+    if(ccol != "black"){ ccol <- ccol[1:du] }
+  } else {
+    tmp <- dat
+    t1 <-paste("pairs hex binned plot of the data")
+  }
 
 
-  tmp <- dat[, 1:du]
 
   ### the following from https://procomun.wordpress.com/2011/03/18/splomr/
   splom(tmp,
@@ -607,7 +615,7 @@ p.pairs <- function(dat, colramp = BTC, loess = TRUE, lmline = TRUE) {
    if(loess) panel.loess(x, y, ..., col = 'red')
    if(lmline) panel.lmline(x, y, ..., col = 'orange')
    },
-   pscale=0, varname.cex=0.7
+   pscale=0, varname.cex=0.7, varname.col = ccol
    )
 } ## END FUNCTION
 
@@ -703,7 +711,7 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[,5]
-#' p.hmclust(dat, truth)
+#' L <- p.hmclust(dat, truth)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 p.hmclust <- function(dat, truth = NULL) {
@@ -740,19 +748,27 @@ p.hmclust <- function(dat, truth = NULL) {
   }
 
 
-  outHMCclusters <<- lapply(unique(labL), function(x){ 
+  outHMCclusters <- lapply(unique(labL), function(x){ 
                   list(class = x,
                        mean = apply(dat[labL == x,], 2, mean),
                        cov = cov(dat[labL == x,])
                        )
           }
   )
-  #return(out)
+
+  means <- sapply(outHMCclusters, '[[', 2)
+  covs <- sapply(outHMCclusters, '[[', 3, simplify = FALSE)
+  covs <- array(unlist(covs), dim = c(dim(covs[[1]]), length(covs)))
+  colnames(covs) <- colnames(dat)
+  rownames(covs) <- colnames(dat)
+
+  outL <- list(mean = means, sigma = covs)
+  invisible(outL)
 }
 
 #' Generate cluster parameter plots
 #'
-#' @param mod mclust output
+#' @param modMeans means from a model (clusters in columns)
 #'
 #' @return heatmap and line plot of cluster means
 #' @examples
@@ -760,13 +776,13 @@ p.hmclust <- function(dat, truth = NULL) {
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-#' mod <- md1 
-#' p <- p.clusterMeans(mod)
+#' modMeans <- md1$parameters$mean 
+#' p <- p.clusterMeans(modMeans)
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
 #' @export 
 ### Model Parameter Plots
-p.clusterMeans <- function(mod, ccol = "black") {
-  means <- mod$parameters$mean
+p.clusterMeans <- function(modMeans, ccol = "black") {
+  means <- modMeans
   colnames(means) <- paste0("C", 1:ncol(means))
   d1 <- melt(means)
 
@@ -790,7 +806,7 @@ p.clusterMeans <- function(mod, ccol = "black") {
 
 #' Generate cluster covariance plots
 #'
-#' @param mod mclust output
+#' @param modSigma mclust output
 #' @param ccol feature colors
 #'
 #' @return heatmap and line plot of cluster means
@@ -799,13 +815,13 @@ p.clusterMeans <- function(mod, ccol = "black") {
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-#' mod <- md1 
+#' mod <- md1$parameters$variance$sigma
 #' p.clusterCov(mod)
 #' 
 #' @export 
 ### Cluster Covariance Plots
-p.clusterCov <- function(mod, ccol = "black") {
-  ccov <- mod$parameters$variance$sigma
+p.clusterCov <- function(modSigma, ccol = "black") {
+  ccov <- modSigma
 
   m1 <- melt(ccov)
   m1$Var2 <- ordered(m1$Var2, levels = rev(levels(m1$Var1)))
@@ -816,11 +832,11 @@ p.clusterCov <- function(mod, ccol = "black") {
   g1 <-
     ggplot(m1, aes(x = Var1, y = Var2, group = Var3, fill = value)) + 
     geom_raster() + 
-    scale_fill_gradientn(colors = c("darkred","gray98", "darkblue"), space="Lab") + 
+    #scale_fill_gradientn(colors = c("darkred","gray98", "darkblue"), space="Lab") + 
     facet_wrap(~ Var3, ncol = 2) + 
     theme(axis.title = element_blank(),
-          axis.text.x = element_text(angle = 90),
-          axis.text = element_text(color = ccol))
+          axis.text.x = element_text(angle = 90, color = ccol),
+          axis.text.y = element_text(color = rev(ccol)))
 
   out <- g1
   return(out)

@@ -4,10 +4,10 @@
 \alias{p.clusterMeans}
 \title{Generate cluster parameter plots}
 \usage{
-p.clusterMeans(mod, ccol = "black")
+p.clusterMeans(modMeans, ccol = "black")
 }
 \arguments{
-\item{mod}{mclust output}
+\item{modMeans}{means from a model (clusters in columns)}
 }
 \value{
 heatmap and line plot of cluster means
@@ -20,8 +20,8 @@ dat <- iris[, -5]
 out <- p.bic(dat)
 truth <- iris[, 5]
 tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-mod <- md1 
-p <- p.clusterMeans(mod)
+modMeans <- md1$parameters$mean 
+p <- p.clusterMeans(modMeans)
 grid.arrange(p[[1]], p[[2]], ncol = 2)
 }
 

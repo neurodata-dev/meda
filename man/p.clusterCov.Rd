@@ -4,10 +4,10 @@
 \alias{p.clusterCov}
 \title{Generate cluster covariance plots}
 \usage{
-p.clusterCov(mod, ccol = "black")
+p.clusterCov(modSigma, ccol = "black")
 }
 \arguments{
-\item{mod}{mclust output}
+\item{modSigma}{mclust output}
 
 \item{ccol}{feature colors}
 }
@@ -22,7 +22,7 @@ dat <- iris[, -5]
 out <- p.bic(dat)
 truth <- iris[, 5]
 tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-mod <- md1 
+mod <- md1$parameters$variance$sigma
 p.clusterCov(mod)
 
 }

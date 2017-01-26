@@ -4,12 +4,14 @@
 \alias{p.pairs}
 \title{Generate a pairs hex binned plot}
 \usage{
-p.pairs(dat, colramp = BTC, loess = TRUE, lmline = TRUE)
+p.pairs(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = TRUE)
 }
 \arguments{
 \item{dat}{data}
 
 \item{colramp}{Color Ramp used, BTC or BTY}
+
+\item{ccol}{colors for features}
 
 \item{loess}{boolean for loess curve}
 
@@ -23,7 +25,7 @@ Generate a pairs hex binned plot
 }
 \examples{
 dat <- iris[,-5]
-p.pairs(dat, colramp = magent)
+p.pairs(dat, colramp = magent, ccol = c("blue", "red"))
 p.pairs(dat, colramp = BTC)
 }
 
