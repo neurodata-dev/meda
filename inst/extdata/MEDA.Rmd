@@ -142,7 +142,7 @@ tryCatch(mc1 <- p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,
 ```
 
 ## Binary Hierarhical Mclust classifications
-```{r cc-hmclust}
+```{r cc-hmclust, fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
 tryCatch(hmcL <- p.hmclust(dat, truth = truth))
 ```
 
@@ -187,26 +187,18 @@ if(use.plotly){
 }
 ```
 
-## Cumulative Sum of Variance (on correlation matrix)
-```{r cc-Cor-cumsum}
-if(use.plotly){
-  tryCatch(ggplotly(p.try(p.cumvar, dat)))
-} else {
-  p.try(p.cumvar, cor(dat))
-}
-```
 
 ## Right Singular Vectors Heatmap
 The right singular vectors of the data matrix are plotted below in a
 heatmap.
 ```{r cc-rsvH}
-tryCatch(p.eig(dat)[[1]])
+tryCatch(p.rsv(dat, ccol = colCol)[[1]])
 ```
 
 ## Right Singular Vectors Pairs plot
 The right singular vectors are plotted below in a pairs plot.
 A maximum of 8 pairs will be plotted for readability. 
-```{r cc-rsvP}
-tryCatch(p.eig(dat)[[2]])
+```{r cc-rsvP, fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
+tryCatch(p.rsv(dat, ccol = colCol)[[2]])
 ```
 

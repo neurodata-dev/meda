@@ -17,9 +17,15 @@ binary hierarchical mclust classification output
 \description{
 Generate binary hierarchical mclust output
 }
+\details{
+BIC is run for k = {1,2}, if k = 2 then each node is
+propagated down the tree.  If k = 1, then that node is frozen. 
+If a singleton exists, the level takes a step back.
+}
 \examples{
 dat <- iris[, -5]
 truth <- iris[,5]
 L <- p.hmclust(dat, truth)
+L <- p.hmclust(dat)
 }
 

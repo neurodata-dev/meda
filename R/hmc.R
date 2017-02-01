@@ -2,6 +2,7 @@
 #'
 #' @param dat A data frame or matrix
 #' file.
+#' @param maxit maximum number of levels in the hierarchy.
 #' @return A vector of cluster labels
 #'
 #' @details Performs hierarchical mclust for k (G) = 1 or 2.
@@ -35,11 +36,13 @@
 
 
 
-hmc <- function(dat){
+hmc <- function(dat, maxit = Inf){
   hmc1 <- function(dat){
     L <- data.frame(continue = rep(TRUE, length(dat)), lab = rep(1, length(dat)))
   
-    while(any(L$continue == TRUE)){
+    it <- 0
+    
+    while(any(L$continue == TRUE) || it < maxit){
       tmp <- L[, dim(L)[2]]
       for(i in sort(unique(L[,dim(L)[2]][L$continue == TRUE]))){
 
@@ -60,6 +63,7 @@ hmc <- function(dat){
       if(any(L$continue == TRUE)){
         L <- cbind(L,L[, dim(L)[2]] + tmp)
         }
+      it <- it + 1
     }
     
     out <- data.frame(L)
@@ -73,7 +77,8 @@ hmc <- function(dat){
   } else {
     L <- data.frame(continue = rep(TRUE, nrow(dat)), lab = rep(1, nrow(dat)))
   
-    while(any(L$continue == TRUE)){
+    it <- 0
+    while(any(L$continue == TRUE) || it > maxit){
       tmp <- L[, dim(L)[2]]
       for(i in sort(unique(L[,dim(L)[2]][L$continue == TRUE]))){
 
@@ -95,6 +100,7 @@ hmc <- function(dat){
       if(any(L$continue == TRUE)){
         L <- cbind(L,X = L[, dim(L)[2]] + tmp)
       }
+      it <- it + 1
     }
     
     out <- data.frame(L)

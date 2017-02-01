@@ -357,7 +357,7 @@ p.1dheat <- function(dat, breaks = "Scott", ccol = "black") {
   
   mt <- data.table::melt(dat, measure = 1:ncol(dat))
 
-  H <- hist(mt$value, breaks = 50, plot = FALSE)
+  H <- hist(mt$value, breaks = breaks, plot = FALSE)
   df <- expand.grid(x = H$mids, y = names(dat))
 
   bn <- lapply(apply(dat, 2, hist, breaks = H$breaks, plot = FALSE), 
@@ -636,22 +636,20 @@ p.pairs <- function(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = T
 #' @export 
 ### BIC plot
 p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
-  tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
-
-  out <- NULL
-
-  sv <- svd(dat, nu = 0, nv = 0)$d
-  tryCatch(elb <- getElbows(sv, plot = FALSE))
+  #tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
+  #sv <- svd(dat, nu = 0, nv = 0)$d
+  #tryCatch(elb <- getElbows(sv, plot = FALSE))
 
   #setTimeLimit(cpu = timeLimit, transient = FALSE)
+  out <- NULL
   bicO <- mclust::mclustBIC(dat, G = 1:10)
   out <- list(bic = bicO, data = dat)
 
   if(print) print(summary(bicO))
 
-  plot(bicO) 
-
   return(out)
+
+  plot(bicO) 
 }
 
 
@@ -708,10 +706,14 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 #' @param truth true labels if any
 #'
 #' @return binary hierarchical mclust classification output
+#' @details BIC is run for k = {1,2}, if k = 2 then each node is
+#' propagated down the tree.  If k = 1, then that node is frozen. 
+#' If a singleton exists, the level takes a step back. 
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[,5]
 #' L <- p.hmclust(dat, truth)
+#' L <- p.hmclust(dat)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 p.hmclust <- function(dat, truth = NULL) {
@@ -728,30 +730,22 @@ p.hmclust <- function(dat, truth = NULL) {
     20
   }
   
+  lab <- hmc(dat)
+  
+  singles <- apply(lab, 2, function(x) any(table(x) == 1))
+  mi <- max(which(singles == FALSE))
 
-  if(d > 8){
-    lab <- hmc(dat[, 1:8])
+  if(all(singles)){
     labL <- lab[, dim(lab)[2]]
-    pairs(dat[, 1:8], 
-          pch = shape, 
-          col =  labL, 
-          cex = size,
-          main = "Color is classification; if present, shape is truth\n Pairs plot of first 8 dimensions")
   } else {
-    lab <- hmc(dat)
-    labL <- lab[, dim(lab)[2]]
-    pairs(dat, 
-          pch = shape, 
-          col =  labL, 
-          cex = size, 
-          main = "Color is classification; if present, shape is truth")
+    labL <- lab[, mi]
   }
-
 
   outHMCclusters <- lapply(unique(labL), function(x){ 
                   list(class = x,
                        mean = apply(dat[labL == x,], 2, mean),
-                       cov = cov(dat[labL == x,])
+                       cov = cov(dat[labL == x,]),
+                       cor = cor(dat[labL == x,])
                        )
           }
   )
@@ -762,7 +756,20 @@ p.hmclust <- function(dat, truth = NULL) {
   colnames(covs) <- colnames(dat)
   rownames(covs) <- colnames(dat)
 
-  outL <- list(mean = means, sigma = covs)
+  cors <- sapply(outHMCclusters, '[[', 4, simplify = FALSE)
+  cors <- array(unlist(cors), dim = c(dim(cors[[1]]), length(cors)))
+  colnames(cors) <- colnames(dat)
+  rownames(cors) <- colnames(dat)
+
+  outL <- list(mean = means, sigma = covs, cor = cors, hlabels = lab) 
+
+  pairs(dat, 
+        pch = shape, 
+        col =  labL, 
+        cex = size, 
+        main = "Color is classification; if present, shape is truth"
+        )
+
   invisible(outL)
 }
 
@@ -815,14 +822,16 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-#' mod <- md1$parameters$variance$sigma
-#' p.clusterCov(mod)
+#' modSigma <- md1$parameters$variance$sigma
+#' p.clusterCov(modSigma)
+#' tryCatch(L <- p.hmclust(datLog, truth = truth))
+#' p.clusterCov(modSigma)
 #' 
 #' @export 
 ### Cluster Covariance Plots
 p.clusterCov <- function(modSigma, ccol = "black") {
   ccov <- modSigma
-
+  
   m1 <- melt(ccov)
   m1$Var2 <- ordered(m1$Var2, levels = rev(levels(m1$Var1)))
   m1$Var3 <- factor(sprintf("Cluster_%02d", m1$Var3))
@@ -830,10 +839,14 @@ p.clusterCov <- function(modSigma, ccol = "black") {
   m1v <- max(abs(m1$value))
 
   g1 <-
-    ggplot(m1, aes(x = Var1, y = Var2, group = Var3, fill = value)) + 
-    geom_raster() + 
-    #scale_fill_gradientn(colors = c("darkred","gray98", "darkblue"), space="Lab") + 
-    facet_wrap(~ Var3, ncol = 2) + 
+    ggplot(m1, aes(x = Var1, y = Var2, group = Var3, fill = value)) +
+    geom_raster() +
+    scale_fill_gradient2(
+      low = "darkred", 
+      mid = "gray98",
+      high = "darkblue",
+      midpoint = 0) +
+    facet_wrap(~ Var3, ncol = 2) +
     theme(axis.title = element_blank(),
           axis.text.x = element_text(angle = 90, color = ccol),
           axis.text.y = element_text(color = rev(ccol)))
@@ -884,24 +897,26 @@ p.jitter <- function(dat, clusterLab = NULL) {
 #' Generate singular vector plots
 #'
 #' @param dat data 
+#' @param ccol feature colors 
 #'
 #' @return pairs plot and heatmap of right singular vectors
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' p1 <- p.eig(dat)
+#' p1 <- p.rsv(dat, ccol = c("black", "black", "blue", "blue"))
 #' ## grid.arrange(p1[[1]], p1[[2]], nrow = 2)
 #' p1[[1]]
 #' p1[[2]]
 #' @export 
 ### Spectral plots, singularvectors 
-p.eig <- function(dat) {
+p.rsv <- function(dat, ccol = "black") {
   dm <- as.matrix(dat) 
   covM <- cov(dm)
 
   v <- svd(covM)$v
 
   colnames(v) <- sprintf(paste0("rsv%0",nchar(ncol(v)), "d"), 1:ncol(v))
+  rownames(v) <- colnames(dat)
   mv <- melt(v)
   
   mv$Var2 <- ordered(mv$Var2, levels = rev(levels(mv$Var2)))
@@ -910,25 +925,22 @@ p.eig <- function(dat) {
 
   sc <- scale_fill_gradientn(colours = mycol)
 
-  g1 <- ggplot(mv, aes(x = Var1, y = Var2, fill = value)) + 
+  g1 <- 
+    ggplot(mv, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
-    sc + xlab("Dimension") + ylab("Right Singular Vectors") + 
+    sc + xlab(NULL) + ylab("Right Singular Vectors") + 
     theme(panel.background = element_rect(fill = "gray75")) +
-    theme(panel.grid = element_blank())
+    theme(panel.grid = element_blank()) +
+    theme(axis.text.x = element_text(color = ccol, angle = 90))
 
-  if(dim(v)[2] > 10){
-    g1 <- g1 + 
-      scale_x_continuous(breaks = c(seq(1,9,1), seq(10,dim(v)[2], 2)))
-  } 
-
-  vP <- if(dim(v)[2] > 8){
-    v[, 1:8]
-  } else {
-    v
-  }
+  #vP <- if(dim(v)[2] > 8){
+  #  v[, 1:8]
+  #} else {
+  #  v
+  #}
 
   g2 <- 
-    splom(vP,
+    splom(v,
      panel=panel.xyplot,
      diag.panel = function(x, ...){
      yrng <- current.panel.limits()$ylim
@@ -937,7 +949,7 @@ p.eig <- function(dat) {
      panel.lines(d)
      diag.panel.splom(x, ...)
      },
-     pch = 19,
+     pch = 19, col = ccol, 
      pscale=0, varname.cex=0.7
      )
 

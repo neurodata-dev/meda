@@ -4,11 +4,13 @@
 \alias{hmc}
 \title{Hierarchical MCLUST}
 \usage{
-hmc(dat)
+hmc(dat, maxit = Inf)
 }
 \arguments{
 \item{dat}{A data frame or matrix
 file.}
+
+\item{maxit}{maximum number of levels in the hierarchy.}
 }
 \value{
 A vector of cluster labels
