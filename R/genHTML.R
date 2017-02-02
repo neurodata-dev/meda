@@ -76,6 +76,13 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
   complete <- all(complete.cases(dat))
   nas <- anyNA(dat)
   negs <- any(dat < 0)
+  sd0 <- apply(dat, 2, function(x) sd(x) == 0)
+  sdZ <- any(sd0)
+
+  ## Halt if any columns have sd = 0
+ if(sdZ){
+   stop(paste("Feature columns", c(1:ncol(dat))[sd0], "have standard deviation = 0!"))
+   }
 
   rmd <- system.file("extdata", "MEDA.Rmd", package = "meda")
 
