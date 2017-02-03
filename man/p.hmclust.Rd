@@ -4,12 +4,14 @@
 \alias{p.hmclust}
 \title{Generate binary hierarchical mclust output}
 \usage{
-p.hmclust(dat, truth = NULL)
+p.hmclust(dat, truth = NULL, maxd = Inf)
 }
 \arguments{
 \item{dat}{data that p.bic has been run on}
 
 \item{truth}{true labels if any}
+
+\item{maxd}{maximum dimensions to plot}
 }
 \value{
 binary hierarchical mclust classification output
@@ -25,7 +27,7 @@ If a singleton exists, the level takes a step back.
 \examples{
 dat <- iris[, -5]
 truth <- iris[,5]
-L <- p.hmclust(dat, truth)
+hmcL <- p.hmclust(dat, truth)
 L <- p.hmclust(dat)
 }
 

@@ -3,6 +3,7 @@ title: "Matrix Exploratory Data Analysis Output:"
 author: "MEDA"
 output:
   html_document:
+    self_contained: true
     fig_caption: yes
     fig_height: 8
     fig_width: 8
@@ -13,26 +14,25 @@ output:
     toc: yes
 ---
 
-
 ```{r setup, echo = FALSE}
 opts_chunk$set(cache=FALSE, echo=FALSE, fig.height = 8, fig.width= 8,
                warning=FALSE, message=FALSE, fig.show='hold',
-               comment="#", fig.keep='low')
+               comment="#", fig.keep='low', fig.path = outdir)
 ```
 
 # Structure
 ## Column types
-```{r cc-str1, results = 'hold'}
+```{r meda-str1, results = 'hold'}
 print(colStr)
 ```
 ## Missing values, NAs, and Negatives
-```{r cc-str2, results = 'hold'}
+```{r meda-str2, results = 'hold'}
 print(paste("Are all rows complete?:", complete))
 print(paste("Are there any NAs?:", nas))
 print(paste("Are any values negative?:", negs))
 ```
 
-```{r cc-str3, results = 'hold'}
+```{r meda-str3, results = 'hold'}
 n <- dim(dat)[1]
 d <- dim(dat)[2]
 if(d <= 12) { print("Structure"); str(dat) }
@@ -46,7 +46,7 @@ color according to magnitude. Mouse hover for column names.
 
 [Heatmap](https://en.wikipedia.org/wiki/Heat_map)
 
-```{r cc-heatmap, fig.h = 12}
+```{r meda-heatmap, fig.h = 12}
 tryCatch(p.heat(dat))
 ```
 
@@ -55,7 +55,7 @@ tryCatch(p.heat(dat))
 The column means and medians are presented in combined 
 heatmap and lineplot below.
 
-```{r cc-locations, fig.width = 12}
+```{r meda-locations, fig.width = 12}
 tryCatch(h1 <- p.location(dat, ccol = colCol))
 tryCatch(grid.arrange(h1[[1]], h1[[2]], ncol = 2))
 ```
@@ -74,7 +74,7 @@ relationship, and -1 corresponds to an inverse linear relationship.
 2. [Correlation and dependence](https://en.wikipedia.org/wiki/Correlation_and_dependence)
 3. [Example graphic](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Correlation_examples2.svg/506px-Correlation_examples2.svg.png)
 
-```{r cc-corr}
+```{r meda-corr}
 tryCatch(do.call(corrplot, p.cor(dat, colCol = colCol)))
 ```
 
@@ -84,7 +84,7 @@ tryCatch(do.call(corrplot, p.cor(dat, colCol = colCol)))
 For each feature column, the data are binned and a heatmap is produced
 with each bin colored according to count.
 
-```{r cc-1dheat}
+```{r meda-1dheat}
 tryCatch(p.1dheat(dat, ccol = colCol))
 ```
 
@@ -95,9 +95,16 @@ the data along those two dimensions.
 
 For readability a maximum of 8 dimensions are plotted. 
 
-```{r cc-pairs}
-p.try(p.pairs, dat)
+```{r meda-pairs}
+tryCatch(p.pairs(dat, maxd = 8))
 ```
+
+```{r meda-pairsFULL, fig.show='hide', dev='pdf', fig.width = max(8,dim(dat)[2]), fig.height = max(8,dim(dat)[2])}
+tryCatch(p.pairs(dat, maxd = Inf))
+```
+
+The full plot can be downloaded [here](./meda-pairsFULL-1.pdf)
+
 
 # Outlier Plots
 
@@ -112,7 +119,7 @@ We use the built-in method from the `randomForest` package in `R`.
 1. [Outlier](https://en.wikipedia.org/wiki/Outlier)
 1. [randomForest_outlier](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#outliers)
 
-```{r cc-outlier}
+```{r meda-outlier}
 if(use.plotly){
   ggplotly(p.try(p.outlier, dat))
 } else {
@@ -128,7 +135,7 @@ parameters for Mclust.
 
 1. [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion)
 
-```{r cc-bic}
+```{r meda-bic}
 out <- p.try(p.bic, dat)
 ```
 
@@ -137,23 +144,39 @@ Mclust takes the parameters from BIC above and clusters the data.
 
 1. [Mclust](http://www.stat.washington.edu/mclust/)  
   
-```{r cc-mclust}
-tryCatch(mc1 <- p.mclust(out$data, out$bic, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
+```{r meda-mclust}
+tryCatch(mc1 <- p.mclust(out$data, out$bic, maxd = 8, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
 ```
 
 ## Binary Hierarhical Mclust classifications
-```{r cc-hmclust, fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
-tryCatch(hmcL <- p.hmclust(dat, truth = truth))
+```{r meda-hmclust}
+tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxd = 8))
 ```
 
+```{r meda-hmclustFULL, fig.show = "hide", dev = "pdf", fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
+  shape <- if(!is.null(truth)){ 
+    as.numeric(factor(truth))
+  } else {
+    20
+  }
+pairs(dat, 
+      pch = shape, 
+      col =  hmcL$leaves, 
+      cex = max(min(1.5/log10(dim(dat)[1]), 1.25), 0.05),
+      main = "Color is classification; if present, shape is truth"
+      )
+```
+
+The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
+
 ## HMClust output: Cluster means
-```{r cc-cmeans}
+```{r meda-cmeans}
 tryCatch(param <- p.clusterMeans(hmcL$mean, ccol = colCol))
 grid.arrange(param[[1]], param[[2]], ncol = 2)
 ```
 
 ## HMClust output: Cluster covariance matrices
-```{r cc-ccov, fig.height = 8 +ifelse(dim(hmcL[[2]])[3] %% 2==0,dim(hmcL[[2]])[3]- 2,dim(hmcL[[2]])[3])}
+```{r meda-ccov, fig.height = 8 +ifelse(dim(hmcL[[2]])[3] %% 2==0,dim(hmcL[[2]])[3]- 2,dim(hmcL[[2]])[3])}
 tryCatch(p.clusterCov(hmcL$sigma, ccol = colCol))
 ```
 
@@ -179,7 +202,7 @@ selection.
 2. [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis)
 3. [Elbows](http://dx.doi.org/10.1016/j.csda.2005.09.010)
 
-```{r cc-cumsum}
+```{r meda-cumsum}
 if(use.plotly){
   tryCatch(ggplotly(p.try(p.cumvar, dat)))
 } else {
@@ -191,14 +214,29 @@ if(use.plotly){
 ## Right Singular Vectors Heatmap
 The right singular vectors of the data matrix are plotted below in a
 heatmap.
-```{r cc-rsvH}
-tryCatch(p.rsv(dat, ccol = colCol)[[1]])
+```{r meda-rsvH}
+tryCatch(rsv <- p.rsv(dat, ccol = colCol, maxd = 8))
+rsv[[1]]
 ```
 
 ## Right Singular Vectors Pairs plot
 The right singular vectors are plotted below in a pairs plot.
 A maximum of 8 pairs will be plotted for readability. 
-```{r cc-rsvP, fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
-tryCatch(p.rsv(dat, ccol = colCol)[[2]])
+```{r meda-rsvP}
+rsv[[2]]
+```
+
+```{r meda-rsvFULL, fig.show = 'hide', fig.keep='all', dev = 'pdf', }
+tryCatch(rsvFULL <- p.rsv(dat, ccol = colCol, maxd = Inf))
+rsvFULL[[1]]
+rsvFULL[[2]]
+```
+
+The full RSV plots can be downloaded [here](./meda-rsvFULL-1.pdf)
+and [here](./meda-rsvFULL-2.pdf).
+
+## 3D pca of correlation matrix
+```{r meda-3dpca}
+try(p.3dpca(dat, colCol = colCol))
 ```
 

@@ -4,7 +4,7 @@
 \alias{genHTML}
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
-genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "cur",
+genHTML(x, outfile, outdir, scale = FALSE, dmethod = "cur",
   nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL)
 }
 \arguments{
@@ -13,7 +13,7 @@ genHTML(x, outfile, use.plotly = FALSE, scale = FALSE, dmethod = "cur",
 \item{outfile}{A string denoting the location to put the output html
 file.}
 
-\item{use.plotly}{A Boolean to specify if ggplotly is used.}
+\item{outdir}{directory for figures}
 
 \item{scale}{A Boolean to specify whether column-wise scaling is
 performed before analysis.}

@@ -4,10 +4,13 @@
 \alias{p.pairs}
 \title{Generate a pairs hex binned plot}
 \usage{
-p.pairs(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = TRUE)
+p.pairs(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE,
+  lmline = TRUE)
 }
 \arguments{
 \item{dat}{data}
+
+\item{maxd}{maximum dimensions to plot}
 
 \item{colramp}{Color Ramp used, BTC or BTY}
 

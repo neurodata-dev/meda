@@ -3,7 +3,7 @@
 #' @param x data 
 #' @param outfile A string denoting the location to put the output html
 #' file.
-#' @param use.plotly A Boolean to specify if ggplotly is used.
+#' @param outdir directory for figures
 #' @param scale A Boolean to specify whether column-wise scaling is
 #' performed before analysis.
 #' @param dmethod a string denoting the method to use for dimension
@@ -56,12 +56,13 @@
 #' @export
 
 
-genHTML <- function(x, outfile, use.plotly = FALSE, 
+genHTML <- function(x, outfile, outdir,  
                     scale = FALSE, dmethod = "cur", 
                     nmethod = "cur", truth = NULL, 
                     colCol = NULL, colRow = NULL) {
 
-  use.plotly <- use.plotly
+  outdir <- outdir
+  use.plotly <- FALSE ## Remove this later
 
   if(scale){
     dat <- scale(x, center = TRUE, scale = TRUE) 
@@ -85,13 +86,15 @@ genHTML <- function(x, outfile, use.plotly = FALSE,
    }
 
   rmd <- system.file("extdata", "MEDA.Rmd", package = "meda")
+  file.copy(rmd, outdir, overwrite = TRUE)
 
   ## Colors and such 
   if(!exists("colCol") || is.null(colCol)){
     colCol <- "black"
   }
 
-  render(rmd, output_file = outfile)
+  render(paste0(outdir, "/MEDA.Rmd"), output_file = outfile)
+  file.remove(paste0(outdir, "/MEDA.Rmd"))
 }
 
 #' Summary of data types
@@ -575,6 +578,7 @@ p.cumvar <- function(dat){
 #' Generate a pairs hex binned plot
 #'
 #' @param dat data
+#' @param maxd maximum dimensions to plot
 #' @param colramp Color Ramp used, BTC or BTY
 #' @param ccol colors for features
 #' @param loess boolean for loess curve
@@ -590,11 +594,12 @@ p.cumvar <- function(dat){
 #' p.pairs(dat, colramp = BTC)
 #' @export 
 ### Pairs Plots
-p.pairs <- function(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = TRUE) {
+p.pairs <- function(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE, lmline = TRUE) {
 
-  du <- ifelse(dim(dat)[2] > 8, 8, dim(dat)[2])
-  if(dim(dat)[2] > 8){
-    du <- 8
+  d <- dim(dat)[2]
+  du <- ifelse(d > maxd, maxd, d)
+
+  if(d > maxd){
     tmp <- dat[, 1:du]
     t1 <-paste("pairs hex binned plot of first", du, "dimensions")
     if(ccol != "black"){ ccol <- ccol[1:du] }
@@ -602,8 +607,6 @@ p.pairs <- function(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = T
     tmp <- dat
     t1 <-paste("pairs hex binned plot of the data")
   }
-
-
 
   ### the following from https://procomun.wordpress.com/2011/03/18/splomr/
   splom(tmp,
@@ -622,7 +625,7 @@ p.pairs <- function(dat, colramp = BTC, ccol = "black", loess = TRUE, lmline = T
    if(loess) panel.loess(x, y, ..., col = 'red')
    if(lmline) panel.lmline(x, y, ..., col = 'orange')
    },
-   pscale=0, varname.cex=0.7, varname.col = ccol
+   pscale=0, varname.cex=0.7
    )
 } ## END FUNCTION
 
@@ -654,9 +657,9 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 
   if(print) print(summary(bicO))
 
-  return(out)
-
   plot(bicO) 
+
+  return(out)
 }
 
 
@@ -665,6 +668,7 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 #' @param dat data that p.bic has been run on
 #' @param bic output from p.bic or \code{\link[mclust]{mclustBIC}}
 #' @param truth true labels if any
+#' @param maxd maximum dimensions to plot NOT USED YET
 #' @param print Boolean to print parameter estimates.
 #'
 #' @return mclust classification output
@@ -675,10 +679,12 @@ p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 #' @export 
 ### Mclust Classifications 
-p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
+p.mclust <- function(dat, bic, truth = NULL, maxd = Inf, print = FALSE) {
 
   n <- nrow(dat)
   d <- ncol(dat)
+
+  dmax <- ifelse(d > maxd, maxd, d)
 
   mod1 <- Mclust(dat, x = bic)
   if(print) print(mod1$parameters[[3]])
@@ -691,18 +697,20 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 
   size <- max(min(1.5/log10(n), 1.25), 0.05)
 
-  if(d > 8){
-    pairs(as.data.frame(dat)[, 1:8], 
+  if(d > dmax){
+    pairs(as.data.frame(dat)[, 1:dmax], 
           col = mod1$classification, 
           pch = shape,
           cex = size,
-          main = "Color is classification; if present, shape is truth\n Pairs plot of first 8 dimensions")
+          main = paste("Color is classification; if present, shape is truth\n Pairs plot of first", dmax, "dimensions")
+          )
   } else {
     pairs(as.data.frame(dat), 
           col = mod1$classification, 
           pch = shape,
           cex = size, 
-          main = "Color is classification; if present, shape is truth")
+          main = "Color is classification; if present, shape is truth"
+         )
   }
   invisible(mod1)
 }
@@ -711,6 +719,7 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 #'
 #' @param dat data that p.bic has been run on
 #' @param truth true labels if any
+#' @param maxd maximum dimensions to plot
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -719,16 +728,18 @@ p.mclust <- function(dat, bic, truth = NULL, print = FALSE) {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[,5]
-#' L <- p.hmclust(dat, truth)
+#' hmcL <- p.hmclust(dat, truth)
 #' L <- p.hmclust(dat)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-p.hmclust <- function(dat, truth = NULL) {
+p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
 
   dat <- as.matrix(dat)
   d <- ncol(dat)
   n <- nrow(dat)
  
+  dmax <- ifelse(d > maxd, maxd, d)
+
   size <- max(min(1.5/log10(n), 1.25), 0.05)
 
   shape <- if(!is.null(truth)){ 
@@ -768,9 +779,9 @@ p.hmclust <- function(dat, truth = NULL) {
   colnames(cors) <- colnames(dat)
   rownames(cors) <- colnames(dat)
 
-  outL <- list(mean = means, sigma = covs, cor = cors, hlabels = lab) 
+  outL <- list(mean = means, sigma = covs, cor = cors, hlabels = lab, leaves = labL) 
 
-  pairs(dat, 
+  pairs(dat[, 1:dmax], 
         pch = shape, 
         col =  labL, 
         cex = size, 
@@ -905,6 +916,7 @@ p.jitter <- function(dat, clusterLab = NULL) {
 #'
 #' @param dat data 
 #' @param ccol feature colors 
+#' @param maxd maximum dimensions to plot
 #'
 #' @return pairs plot and heatmap of right singular vectors
 #'
@@ -916,11 +928,14 @@ p.jitter <- function(dat, clusterLab = NULL) {
 #' p1[[2]]
 #' @export 
 ### Spectral plots, singularvectors 
-p.rsv <- function(dat, ccol = "black") {
+p.rsv <- function(dat, ccol = "black", maxd = Inf) {
+  d <- dim(dat)[2]
   dm <- as.matrix(dat) 
   covM <- cov(dm)
 
-  v <- svd(covM)$v
+  dmax <- ifelse(d > maxd, maxd, d)
+
+  v <- svd(covM, nv = dmax)$v
 
   colnames(v) <- sprintf(paste0("rsv%0",nchar(ncol(v)), "d"), 1:ncol(v))
   rownames(v) <- colnames(dat)

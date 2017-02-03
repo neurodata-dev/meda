@@ -1,6 +1,6 @@
 Package: meda
 Title: Matrix Exploratory Data Analysis
-Version: 0.1.1.9015
+Version: 0.1.1.9016
 Authors@R: person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre"))
 Description: A toolbox for exploratory data analysis on matrices. 
 Depends:

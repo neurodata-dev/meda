@@ -4,12 +4,14 @@
 \alias{p.rsv}
 \title{Generate singular vector plots}
 \usage{
-p.rsv(dat, ccol = "black")
+p.rsv(dat, ccol = "black", maxd = Inf)
 }
 \arguments{
 \item{dat}{data}
 
 \item{ccol}{feature colors}
+
+\item{maxd}{maximum dimensions to plot}
 }
 \value{
 pairs plot and heatmap of right singular vectors
