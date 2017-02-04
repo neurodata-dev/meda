@@ -30,9 +30,9 @@ The following are preliminary runs of the R package
 synaptome data with different transformations applied to 
 the data prior to analysis.
 
-- [Raw](http://docs.neurodata.io/meda/examples/Kristina15/SynDataRaw.html)
-- [Log_10](http://docs.neurodata.io/meda/examples/Kristina15/SynDataLog10.html)
-- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Kristina15/SynData01e3.html)  
+- [Raw](http://docs.neurodata.io/meda/examples/Kristina15/Raw/SynDataRaw.html)
+- [Log_10](http://docs.neurodata.io/meda/examples/Kristina15/Log10/SynDataLog10.html)
+- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Kristina15/01e3/SynData01e3.html)  
 - [HeatMaps](http://docs.neurodata.io/meda/examples/HeatMaps.html)  
 - [Shapes](http://nbviewer.jupyter.org/github/neurodata/non-parametric-clustering/blob/master/procrustes_clustering/notebooks/procrustes_clustering.ipynb)
 
@@ -42,6 +42,6 @@ The following are preliminary runs of the R package
 synaptome data with different transformations applied to 
 the data prior to analysis.
 
-- [Raw](http://docs.neurodata.io/meda/examples/Weiler/Ex10R55_Raw.html)
-- [Log_10](http://docs.neurodata.io/meda/examples/Weiler/Ex10R55_Log10.html)
-- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Weiler/Ex10R55_01e3.html)  
+- [Raw](http://docs.neurodata.io/meda/examples/Weiler/Raw/Ex10R55_Raw.html)
+- [Log_10](http://docs.neurodata.io/meda/examples/Weiler/Log10/Ex10R55_Log10.html)
+- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Weiler/01e3/Ex10R55_01e3.html)  
