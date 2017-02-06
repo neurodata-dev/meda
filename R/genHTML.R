@@ -220,9 +220,9 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' Generate location estimates
 #'
 #' @param dat data
+#' @param ccol colors for features. 
 #'
 #' @return a list of ggplot objects, see details. 
-#' @details
 #' 
 #' @importFrom gplots colorpanel
 #' @importFrom gridExtra grid.arrange
@@ -340,6 +340,7 @@ p.violin <- function(dat, use.plotly, ...) {
 #'
 #' @param dat the data
 #' @param breaks see \code{\link[graphics]{hist}}
+#' @param ccol colors for features.
 #' 
 #' @return a ggplot object 
 #'
@@ -582,7 +583,7 @@ p.cumvar <- function(dat){
 #' @param colramp Color Ramp used, BTC or BTY
 #' @param ccol colors for features
 #' @param loess boolean for loess curve
-#' @param loem boolean for lm line
+#' @param lmline boolean for lm line
 #'
 #' @return A lattice splom
 #' @importFrom hexbin BTC
@@ -610,6 +611,7 @@ p.pairs <- function(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE
 
   ### the following from https://procomun.wordpress.com/2011/03/18/splomr/
   splom(tmp,
+   as.matrix = TRUE,
    panel=panel.hexbinplot,
    colramp=colramp,
    #style = "nested.centroids",
@@ -794,6 +796,7 @@ p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
 #' Generate cluster parameter plots
 #'
 #' @param modMeans means from a model (clusters in columns)
+#' @param ccol colors for features
 #'
 #' @return heatmap and line plot of cluster means
 #' @examples
@@ -920,6 +923,10 @@ p.jitter <- function(dat, clusterLab = NULL) {
 #'
 #' @return pairs plot and heatmap of right singular vectors
 #'
+#' @importFrom gplots colorpanel
+#' @importFrom data.table melt
+#' @importFrom lattice splom
+#'
 #' @examples
 #' dat <- iris[, -5]
 #' p1 <- p.rsv(dat, ccol = c("black", "black", "blue", "blue"))
@@ -963,6 +970,7 @@ p.rsv <- function(dat, ccol = "black", maxd = Inf) {
 
   g2 <- 
     splom(v,
+     as.matrix = TRUE, 
      panel=panel.xyplot,
      diag.panel = function(x, ...){
      yrng <- current.panel.limits()$ylim

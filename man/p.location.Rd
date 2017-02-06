@@ -8,15 +8,14 @@ p.location(dat, ccol = NULL)
 }
 \arguments{
 \item{dat}{data}
+
+\item{ccol}{colors for features.}
 }
 \value{
 a list of ggplot objects, see details.
 }
 \description{
 Generate location estimates
-}
-\details{
-
 }
 \examples{
 dat <- iris[, -5]

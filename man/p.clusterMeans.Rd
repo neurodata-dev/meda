@@ -8,6 +8,8 @@ p.clusterMeans(modMeans, ccol = "black")
 }
 \arguments{
 \item{modMeans}{means from a model (clusters in columns)}
+
+\item{ccol}{colors for features}
 }
 \value{
 heatmap and line plot of cluster means

@@ -18,7 +18,7 @@ p.pairs(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE,
 
 \item{loess}{boolean for loess curve}
 
-\item{loem}{boolean for lm line}
+\item{lmline}{boolean for lm line}
 }
 \value{
 A lattice splom

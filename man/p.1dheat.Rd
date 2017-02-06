@@ -10,6 +10,8 @@ p.1dheat(dat, breaks = "Scott", ccol = "black")
 \item{dat}{the data}
 
 \item{breaks}{see \code{\link[graphics]{hist}}}
+
+\item{ccol}{colors for features.}
 }
 \value{
 a ggplot object
