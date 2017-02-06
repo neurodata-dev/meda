@@ -139,15 +139,6 @@ parameters for Mclust.
 out <- p.try(p.bic, dat)
 ```
 
-## Mclust classifications
-Mclust takes the parameters from BIC above and clusters the data.
-
-1. [Mclust](http://www.stat.washington.edu/mclust/)  
-  
-```{r meda-mclust}
-tryCatch(mc1 <- p.mclust(out$data, out$bic, maxd = 8, print = ifelse(dim(dat)[1]<100,TRUE,FALSE)))
-```
-
 ## Binary Hierarhical Mclust classifications
 ```{r meda-hmclust}
 tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxd = 8))
@@ -226,14 +217,16 @@ A maximum of 8 pairs will be plotted for readability.
 rsv[[2]]
 ```
 
-```{r meda-rsvFULL, fig.show = 'hide', fig.keep='all', dev = 'pdf', }
+```{r meda-rsvhFULL, fig.show = 'hide', fig.keep='all', dev = 'png', fig.height = max(8, dim(dat)[2]), fig.width = max(8, dim(dat)[2])}
 tryCatch(rsvFULL <- p.rsv(dat, ccol = colCol, maxd = Inf))
 rsvFULL[[1]]
+```
+```{r meda-rsvpFULL, fig.show = 'hide', fig.keep='all', dev = 'pdf', fig.height = max(8, dim(dat)[2]), fig.width = max(8, dim(dat)[2])}
 rsvFULL[[2]]
 ```
 
-The full RSV plots can be downloaded [here](./meda-rsvFULL-1.pdf)
-and [here](./meda-rsvFULL-2.pdf).
+The full RSV plots can be downloaded [here](./meda-rsvhFULL-1.png)
+and [here](./meda-rsvpFULL-1.pdf).
 
 ## 3D pca of correlation matrix
 ```{r meda-3dpca}
