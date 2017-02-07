@@ -719,7 +719,7 @@ p.mclust <- function(dat, bic, truth = NULL, maxd = Inf, print = FALSE) {
 
 #' Generate binary hierarchical mclust output
 #'
-#' @param dat data that p.bic has been run on
+#' @param dat data 
 #' @param truth true labels if any
 #' @param maxd maximum dimensions to plot
 #'
@@ -790,6 +790,8 @@ p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
         main = "Color is classification; if present, shape is truth"
         )
 
+  print("Fraction of points in each cluster:")
+  print(table(labL)/length(labL))
   invisible(outL)
 }
 

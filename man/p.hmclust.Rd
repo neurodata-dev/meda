@@ -7,7 +7,7 @@
 p.hmclust(dat, truth = NULL, maxd = Inf)
 }
 \arguments{
-\item{dat}{data that p.bic has been run on}
+\item{dat}{data}
 
 \item{truth}{true labels if any}
 
