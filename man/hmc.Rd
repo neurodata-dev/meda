@@ -4,7 +4,7 @@
 \alias{hmc}
 \title{Hierarchical MCLUST}
 \usage{
-hmc(dat, maxit = Inf)
+hmc(dat, maxit = 100)
 }
 \arguments{
 \item{dat}{A data frame or matrix
@@ -29,7 +29,7 @@ Z <- rep(1:5, each = 50)
 mu <- c(-10,-5,5,10,20)
 set.seed(391857)
 test <- rnorm(length(Z), mean = mu[Z], sd = 1)
-L <- hmc(test)
+L <- hmc(test, maxit = Inf)
 plot(cbind(test,0), col = Z)
 for(i in 2:dim(L)[2]){
  points(cbind(test,i/dim(L)[2]), col=L[,i])
@@ -41,7 +41,7 @@ test2d <- data.frame(
             x = rnorm(length(Z), mean = mu2d[Z,1], sd = 1),
             y = rnorm(length(Z), mean = mu2d[Z,2], sd = 1))
 
-L <- hmc(test2d)
+L <- hmc(test2d, maxit = 100)
 plot(test2d, col = L[, dim(L)[2]], pch = Z)
 
 }

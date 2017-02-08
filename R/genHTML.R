@@ -721,7 +721,8 @@ p.mclust <- function(dat, bic, truth = NULL, maxd = Inf, print = FALSE) {
 #'
 #' @param dat data 
 #' @param truth true labels if any
-#' @param maxd maximum dimensions to plot
+#' @param maxDim maximum dimensions to plot
+#' @param maxDepth maximum tree depth
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -734,13 +735,13 @@ p.mclust <- function(dat, bic, truth = NULL, maxd = Inf, print = FALSE) {
 #' L <- p.hmclust(dat)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
+p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 
   dat <- as.matrix(dat)
   d <- ncol(dat)
   n <- nrow(dat)
  
-  dmax <- ifelse(d > maxd, maxd, d)
+  dmax <- ifelse(d > maxDim, maxDim, d)
 
   size <- max(min(1.5/log10(n), 1.25), 0.05)
 
@@ -795,6 +796,51 @@ p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
   invisible(outL)
 }
 
+#' Generate binary hierarchical mclust tree
+#'
+#' @param dat data 
+#' @param truth true labels if any
+#' @param maxDim maximum dimensions to plot
+#' @param maxDepth maximum tree depth
+#'
+#' @return binary hierarchical mclust classification output
+#' @details BIC is run for k = {1,2}, if k = 2 then each node is
+#' propagated down the tree.  If k = 1, then that node is frozen. 
+#' If a singleton exists, the level takes a step back. 
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- iris[,5]
+#' L <- p.hmc(dat, truth = truth)
+#' @export 
+### Binary Hierarchical Mclust Classifications 
+p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
+
+  d <- dim(dat)[2]
+  n <- dim(dat)[1]
+
+  size <- max(min(1.5/log10(n), 1.25), 0.05)
+  shape <- if(!is.null(truth)){ 
+    as.numeric(factor(truth))
+  } else {
+    20
+  }
+
+  dmax <- ifelse(d > maxDim, maxDim, d)
+
+  L <- hmcTree(dat, maxDepth)
+
+  print("Fraction of points in each cluster:")
+  print(table(L$labels$col)/length(L$labels$col))
+
+  pairs(dat[, 1:dmax], 
+        pch = shape, 
+        col =  L$labels$col, 
+        cex = size, 
+        main = "Color is classification; if present, shape is truth"
+        )
+  invisible(L)
+}
+
 #' Generate cluster parameter plots
 #'
 #' @param modMeans means from a model (clusters in columns)
@@ -812,8 +858,14 @@ p.hmclust <- function(dat, truth = NULL, maxd = Inf) {
 #' @export 
 ### Model Parameter Plots
 p.clusterMeans <- function(modMeans, ccol = "black") {
-  means <- modMeans
-  colnames(means) <- paste0("C", 1:ncol(means))
+  means <- as.matrix(modMeans)
+  colnames(means) <- 
+    if(!is.null(colnames(means))){
+      as.factor(colnames(means))
+    } else {
+      as.factor(paste0("C", 1:ncol(means)))
+    }
+
   d1 <- melt(means)
 
   g1 <- ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
@@ -845,6 +897,8 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
 #' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
+#' tryCatch(mdh <- p.hmc(dat, truth = truth))
+#' tryCatch(mdh <- p.hmcTree(dat, truth = truth))
 #' modSigma <- md1$parameters$variance$sigma
 #' p.clusterCov(modSigma)
 #' tryCatch(L <- p.hmclust(datLog, truth = truth))
@@ -853,8 +907,8 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
 #' @export 
 ### Cluster Covariance Plots
 p.clusterCov <- function(modSigma, ccol = "black") {
-  ccov <- modSigma
   
+  ccov <- modSigma
   m1 <- melt(ccov)
   m1$Var2 <- ordered(m1$Var2, levels = rev(levels(m1$Var1)))
   m1$Var3 <- factor(sprintf("Cluster_%02d", m1$Var3))

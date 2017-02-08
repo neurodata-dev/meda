@@ -17,7 +17,7 @@
 #' mu <- c(-10,-5,5,10,20)
 #' set.seed(391857)
 #' test <- rnorm(length(Z), mean = mu[Z], sd = 1)
-#' L <- hmc(test)
+#' L <- hmc(test, maxit = Inf)
 #' plot(cbind(test,0), col = Z)
 #' for(i in 2:dim(L)[2]){
 #'  points(cbind(test,i/dim(L)[2]), col=L[,i])
@@ -29,20 +29,20 @@
 #'             x = rnorm(length(Z), mean = mu2d[Z,1], sd = 1),
 #'             y = rnorm(length(Z), mean = mu2d[Z,2], sd = 1))
 #'
-#' L <- hmc(test2d)
+#' L <- hmc(test2d, maxit = 100)
 #' plot(test2d, col = L[, dim(L)[2]], pch = Z)
 #' 
 #' @export
 
 
 
-hmc <- function(dat, maxit = Inf){
+hmc <- function(dat, maxit = 100){
   hmc1 <- function(dat){
     L <- data.frame(continue = rep(TRUE, length(dat)), lab = rep(1, length(dat)))
   
     it <- 0
     
-    while(any(L$continue == TRUE) || it < maxit){
+    while(any(L$continue == TRUE) | it < maxit){
       tmp <- L[, dim(L)[2]]
       for(i in sort(unique(L[,dim(L)[2]][L$continue == TRUE]))){
 
@@ -78,7 +78,7 @@ hmc <- function(dat, maxit = Inf){
     L <- data.frame(continue = rep(TRUE, nrow(dat)), lab = rep(1, nrow(dat)))
   
     it <- 0
-    while(any(L$continue == TRUE) || it > maxit){
+    while(any(L$continue == TRUE) | it > maxit){
       tmp <- L[, dim(L)[2]]
       for(i in sort(unique(L[,dim(L)[2]][L$continue == TRUE]))){
 
