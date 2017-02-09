@@ -30,11 +30,17 @@ The following are preliminary runs of the R package
 synaptome data with different transformations applied to 
 the data prior to analysis.
 
+#### Run on 1000 sample points with seed 1234 from the total ~1.1e6 points
 - [Raw](http://docs.neurodata.io/meda/examples/Kristina15/Raw/SynDataRaw.html)
 - [Log_10](http://docs.neurodata.io/meda/examples/Kristina15/Log10/SynDataLog10.html)
 - [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Kristina15/01e3/SynData01e3.html)  
 - [HeatMaps](http://docs.neurodata.io/meda/examples/HeatMaps.html)  
 - [Shapes](http://nbviewer.jupyter.org/github/neurodata/non-parametric-clustering/blob/master/procrustes_clustering/notebooks/procrustes_clustering.ipynb)
+
+#### Run on 10000 sample points with seed 317 from the total ~1.1e6 points
+- [Raw](http://docs.neurodata.io/meda/examples/K15_1e4/Raw/SynDataRaw.html)
+- [Log_10](http://docs.neurodata.io/meda/examples/K15_1e4/Log10/SynDataLog10.html)
+- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/K15_1e4/01e3/SynData01e3.html)  
 
 ### Weiler Dataset (Ex10R55 -- Chessboard)
 The following are preliminary runs of the R package 
@@ -42,6 +48,12 @@ The following are preliminary runs of the R package
 synaptome data with different transformations applied to 
 the data prior to analysis.
 
+#### Run on 1000 sample points with seed 317 from the total ~190,000 points
 - [Raw](http://docs.neurodata.io/meda/examples/Weiler/Raw/Ex10R55_Raw.html)
 - [Log_10](http://docs.neurodata.io/meda/examples/Weiler/Log10/Ex10R55_Log10.html)
 - [Scaled 0-1000](http://docs.neurodata.io/meda/examples/Weiler/01e3/Ex10R55_01e3.html)  
+
+#### Run on 10000 sample points with seed 1234 from the total ~190,000 points
+- [Raw](http://docs.neurodata.io/meda/examples/W_1e4/Raw/Ex10R55_Raw.html)
+- [Log_10](http://docs.neurodata.io/meda/examples/W_1e4/Log10/Ex10R55_Log10.html)
+- [Scaled 0-1000](http://docs.neurodata.io/meda/examples/W_1e4/01e3/Ex10R55_01e3.html)  
