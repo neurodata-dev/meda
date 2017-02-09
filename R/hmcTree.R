@@ -14,7 +14,7 @@
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
-#' hmcL <- hmcTree(dat)
+#' L <- hmcTree(dat)
 #' plot(as.dendrogram(L))
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
@@ -96,11 +96,13 @@ hmcTree <- function(dat, maxDepth = 6){
   n <- lapply(n, as.numeric)
   m <- node$Get('model')
 
-  g <- node$Get("mean", "level", format = list)
-  means <- data.frame(g)[,-1]
+  #g <- node$Get("mean", "level", format = list)
+  g <- node$Get("mean", "level", format = list, filterFun = isLeaf)
+  means <- data.frame(g)
   colnames(means) <- gsub("X", "C", colnames(means))
 
-  h <- node$Get("cov", "level", format = list)[-1]
+  #h <- node$Get("cov", "level", format = list)[-1]
+  h <- node$Get("cov", "level", format = list, filterFun = isLeaf)
   mn <- melt(n)
   mn$L1 <- as.factor(mn$L1)
   mn$col <- as.numeric(mn$L1)

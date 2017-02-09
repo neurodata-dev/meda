@@ -166,7 +166,16 @@ The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
 ```{r meda-cmeans}
 #tryCatch(param <- p.clusterMeans(hmcL$mean, ccol = colCol))
 tryCatch(param <- p.clusterMeans(hmcL$means, ccol = colCol))
-grid.arrange(param[[1]], param[[2]], ncol = 2)
+#grid.arrange(param[[1]], param[[2]], ncol = 2)
+param[[1]]
+param[[2]]
+```
+
+## Cluster Dendrogram 
+
+The dendrogram from hierarchical mclust.
+```{r meda-dendro}
+plot(as.dendrogram(hmcL))
 ```
 
 ## HMClust output: Cluster covariance matrices

@@ -21,9 +21,11 @@ Generate cluster parameter plots
 dat <- iris[, -5]
 out <- p.bic(dat)
 truth <- iris[, 5]
-tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
-modMeans <- md1$parameters$mean 
-p <- p.clusterMeans(modMeans)
+L <- p.hmc(dat, truth = truth)
+p <- p.clusterMeans(L$means)
 grid.arrange(p[[1]], p[[2]], ncol = 2)
+grid.arrange(p[[1]], p[[2]], nrow = 2)
+p[[1]]
+p[[2]]
 }
 
