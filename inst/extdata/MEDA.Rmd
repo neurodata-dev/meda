@@ -175,14 +175,16 @@ param[[2]]
 ## Cluster Dendrogram 
 
 The dendrogram from hierarchical mclust.
+The default maxiumum tree depth is set to 6.
 ```{r meda-dendro}
 plot(as.dendrogram(hmcL), center = TRUE)
 round(hmcL$Get("num", filterFun=isLeaf), 4)
 ```
 
-## HMClust output: Cluster covariance matrices
+## HMClust output: Cluster correlation matrices
 ```{r meda-ccov, fig.height = 8 +ifelse(dim(hmcL$sigma)[3] %% 2==0,dim(hmcL$sigma)[3]- 2,dim(hmcL$sigma)[3])}
-tryCatch(p.clusterCov(hmcL$sigma, ccol = colCol))
+#tryCatch(p.clusterCov(hmcL$sigma, ccol = colCol))
+tryCatch(p.clusterCov(hmcL$cor, ccol = colCol))
 ```
 
 

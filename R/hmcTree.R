@@ -15,11 +15,12 @@
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
+#' L <- hmcTree(tmp)
 #' plot(as.dendrogram(L), center = TRUE)
-#' L$Get("level", "num")
+#' tryCatch(p.clusterCov(L$cor))
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-hmcTree <- function(dat, maxDepth = 10){
+hmcTree <- function(dat, maxDepth = 6){
   ## Helper function
   splitNode = function(node){
     if(!is.null(dim(node$data)) && 
@@ -34,18 +35,19 @@ hmcTree <- function(dat, maxDepth = 10){
          dat2 <- node$data[mc$classification == 2,]
 
          node$AddChild(paste0(node$name, "1"), 
-                       data = dat1, dataid = rownames(dat1), 
-                       continue = TRUE,
-                       num = dim(dat1)[1]/tot,
-                       mean = mc$parameters$mean[,1], 
-                       cov = mc$parameters$variance$sigma[,,1]
-                       )
+           data = dat1, dataid = rownames(dat1), 
+           continue = TRUE,
+           num = dim(dat1)[1]/tot,
+           mean = mc$parameters$mean[,1], 
+           cov = mc$parameters$variance$sigma[,,1],
+           cor = cov2cor(mc$parameters$variance$sigma[,,1]))
+#
          node$AddChild(paste0(node$name, "2"), 
-                       data = dat2, dataid = rownames(dat2), continue = TRUE,
-                       num = dim(dat2)[1]/tot,
-                       mean = mc$parameters$mean[,2], 
-                       cov = mc$parameters$variance$sigma[,,2]
-                       )
+           data = dat2, dataid = rownames(dat2), continue = TRUE,
+           num = dim(dat2)[1]/tot,
+           mean = mc$parameters$mean[,2], 
+           cov = mc$parameters$variance$sigma[,,2],
+           cor = cov2cor(mc$parameters$variance$sigma[,,2]))
        } else {
          node$continue = FALSE
        }
@@ -69,13 +71,15 @@ hmcTree <- function(dat, maxDepth = 10){
                        continue = TRUE,
                        num = length(dat1)/tot,
                        mean = mc$parameters$mean[1], 
-                       cov = mc$parameters$variance$sigma[1]
+                       cov = mc$parameters$variance$sigma[1],
+                       cor = cov2cor(mc$parameters$variance$sigma[1])
                        )
          node$AddChild(paste0(node$name, "2"), 
                        data = dat2, dataid = rownames(dat1), continue = TRUE,
                        num = length(dat2)/tot,
                        mean = mc$parameters$mean[2], 
-                       cov = mc$parameters$variance$sigma[2]
+                       cov = mc$parameters$variance$sigma[2],
+                       cor = cov2cor(mc$parameters$variance$sigma[2])
                        )
        } else {
          node$continue = FALSE
@@ -121,10 +125,13 @@ hmcTree <- function(dat, maxDepth = 10){
   mn$L1 <- as.factor(mn$L1)
   mn$col <- as.numeric(mn$L1)
 
+  k <- node$Get("cor", "level", format = list, filterFun = isLeaf)
+
   outLabels <- mn[order(mn$value), ]
 
   node$means <- means
   node$sigma <- abind(h, along = 3)
+  node$cor <- abind(k, along = 3)
   node$labels <- outLabels
 
   return(node)
