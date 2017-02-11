@@ -134,13 +134,14 @@ The Bayesian Information Criterion is used to select the model
 parameters for Mclust. 
 
 1. [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion)
+2. [List of mclustModelNames p.88](https://cran.r-project.org/web/packages/mclust/mclust.pdf)
 
 ```{r meda-bic}
 out <- p.try(p.bic, dat)
 ```
 
 ## Binary Hierarhical Mclust classifications
-```{r meda-hmclust}
+```{r meda-hmcTree}
 #tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxDim = 8))
 tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8))
 ```
@@ -175,7 +176,8 @@ param[[2]]
 
 The dendrogram from hierarchical mclust.
 ```{r meda-dendro}
-plot(as.dendrogram(hmcL))
+plot(as.dendrogram(hmcL), center = TRUE)
+round(hmcL$Get("num", filterFun=isLeaf), 4)
 ```
 
 ## HMClust output: Cluster covariance matrices

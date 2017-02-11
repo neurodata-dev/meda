@@ -4,7 +4,7 @@
 \alias{p.hmc}
 \title{Generate binary hierarchical mclust tree}
 \usage{
-p.hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6)
+p.hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 10)
 }
 \arguments{
 \item{dat}{data}
@@ -28,7 +28,7 @@ If a singleton exists, the level takes a step back.
 }
 \examples{
 dat <- iris[, -5]
-truth <- iris[,5]
+truth <- NULL #iris[,5]
 L <- p.hmc(dat, truth = truth)
 }
 

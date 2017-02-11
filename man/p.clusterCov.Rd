@@ -19,15 +19,9 @@ Generate cluster covariance plots
 }
 \examples{
 dat <- iris[, -5]
-out <- p.bic(dat)
 truth <- iris[, 5]
-tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 tryCatch(mdh <- p.hmc(dat, truth = truth))
-tryCatch(mdh <- p.hmcTree(dat, truth = truth))
-modSigma <- md1$parameters$variance$sigma
-p.clusterCov(modSigma)
-tryCatch(L <- p.hmclust(datLog, truth = truth))
-p.clusterCov(modSigma)
+
 
 }
 

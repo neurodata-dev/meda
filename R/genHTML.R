@@ -809,11 +809,11 @@ p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' If a singleton exists, the level takes a step back. 
 #' @examples
 #' dat <- iris[, -5]
-#' truth <- iris[,5]
+#' truth <- NULL #iris[,5]
 #' L <- p.hmc(dat, truth = truth)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
+p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 10) {
 
   d <- dim(dat)[2]
   n <- dim(dat)[1]
@@ -898,15 +898,9 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
 #' @return heatmap and line plot of cluster means
 #' @examples
 #' dat <- iris[, -5]
-#' out <- p.bic(dat)
 #' truth <- iris[, 5]
-#' tryCatch(md1 <- p.mclust(out$dat, out$bicO, truth = truth))
 #' tryCatch(mdh <- p.hmc(dat, truth = truth))
-#' tryCatch(mdh <- p.hmcTree(dat, truth = truth))
-#' modSigma <- md1$parameters$variance$sigma
-#' p.clusterCov(modSigma)
-#' tryCatch(L <- p.hmclust(datLog, truth = truth))
-#' p.clusterCov(modSigma)
+#' 
 #' 
 #' @export 
 ### Cluster Covariance Plots

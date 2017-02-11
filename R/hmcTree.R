@@ -15,30 +15,37 @@
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
-#' plot(as.dendrogram(L))
+#' plot(as.dendrogram(L), center = TRUE)
+#' L$Get("level", "num")
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-hmcTree <- function(dat, maxDepth = 6){
+hmcTree <- function(dat, maxDepth = 10){
   ## Helper function
   splitNode = function(node){
-    if(node$continue == TRUE && isLeaf(node)){
+    if(!is.null(dim(node$data)) && 
+       dim(node$data)[1] > 5 && 
+       node$continue == TRUE && 
+       isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
        mc <- Mclust(node$data, x = b)
+       node$model <- mc
        if(mc$G == 2){
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 
          node$AddChild(paste0(node$name, "1"), 
-                       data = dat1, dataid = rownames(dat1), continue = TRUE,
+                       data = dat1, dataid = rownames(dat1), 
+                       continue = TRUE,
+                       num = dim(dat1)[1]/tot,
                        mean = mc$parameters$mean[,1], 
                        cov = mc$parameters$variance$sigma[,,1]
                        )
          node$AddChild(paste0(node$name, "2"), 
                        data = dat2, dataid = rownames(dat2), continue = TRUE,
+                       num = dim(dat2)[1]/tot,
                        mean = mc$parameters$mean[,2], 
                        cov = mc$parameters$variance$sigma[,,2]
                        )
-         node$model = mc
        } else {
          node$continue = FALSE
        }
@@ -46,24 +53,30 @@ hmcTree <- function(dat, maxDepth = 6){
   } ## END splitNode
 
   splitNode1 = function(node){
-    if(node$continue == TRUE && isLeaf(node)){
+    if(!is.null(dim(node$data)) && 
+       dim(node$data)[1] > 5 && 
+       node$continue == TRUE && 
+       isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
        mc <- Mclust(node$data, x = b)
+       node$model <- mc
        if(mc$G == 2){
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 
          node$AddChild(paste0(node$name, "1"), 
-                       data = dat1, dataid = rownames(dat2), continue = TRUE,
+                       data = dat1, dataid = rownames(dat2), 
+                       continue = TRUE,
+                       num = length(dat1)/tot,
                        mean = mc$parameters$mean[1], 
                        cov = mc$parameters$variance$sigma[1]
                        )
          node$AddChild(paste0(node$name, "2"), 
                        data = dat2, dataid = rownames(dat1), continue = TRUE,
+                       num = length(dat2)/tot,
                        mean = mc$parameters$mean[2], 
                        cov = mc$parameters$variance$sigma[2]
                        )
-         node$model = mc
        } else {
          node$continue = FALSE
        }
@@ -71,13 +84,14 @@ hmcTree <- function(dat, maxDepth = 6){
   } ## END splitNode1
 
   dat <- as.data.frame(dat)
+  tot <- dim(dat)[1]
   dataid <- if(!is.null(rownames(dat))){ 
               rownames(dat) 
               } else { 
                 1:dim(dat)[1] 
               }
 
-  node <- Node$new("1", data = dat, dataid = rownames(dat), continue = TRUE, model = NULL)
+  node <- Node$new("1", data = dat, dataid = rownames(dat), continue = TRUE, model = NULL, num = tot/tot)
 
   if(is.null(dim(dat)) || dim(dat)[2] == 1){
     while(node$height < maxDepth && 
