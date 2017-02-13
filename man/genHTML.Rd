@@ -43,23 +43,25 @@ RMarkdown. "There is no excuse for failing to plot and look." ~ J. W.
 Tukey (Exploratory Data Analysis, p 43)
 }
 \examples{
-require(meda)
-dat <- iris[, -5]
-truth <- as.numeric(iris[, 5])
-featCol <- c("red", "purple", "darkgreen")
-## p.heat(dat)
-p.1dheat(dat)
-## p.violin(dat)
-p.outlier(dat)
-do.call(corrplot, p.cor(dat))
-p.cumvar(dat)
-p.cumvar(cor(dat))
-p.pairs(dat)
-out <- p.bic(dat)
-mc1 <- p.mclust(out$dat, out$bicO)
-p <- p.clusterMeans(mc1); grid.arrange(p[[1]], p[[2]], ncol = 2)
-p.hmclust(dat, truth = iris[,5]) 
-
+#require(meda)
+#dat <- iris[, -5]
+#truth <- as.numeric(iris[, 5])
+#featCol <- c("red", "purple", "darkgreen")
+### p.heat(dat)
+#p <- p.location(dat)
+#grid.arrange(p[[1]], p[[2]], ncol = 2)
+#p.1dheat(dat)
+#p.outlier(dat)
+#do.call(corrplot, p.cor(dat))
+#p.pairs(dat)
+#out <- p.bic(dat)
+#L <- p.hmc(dat)
+#p <- p.clusterMeans(L$means)
+#grid.arrange(p[[1]], p[[2]], ncol = 2)
+#p.clusterCov(L$cor)
+#p.cumvar(dat)
+#p <- p.rsv(dat); p[[1]]; p[[2]]
+#p.3dpca(dat)
 }
 \seealso{
 \code{\link[rmarkdown]{render}}

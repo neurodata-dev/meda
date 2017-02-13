@@ -1,6 +1,6 @@
 #' Generate a binary hierarchical mclust tree
 #'
-#' @param data a data matrix
+#' @param dat a data matrix
 #' @param maxDepth maximum tree depth
 #'
 #' @return binary hierarchical mclust classification output
@@ -15,9 +15,7 @@
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
-#' L <- hmcTree(tmp)
 #' plot(as.dendrogram(L), center = TRUE)
-#' tryCatch(p.clusterCov(L$cor))
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 hmcTree <- function(dat, maxDepth = 6){

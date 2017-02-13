@@ -4,12 +4,14 @@
 \alias{p.3dpca}
 \title{Generate 3D pca of correlation matrix}
 \usage{
-p.3dpca(dat, colCol = NULL)
+p.3dpca(dat, colCol = NULL, web = TRUE)
 }
 \arguments{
 \item{dat}{data}
 
 \item{colCol}{colors for the columns of the data matrix}
+
+\item{web}{boolean for plotting in a rglwidget.}
 }
 \value{
 a 3d scatter plot of first three PCs.
@@ -21,6 +23,6 @@ Generate 3D pca of correlation matrix
 dat <- iris[, -5]
 truth <- iris[, 5]
 colCol <- c("red", "green", "blue", "purple")
-p.3dpca(dat, colCol)
+p.3dpca(dat, colCol, web = FALSE)
 }
 

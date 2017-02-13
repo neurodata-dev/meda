@@ -15,8 +15,4 @@ Summary Histogram
 \description{
 Summary of data types
 }
-\examples{
-dat <- iris[, -5]
-
-}
 

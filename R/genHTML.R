@@ -36,23 +36,25 @@
 #' @import rCUR
 #'
 #' @examples
-#' require(meda)
-#' dat <- iris[, -5]
-#' truth <- as.numeric(iris[, 5])
-#' featCol <- c("red", "purple", "darkgreen")
-#' ## p.heat(dat)
-#' p.1dheat(dat)
-#' ## p.violin(dat)
-#' p.outlier(dat)
-#' do.call(corrplot, p.cor(dat))
-#' p.cumvar(dat)
-#' p.cumvar(cor(dat))
-#' p.pairs(dat)
-#' out <- p.bic(dat)
-#' mc1 <- p.mclust(out$dat, out$bicO)
-#' p <- p.clusterMeans(mc1); grid.arrange(p[[1]], p[[2]], ncol = 2)
-#' p.hmclust(dat, truth = iris[,5]) 
-#' 
+#' #require(meda)
+#' #dat <- iris[, -5]
+#' #truth <- as.numeric(iris[, 5])
+#' #featCol <- c("red", "purple", "darkgreen")
+#' ### p.heat(dat)
+#' #p <- p.location(dat)
+#' #grid.arrange(p[[1]], p[[2]], ncol = 2)
+#' #p.1dheat(dat)
+#' #p.outlier(dat)
+#' #do.call(corrplot, p.cor(dat))
+#' #p.pairs(dat)
+#' #out <- p.bic(dat)
+#' #L <- p.hmc(dat)
+#' #p <- p.clusterMeans(L$means)
+#' #grid.arrange(p[[1]], p[[2]], ncol = 2)
+#' #p.clusterCov(L$cor)
+#' #p.cumvar(dat)
+#' #p <- p.rsv(dat); p[[1]]; p[[2]]
+#' #p.3dpca(dat)
 #' @export
 
 
@@ -102,9 +104,6 @@ genHTML <- function(x, outfile, outdir,
 #' @param dat data
 #'
 #' @return Summary Histogram
-#' 
-#' @examples
-#' dat <- iris[, -5]
 #' 
 #' @export 
 
@@ -230,9 +229,7 @@ p.try <- function(FUN, dat, use.plotly = NULL) {
 #' @examples
 #' dat <- iris[, -5]
 #' l1 <- p.location(dat)
-#' l2 <- p.location(dat, ccol)
 #' grid.arrange(l1[[1]],l1[[2]], ncol = 2)
-#' grid.arrange(l2[[1]],l2[[2]], ncol = 2)
 #' @export 
 
 ### Location Estimates 
@@ -354,7 +351,7 @@ p.violin <- function(dat, use.plotly, ...) {
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' p.1dheat(dat, ccol = ccol)
+#' p.1dheat(dat)
 #'
 #' @export 
 ### 1D heatmap
@@ -416,9 +413,6 @@ p.cor <- function(dat, colCol = NULL) {
 #' @import foreach
 #' @importFrom energy dcor.ttest
 #' 
-#' @examples 
-#' dat <- iris[, -5]
-#' colCol <- c("darkgreen", "red", "green", "red")
 #' @export 
 ### Correlation plots 
 p.energy <- function(dat, colCol = NULL) {
@@ -470,6 +464,10 @@ p.energy <- function(dat, colCol = NULL) {
 #' @import ggplot2
 #' @importFrom randomForest randomForest outlier
 #' @importFrom rflann Neighbour
+#' 
+#' @examples
+#' dat <- iris[, -5]
+#' p.outlier(dat)
 #' @export 
 ### Outlier plots
 p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
@@ -548,6 +546,10 @@ p.outlier <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 #' \url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
 #' @import ggplot2
 #' @importFrom stats prcomp
+#' 
+#' @examples
+#' dat <- iris[, -5]
+#' p.cumvar(dat)
 #' @export 
 ### Cumulative variance
 p.cumvar <- function(dat){
@@ -813,7 +815,7 @@ p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' L <- p.hmc(dat, truth = truth)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 10) {
+p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 
   d <- dim(dat)[2]
   n <- dim(dat)[1]
@@ -849,14 +851,10 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 10) {
 #' @return heatmap and line plot of cluster means
 #' @examples
 #' dat <- iris[, -5]
-#' out <- p.bic(dat)
 #' truth <- iris[, 5]
 #' L <- p.hmc(dat, truth = truth)
 #' p <- p.clusterMeans(L$means)
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
-#' grid.arrange(p[[1]], p[[2]], nrow = 2)
-#' p[[1]]
-#' p[[2]]
 #' @export 
 ### Model Parameter Plots
 p.clusterMeans <- function(modMeans, ccol = "black") {
@@ -890,7 +888,7 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
   invisible(out)
 } ### END p.clusterMeans
 
-#' Generate cluster covariance plots
+#' Generate cluster covariance/correlation plots
 #'
 #' @param modSigma mclust output
 #' @param ccol feature colors
@@ -899,8 +897,8 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
-#' tryCatch(mdh <- p.hmc(dat, truth = truth))
-#' 
+#' invisible(mdh <- p.hmc(dat, truth = truth))
+#' p.clusterCov(mdh$cor)
 #' 
 #' @export 
 ### Cluster Covariance Plots
@@ -1045,6 +1043,7 @@ p.rsv <- function(dat, ccol = "black", maxd = Inf) {
 #'
 #' @param dat data 
 #' @param colCol colors for the columns of the data matrix
+#' @param web boolean for plotting in a rglwidget. 
 #'
 #' @return a 3d scatter plot of first three PCs.
 #'
@@ -1057,10 +1056,10 @@ p.rsv <- function(dat, ccol = "black", maxd = Inf) {
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' colCol <- c("red", "green", "blue", "purple")
-#' p.3dpca(dat, colCol)
+#' p.3dpca(dat, colCol, web = FALSE)
 #' @export 
 ### 3D pca
-p.3dpca <- function(dat, colCol = NULL) {
+p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 
   dat <- as.matrix(dat)
   cor <- cor(dat)
@@ -1083,8 +1082,10 @@ p.3dpca <- function(dat, colCol = NULL) {
                  abbreviate(rownames(pca)),
                  adj=c(0,2))
 
+  if(web){
   subid <- currentSubscene3d()
   rglwidget(elementId="rgl-pca0",width=720,height=720)
+  }
   
 } ## END p.3dpca
 

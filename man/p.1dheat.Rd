@@ -25,7 +25,7 @@ plotted as a geom_tile object.
 }
 \examples{
 dat <- iris[, -5]
-p.1dheat(dat, ccol = ccol)
+p.1dheat(dat)
 
 }
 

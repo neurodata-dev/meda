@@ -37,6 +37,9 @@
 
 
 hmc <- function(dat, maxit = 100){
+  if(is.infinite(maxit)){
+    maxit <- 100
+  }
   hmc1 <- function(dat){
     L <- data.frame(continue = rep(TRUE, length(dat)), lab = rep(1, length(dat)))
   

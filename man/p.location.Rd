@@ -20,8 +20,6 @@ Generate location estimates
 \examples{
 dat <- iris[, -5]
 l1 <- p.location(dat)
-l2 <- p.location(dat, ccol)
 grid.arrange(l1[[1]],l1[[2]], ncol = 2)
-grid.arrange(l2[[1]],l2[[2]], ncol = 2)
 }
 

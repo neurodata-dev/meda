@@ -24,4 +24,8 @@ For sample size <= 1e4 an outlier measure is calculated from the
 randomForest package, points with measure greater than 3 sd from the
 mean are considred outliers.  Need to add case for n > 1e4.
 }
+\examples{
+dat <- iris[, -5]
+p.outlier(dat)
+}
 

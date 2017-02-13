@@ -21,8 +21,4 @@ Generate an energy distance heatmap
 Takes a random sample of 1000 rows and computes
   energy statistics with p-values.
 }
-\examples{
-dat <- iris[, -5]
-colCol <- c("darkgreen", "red", "green", "red")
-}
 

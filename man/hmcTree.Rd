@@ -7,9 +7,9 @@
 hmcTree(dat, maxDepth = 6)
 }
 \arguments{
-\item{maxDepth}{maximum tree depth}
+\item{dat}{a data matrix}
 
-\item{data}{a data matrix}
+\item{maxDepth}{maximum tree depth}
 }
 \value{
 binary hierarchical mclust classification output
@@ -25,8 +25,6 @@ propagated down the tree.  If k = 1, then that node is frozen.
 dat <- iris[, -5]
 truth <- iris[, 5]
 L <- hmcTree(dat)
-L <- hmcTree(tmp)
 plot(as.dendrogram(L), center = TRUE)
-tryCatch(p.clusterCov(L$cor))
 }
 

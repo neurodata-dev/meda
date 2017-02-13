@@ -2,7 +2,6 @@
 
 export(bhkmpp)
 export(comp)
-export(dat)
 export(genHTML)
 export(hmc)
 export(hmcTree)

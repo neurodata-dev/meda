@@ -19,4 +19,8 @@ Generate a cumulative variance plot
 Uses getElbows from
 \url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
 }
+\examples{
+dat <- iris[, -5]
+p.cumvar(dat)
+}
 

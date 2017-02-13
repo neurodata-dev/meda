@@ -2,7 +2,7 @@
 % Please edit documentation in R/genHTML.R
 \name{p.clusterCov}
 \alias{p.clusterCov}
-\title{Generate cluster covariance plots}
+\title{Generate cluster covariance/correlation plots}
 \usage{
 p.clusterCov(modSigma, ccol = "black")
 }
@@ -15,13 +15,13 @@ p.clusterCov(modSigma, ccol = "black")
 heatmap and line plot of cluster means
 }
 \description{
-Generate cluster covariance plots
+Generate cluster covariance/correlation plots
 }
 \examples{
 dat <- iris[, -5]
 truth <- iris[, 5]
-tryCatch(mdh <- p.hmc(dat, truth = truth))
-
+invisible(mdh <- p.hmc(dat, truth = truth))
+p.clusterCov(mdh$cor)
 
 }
 
