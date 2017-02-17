@@ -1125,7 +1125,7 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' @importFrom ggplot2 ggplot
 #'
 #' @export 
-p.stackM <- function(tree, ccol = colCol, centered = FALSE){
+p.stackM <- function(tree, ccol = "black", centered = FALSE){
   node <- Clone(tree)
 
   node$Set(nlevel = node$Get('level'))
@@ -1169,12 +1169,18 @@ p.stackM <- function(tree, ccol = colCol, centered = FALSE){
   ggd <- data.frame(mt,gd)
   ggd$gd <- factor(gd, levels = rev(levels(gd)), ordered = TRUE)
 
+  #pal <- rainbow(255, start = 0,end = 0.5, v = 0.5, s = 0.8)
+  pal <- colorpanel(255, "black", "pink")
+  pal <- colorpanel(255, "darkorchid4", "gray99", "darkgreen")
+
   p <- 
     ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 
-         scale_fill_gradient2() + 
+         #scale_fill_gradient2() + 
+         #scale_fill_viridis() + 
+         scale_fill_gradientn(colours = pal) + 
          geom_tile() + 
          theme(axis.title = element_blank(),
-               axis.text.y = element_text(color = ccol))
+               axis.text.y = element_text(color = rev(ccol)))
 
   return(p)
 } ## END p.stackM

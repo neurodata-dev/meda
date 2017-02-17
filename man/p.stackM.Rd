@@ -4,7 +4,7 @@
 \alias{p.stackM}
 \title{Generate stacked level mean plot}
 \usage{
-p.stackM(tree, ccol = colCol, centered = FALSE)
+p.stackM(tree, ccol = "black", centered = FALSE)
 }
 \arguments{
 \item{tree}{the hmcTree object}
