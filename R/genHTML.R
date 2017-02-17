@@ -14,6 +14,7 @@
 #' the true classes of the data.
 #' @param colCol an n length vector of column colors.
 #' @param colRow an n length vector of column colors.
+#' @param center boolean to center feature columns
 #' 
 #' @return An html document via RMarkdown.
 #'
@@ -61,13 +62,13 @@
 genHTML <- function(x, outfile, outdir,  
                     scale = FALSE, dmethod = "cur", 
                     nmethod = "cur", truth = NULL, 
-                    colCol = NULL, colRow = NULL) {
+                    colCol = NULL, colRow = NULL, center) {
 
   outdir <- outdir
   use.plotly <- FALSE ## Remove this later
 
-  if(scale){
-    dat <- scale(x, center = TRUE, scale = TRUE) 
+  if(center){
+    dat <- scale(x, center = TRUE, scale = FALSE) 
   } else {
     dat <- as.matrix(x)
   }
@@ -807,7 +808,7 @@ p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' @export 
 ### Model Parameter Plots
 p.dend <- function(tree) {
-  dend <- as.dendrogram(tree)
+  dend <- as.dendrogram(Sort(tree, "name"))
   num <- tree$Get("num")
 
   dend <- dend %>%
@@ -1116,19 +1117,23 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' Generate stacked level mean plot
 #'
 #' @param tree the hmcTree object
+#' @param ccol colors for feature labels
+#' @param centered boolen that skips level one if data was centered
 #'
 #' @return a stacked level mean plot
 #'
 #' @importFrom ggplot2 ggplot
 #'
 #' @export 
-p.stackM <- function(tree){
+p.stackM <- function(tree, ccol = colCol, centered = FALSE){
   node <- Clone(tree)
-  
+
   node$Set(nlevel = node$Get('level'))
+
+  iStart <- if(centered){ 2 } else { 1 }
   
   M <- list()
-  for(i in 1:node$height){
+  for(i in iStart:node$height){
     travi <- Traverse(node, filterFun = function(x) x$nlevel == i)
   
     gi <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
@@ -1164,12 +1169,12 @@ p.stackM <- function(tree){
   ggd <- data.frame(mt,gd)
   ggd$gd <- factor(gd, levels = rev(levels(gd)), ordered = TRUE)
 
-  pal <- rev(rainbow(255, start=0, end = 0.7))
-
   p <- 
     ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 
-         scale_fill_gradientn(colours = pal) + 
-         geom_tile() + theme(axis.title = element_blank())
+         scale_fill_gradient2() + 
+         geom_tile() + 
+         theme(axis.title = element_blank(),
+               axis.text.y = element_text(color = ccol))
 
   return(p)
 } ## END p.stackM

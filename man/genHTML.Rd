@@ -5,7 +5,7 @@
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
 genHTML(x, outfile, outdir, scale = FALSE, dmethod = "cur",
-  nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL)
+  nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL, center)
 }
 \arguments{
 \item{x}{data}
@@ -30,6 +30,8 @@ the true classes of the data.}
 \item{colCol}{an n length vector of column colors.}
 
 \item{colRow}{an n length vector of column colors.}
+
+\item{center}{boolean to center feature columns}
 }
 \value{
 An html document via RMarkdown.

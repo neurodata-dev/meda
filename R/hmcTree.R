@@ -27,8 +27,9 @@ hmcTree <- function(dat, maxDepth = 6){
        isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
        mc <- Mclust(node$data, x = b)
-       node$model <- mc
-       if(mc$G == 2){
+       cont <- all(table(mc$classification) > 10)
+       if(mc$G == 2 && cont){
+         node$model <- mc
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 
@@ -66,8 +67,9 @@ hmcTree <- function(dat, maxDepth = 6){
        isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
        mc <- Mclust(node$data, x = b)
-       node$model <- mc
-       if(mc$G == 2){
+       cont <- all(table(mc$classification) > 10)
+       if(mc$G == 2 && cont){
+         node$model <- mc
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 

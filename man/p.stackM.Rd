@@ -4,10 +4,14 @@
 \alias{p.stackM}
 \title{Generate stacked level mean plot}
 \usage{
-p.stackM(tree)
+p.stackM(tree, ccol = colCol, centered = FALSE)
 }
 \arguments{
 \item{tree}{the hmcTree object}
+
+\item{ccol}{colors for feature labels}
+
+\item{centered}{boolen that skips level one if data was centered}
 }
 \value{
 a stacked level mean plot

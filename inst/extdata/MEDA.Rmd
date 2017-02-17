@@ -143,7 +143,7 @@ out <- p.try(p.bic, dat)
 ## Binary Hierarhical Mclust classifications
 ```{r meda-hmcTree}
 #tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxDim = 8))
-tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8))
+tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 5))
 ```
 
 ```{r meda-hmclustFULL, fig.show = "hide", dev = "pdf", fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
@@ -153,16 +153,29 @@ tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8))
     20
   }
 
-cols <- rainbow(length(unique(hmcL$labels$col)))
 pairs(dat, 
       pch = shape, 
-      col =  cols, 
+      col =  hmcL$labels$col, 
       cex = max(min(1.5/log10(dim(dat)[1]), 1.25), 0.05),
       main = "Color is classification; if present, shape is truth"
       )
 ```
 
 The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
+
+## Cluster Dendrogram 
+
+The dendrogram from hierarchical mclust.
+The default maxiumum tree depth is set to 6.
+```{r meda-dendro}
+tryCatch(p.dend(hmcL))
+```
+
+## HMClust output: Stacked Level Cluster means
+```{r meda-slcmeans}
+tryCatch(pslc <- p.stackM(hmcL, ccol = colCol, centered = center))
+print(pslc)
+```
 
 ## HMClust output: Cluster means
 ```{r meda-cmeans}
@@ -173,13 +186,6 @@ param[[1]]
 param[[2]]
 ```
 
-## Cluster Dendrogram 
-
-The dendrogram from hierarchical mclust.
-The default maxiumum tree depth is set to 6.
-```{r meda-dendro}
-tryCatch(p.dend(hmcL))
-```
 
 ## HMClust output: Cluster correlation matrices
 ```{r meda-ccov, fig.height = 8 +ifelse(dim(hmcL$sigma)[3] %% 2==0,dim(hmcL$sigma)[3]- 2,dim(hmcL$sigma)[3])}
