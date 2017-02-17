@@ -32,7 +32,14 @@ hmcTree <- function(dat, maxDepth = 6){
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 
-         node$AddChild(paste0(node$name, "1"), 
+         if(dim(dat1)[1] >= dim(dat2)[1]){
+           big <- "1"
+           little <- "2"
+         } else {
+           big <- "2"
+           little <- "1"
+         }
+         node$AddChild(paste0(node$name, big), 
            data = dat1, dataid = rownames(dat1), 
            continue = TRUE,
            num = dim(dat1)[1]/tot,
@@ -40,7 +47,7 @@ hmcTree <- function(dat, maxDepth = 6){
            cov = mc$parameters$variance$sigma[,,1],
            cor = cov2cor(mc$parameters$variance$sigma[,,1]))
 #
-         node$AddChild(paste0(node$name, "2"), 
+         node$AddChild(paste0(node$name, little), 
            data = dat2, dataid = rownames(dat2), continue = TRUE,
            num = dim(dat2)[1]/tot,
            mean = mc$parameters$mean[,2], 
@@ -64,7 +71,14 @@ hmcTree <- function(dat, maxDepth = 6){
          dat1 <- node$data[mc$classification == 1,]
          dat2 <- node$data[mc$classification == 2,]
 
-         node$AddChild(paste0(node$name, "1"), 
+         if(length(dat1) >= length(dat2)){
+           big <- "1"
+           little <- "2"
+         } else {
+           big <- "2"
+           little <- "1"
+         }
+         node$AddChild(paste0(node$name, big), 
                        data = dat1, dataid = rownames(dat2), 
                        continue = TRUE,
                        num = length(dat1)/tot,
@@ -72,7 +86,7 @@ hmcTree <- function(dat, maxDepth = 6){
                        cov = mc$parameters$variance$sigma[1],
                        cor = cov2cor(mc$parameters$variance$sigma[1])
                        )
-         node$AddChild(paste0(node$name, "2"), 
+         node$AddChild(paste0(node$name, little), 
                        data = dat2, dataid = rownames(dat1), continue = TRUE,
                        num = length(dat2)/tot,
                        mean = mc$parameters$mean[2], 
@@ -93,7 +107,11 @@ hmcTree <- function(dat, maxDepth = 6){
                 1:dim(dat)[1] 
               }
 
-  node <- Node$new("1", data = dat, dataid = rownames(dat), continue = TRUE, model = NULL, num = tot/tot)
+  node <- Node$new("", data = dat, 
+                   dataid = rownames(dat), 
+                   continue = TRUE, model = NULL, 
+                   mean = apply(dat, 2, mean),
+                   num = tot/tot)
 
   if(is.null(dim(dat)) || dim(dat)[2] == 1){
     while(node$height < maxDepth && 

@@ -153,9 +153,10 @@ tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8))
     20
   }
 
+cols <- rainbow(length(unique(hmcL$labels$col)))
 pairs(dat, 
       pch = shape, 
-      col =  hmcL$labels$col, 
+      col =  cols, 
       cex = max(min(1.5/log10(dim(dat)[1]), 1.25), 0.05),
       main = "Color is classification; if present, shape is truth"
       )
@@ -177,8 +178,7 @@ param[[2]]
 The dendrogram from hierarchical mclust.
 The default maxiumum tree depth is set to 6.
 ```{r meda-dendro}
-plot(as.dendrogram(hmcL), center = TRUE)
-round(hmcL$Get("num", filterFun=isLeaf), 4)
+tryCatch(p.dend(hmcL))
 ```
 
 ## HMClust output: Cluster correlation matrices

@@ -798,6 +798,26 @@ p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
   invisible(outL)
 }
 
+#' Generate dendrogram from clustering 
+#'
+#' @param tree hmcTree output
+#'
+#' @return dendrogram plot
+#' @import dendextend
+#' @export 
+### Model Parameter Plots
+p.dend <- function(tree) {
+  dend <- as.dendrogram(tree)
+  num <- tree$Get("num")
+
+  dend <- dend %>%
+               dendextend::set("branches_lwd", 10*as.numeric(num)) %>% 
+               dendextend::set("branches_lty", c(1))
+
+  plot(dend, center = TRUE)
+  round(tree$Get("num", filterFun=isLeaf), 4)
+} ### END p.dend
+
 #' Generate binary hierarchical mclust tree
 #'
 #' @param dat data 
@@ -834,6 +854,7 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
   print("Fraction of points in each cluster:")
   print(table(L$labels$col)/length(L$labels$col))
 
+
   pairs(dat[, 1:dmax], 
         pch = shape, 
         col =  L$labels$col, 
@@ -846,6 +867,7 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' Generate cluster parameter plots
 #'
 #' @param modMeans means from a model (clusters in columns)
+#' @param cf cluster fractions
 #' @param ccol colors for features
 #'
 #' @return heatmap and line plot of cluster means
@@ -857,7 +879,7 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
 #' @export 
 ### Model Parameter Plots
-p.clusterMeans <- function(modMeans, ccol = "black") {
+p.clusterMeans <- function(modMeans, ccol = "black", cf = NULL) {
   means <- as.matrix(modMeans)
   colnames(means) <- 
     if(!is.null(colnames(means))){
@@ -865,6 +887,7 @@ p.clusterMeans <- function(modMeans, ccol = "black") {
     } else {
       as.factor(paste0("C", 1:ncol(means)))
     }
+
 
   d1 <- melt(means)
 
@@ -1088,4 +1111,66 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
   }
   
 } ## END p.3dpca
+
+
+#' Generate stacked level mean plot
+#'
+#' @param tree the hmcTree object
+#'
+#' @return a stacked level mean plot
+#'
+#' @importFrom ggplot2 ggplot
+#'
+#' @export 
+p.stackM <- function(tree){
+  node <- Clone(tree)
+  
+  node$Set(nlevel = node$Get('level'))
+  
+  M <- list()
+  for(i in 1:node$height){
+    travi <- Traverse(node, filterFun = function(x) x$nlevel == i)
+  
+    gi <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
+    id <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
+  
+    len <- Get(travi, "dataid", format = function(x) length(x))
+  
+    lvU <- Get(travi,"isLeaf")
+  
+    newLv <- i + lvU
+    Set(travi, nlevel=newLv)
+  
+    m <- Get(travi, "mean", format = list)
+  
+    asdf <- mapply(function(x,y) {
+              matrix(rep(x,each=y), 
+                     nrow =length(x), 
+                     ncol = y, 
+                     byrow=TRUE)
+              }, m, len, SIMPLIFY = FALSE)
+
+    M[[i]] <- Reduce(cbind, asdf)
+    rownames(M[[i]]) <- paste0("L", i, names(m[[i]]))
+  }
+  
+  MM <- data.frame(Reduce(rbind, M))
+
+  mt <- melt(MM, id.var = NULL)
+  mt$variable <- as.numeric(gsub("X", "", mt$variable))
+  
+  gd <- expand.grid(rownames(MM), 1:ncol(MM))[,1]
+
+  ggd <- data.frame(mt,gd)
+  ggd$gd <- factor(gd, levels = rev(levels(gd)), ordered = TRUE)
+
+  pal <- rev(rainbow(255, start=0, end = 0.7))
+
+  p <- 
+    ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 
+         scale_fill_gradientn(colours = pal) + 
+         geom_tile() + theme(axis.title = element_blank())
+
+  return(p)
+} ## END p.stackM
 

@@ -4,12 +4,14 @@
 \alias{p.clusterMeans}
 \title{Generate cluster parameter plots}
 \usage{
-p.clusterMeans(modMeans, ccol = "black")
+p.clusterMeans(modMeans, ccol = "black", cf = NULL)
 }
 \arguments{
 \item{modMeans}{means from a model (clusters in columns)}
 
 \item{ccol}{colors for features}
+
+\item{cf}{cluster fractions}
 }
 \value{
 heatmap and line plot of cluster means
