@@ -1123,7 +1123,11 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' @return a stacked level mean plot
 #'
 #' @importFrom ggplot2 ggplot
-#'
+#' @examples
+#' dat <- iris[, -5]
+#' L <- hmcTree(dat)
+#' p <- p.stackM(L)
+#' print(p)
 #' @export 
 p.stackM <- function(tree, ccol = "black", centered = FALSE){
   node <- Clone(tree)
@@ -1173,15 +1177,24 @@ p.stackM <- function(tree, ccol = "black", centered = FALSE){
   pal <- colorpanel(255, "black", "pink")
   pal <- colorpanel(255, "darkorchid4", "gray99", "darkgreen")
 
+  ln <- length(names(m[[1]]))
+  levsep <- seq(ln, nrow(MM), ln)[1:(nrow(MM)/ln -1)] + 0.5
+
   p <- 
     ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 
-         #scale_fill_gradient2() + 
+         scale_fill_gradient2(low = "darkorchid4", 
+                              mid = "gray99", 
+                              high = "darkorange3",
+                              midpoint = 0) + 
          #scale_fill_viridis() + 
-         scale_fill_gradientn(colours = pal) + 
+         #scale_fill_gradientn(colours = pal) + 
          geom_tile() + 
          theme(axis.title = element_blank(),
-               axis.text.y = element_text(color = rev(ccol)))
-
+               axis.text.y = element_text(color = rev(ccol)),
+               panel.background = element_blank(),
+               panel.grid.major.y =element_blank(),
+               panel.ontop = FALSE) + 
+         geom_hline(yintercept = levsep, size = 1)
   return(p)
 } ## END p.stackM
 

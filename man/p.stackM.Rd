@@ -19,4 +19,10 @@ a stacked level mean plot
 \description{
 Generate stacked level mean plot
 }
+\examples{
+dat <- iris[, -5]
+L <- hmcTree(dat)
+p <- p.stackM(L)
+print(p)
+}
 
