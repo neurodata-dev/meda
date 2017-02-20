@@ -22,7 +22,7 @@ system('open index.html')
 
 ### Toy example
 
-- [Fisher's Iris Data](http://docs.neurodata.io/meda/examples/FisherIrisData.html)
+- [Fisher's Iris Data](http://docs.neurodata.io/meda/examples/Fisher/FisherIrisData.html)
 
 ### Kristina15 Dataset
 The following are preliminary runs of the R package 
