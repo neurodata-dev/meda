@@ -67,9 +67,9 @@ the data prior to analysis.
 ### This set is a run with a sample of size 1000 and seed 1234.
 
 #### Stacked Level mean plots
-[6.4 Raw](Kristina15/figs/k15Raw20170221.png)  
-[6.4 Log](Kristina15/figs/k15Log20170221.png)  
-[6.4 01e3](Kristina15/figs/k1501e320170221.png)  
+- [6.4 Raw](examples/Kristina15/figs/k15Raw20170221.png)  
+- [6.4 Log](examples/Kristina15/figs/k15Log20170221.png)  
+- [6.4 01e3](examples/Kristina15/figs/k1501e320170221.png)  
 
 ---
 
@@ -78,9 +78,9 @@ the data prior to analysis.
 ### This set is a run with a sample of size 1000 and seed 1234.
 
 #### Stacked Level mean plots
-[6.4 Raw](Weiler/figs/weilerRaw20170221.png)  
-[6.4 Log](Weiler/figs/weilerLog20170221.png)  
-[6.4 01e3](Weiler/figs/weiler01e320170221.png)  
+- [6.4 Raw](examples/Weiler/figs/weilerRaw20170221.png)  
+- [6.4 Log](examples/Weiler/figs/weilerLog20170221.png)  
+- [6.4 01e3](examples/Weiler/figs/weiler01e320170221.png)  
 
 
 ---
