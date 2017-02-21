@@ -19,7 +19,8 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-## Output Examples
+## [Selected Output Examples](singles.html)
+## Complete Output Examples
 
 ### Toy example
 
@@ -60,34 +61,3 @@ the data prior to analysis.
 - [Scaled 0-1000](http://docs.neurodata.io/meda/examples/W_1e4/01e3/Ex10R55_01e3.html)  
 
 
---- 
-
-# Kristina15 Single Figures
-
-### This set is a run with a sample of size 1000 using various seeds for randomization
-
-#### Stacked Level mean plots (Seed 1234)
-- [6.4 Raw: Seed 1234](examples/Kristina15/figs/k15Raw_seed1234.png)  
-- [6.4 Log: Seed 1234](examples/Kristina15/figs/k15Log_seed1234.png)  
-- [6.4 01e3: Seed 1234](examples/Kristina15/figs/k1501e3_seed1234.png)  
-
-#### Stacked Level mean plots (Seed 317)
-- [6.4 Raw: Seed 317](examples/Kristina15/figs/k15Raw_seed317.png)  
-- [6.4 Log: Seed 317](examples/Kristina15/figs/k15Log_seed317.png)
-- [6.4 01e3: Seed 317](examples/Kristina15/figs/k1501e3_seed317.png)  
-
----
-
-# Weiler Single Figures
-
-### This set is a run with a sample of size 1000 using various seeds for randomization
-
-#### Stacked Level mean plots
-- [6.4 Raw](examples/Weiler/figs/weilerRaw20170221.png)  
-- [6.4 Log](examples/Weiler/figs/weilerLog20170221.png)  
-- [6.4 01e3](examples/Weiler/figs/weiler01e320170221.png)  
-
-
----
----
----
