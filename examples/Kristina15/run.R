@@ -1,6 +1,7 @@
 #! /usr/local/bin/Rscript
 require(meda)
-load('~/neurodata/synaptome-stats/Code/cleanDataWithAttributes.RData')
+base <- Sys.getenv("NEURODATA")
+load(paste0(base,'/synaptome-stats/Code/cleanDataWithAttributes.RData'))
 
 set.seed(1234)
 dat <- data01[sample(nrow(data01), 1e3), 1:24, with = FALSE]
@@ -17,14 +18,14 @@ datRaw <- dat
 datLog <- transformData(dat, type = c("log10"))$log10
 dat01e3 <- transformData(dat, type = c("1e3"))$d01e3
 
-home <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/"
-outdir1 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/Raw/"
-outdir2 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/Log10/"
-outdir3 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/01e3/"
+home <- paste0(base,"/GH-pages/meda-gh/examples/Kristina15/")
+outdir1 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Raw/")
+outdir2 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Log10/")
+outdir3 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/01e3/")
 
-outfile1 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/Raw/SynDataRaw.html"
-outfile2 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/Log10/SynDataLog10.html"
-outfile3 <- "~/neurodata/GH-pages/meda-gh/examples/Kristina15/01e3/SynData01e3.html"
+outfile1 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Raw/SynDataRaw.html")
+outfile2 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Log10/SynDataLog10.html")
+outfile3 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/01e3/SynData01e3.html")
 
 setwd(outdir1)
 tryCatch(genHTML(datRaw, outfile1, outdir ='./', colCol = ccol3, center = TRUE))
