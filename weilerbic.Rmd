@@ -1,0 +1,65 @@
+---
+title       : Matrix Exploratory Data Analysis
+subtitle    : MEDA
+author      : Neurodata
+job         : 
+framework   : html5slides   # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : draft # {standalone, draft}
+knit        : slidify::knit2slides #
+---
+
+```{r, echo=FALSE, eval=FALSE}
+require(slidify)
+require(rmarkdown)
+setwd("~/neurodata/GH-pages/meda-gh/")
+render('weilerbic.Rmd')
+system('open weilerbic.html')
+#slidify::knit2slides("index.Rmd")
+```
+
+```{r,echo=FALSE, eval=FALSE}
+bfn <- dir("bic317_size10000/")
+node <- gsub("bicWRaw_", "", bfn)
+noe <- gsub("\\.pdf", "", node)
+
+wr <- mapply(function(i,y) paste0("- [", y,"](examples/Weiler/bic317_size10000/", i, ")  "), bfn, noe)
+
+FileConn <- file("~/neurodata/GH-pages/meda-gh/examples/Weiler/output.txt")
+writeLines(wr, fileConn)
+close(fileConn)
+system("mvim output.txt")
+```
+# Weiler BIC plots
+
+### This set is a run with a sample of size 10000 using various seeds for randomization
+
+#### BIC plots for each non-leaf node (Seed 317, size = 1e4)
+- [Node](examples/Weiler/bic317_size10000/bicWRaw_Node.pdf)  
+- [Node1](examples/Weiler/bic317_size10000/bicWRaw_Node1.pdf)  
+- [Node11](examples/Weiler/bic317_size10000/bicWRaw_Node11.pdf)  
+- [Node111](examples/Weiler/bic317_size10000/bicWRaw_Node111.pdf)  
+- [Node1111](examples/Weiler/bic317_size10000/bicWRaw_Node1111.pdf)  
+- [Node1112](examples/Weiler/bic317_size10000/bicWRaw_Node1112.pdf)  
+- [Node112](examples/Weiler/bic317_size10000/bicWRaw_Node112.pdf)  
+- [Node1121](examples/Weiler/bic317_size10000/bicWRaw_Node1121.pdf)  
+- [Node1122](examples/Weiler/bic317_size10000/bicWRaw_Node1122.pdf)  
+- [Node12](examples/Weiler/bic317_size10000/bicWRaw_Node12.pdf)  
+- [Node121](examples/Weiler/bic317_size10000/bicWRaw_Node121.pdf)  
+- [Node1211](examples/Weiler/bic317_size10000/bicWRaw_Node1211.pdf)  
+- [Node1212](examples/Weiler/bic317_size10000/bicWRaw_Node1212.pdf)  
+- [Node122](examples/Weiler/bic317_size10000/bicWRaw_Node122.pdf)  
+- [Node1221](examples/Weiler/bic317_size10000/bicWRaw_Node1221.pdf)  
+- [Node2](examples/Weiler/bic317_size10000/bicWRaw_Node2.pdf)  
+- [Node21](examples/Weiler/bic317_size10000/bicWRaw_Node21.pdf)  
+- [Node211](examples/Weiler/bic317_size10000/bicWRaw_Node211.pdf)  
+- [Node2111](examples/Weiler/bic317_size10000/bicWRaw_Node2111.pdf)  
+- [Node212](examples/Weiler/bic317_size10000/bicWRaw_Node212.pdf)  
+- [Node22](examples/Weiler/bic317_size10000/bicWRaw_Node22.pdf)  
+- [Node221](examples/Weiler/bic317_size10000/bicWRaw_Node221.pdf)  
+- [Node2211](examples/Weiler/bic317_size10000/bicWRaw_Node2211.pdf)  
+- [Node222](examples/Weiler/bic317_size10000/bicWRaw_Node222.pdf)  
+
+---

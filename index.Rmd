@@ -22,6 +22,7 @@ system('open index.html')
 
 ## [Selected Output Examples](singles.html)
 ## [Kristina15 BIC plots](k15bic.html)
+## [Weiler BIC plots](weilerbic.html)
 ## Complete Output Examples
 
 ### Toy example
