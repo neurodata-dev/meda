@@ -21,6 +21,7 @@ system('open index.html')
 ```
 
 ## [Selected Output Examples](singles.html)
+## [Kristina15 BIC plots](k15bic.html)
 ## Complete Output Examples
 
 ### Toy example

@@ -1,0 +1,73 @@
+---
+title       : Matrix Exploratory Data Analysis
+subtitle    : MEDA
+author      : Neurodata
+job         : 
+framework   : html5slides   # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : draft # {standalone, draft}
+knit        : slidify::knit2slides #
+---
+
+```{r, echo=FALSE, eval=FALSE}
+require(slidify)
+require(rmarkdown)
+render('k15bic.Rmd')
+system('open k15bic.html')
+#slidify::knit2slides("index.Rmd")
+```
+
+```{r,echo=FALSE, eval=FALSE}
+bfn <- dir("bic317_size10000/")
+node <- gsub("bicK15Raw_", "", bfn)
+noe <- gsub("\\.pdf", "", node)
+
+wr <- mapply(function(i,y) paste0("- [", y,"](examples/Kristina15/bic317_size10000/", i, ")  "), bfn, noe)
+
+fileConn <- file("output.txt")
+for(i in bfn){
+  wr <- paste0("- [stuff](examples/Kristina15/bic317_size10000/", i, ")  ")
+  writeLines(wr, fileConn)
+}
+close(fileConn)
+```
+# Kristina15 BIC plots
+
+### This set is a run with a sample of size 10000 using various seeds for randomization
+
+#### BIC plots for each non-leaf node (Seed 317, size = 1e4)
+- [Node](examples/Kristina15/bic317_size10000/bicK15Raw_Node.pdf)  
+- [Node1](examples/Kristina15/bic317_size10000/bicK15Raw_Node1.pdf)  
+- [Node11](examples/Kristina15/bic317_size10000/bicK15Raw_Node11.pdf)  
+- [Node111](examples/Kristina15/bic317_size10000/bicK15Raw_Node111.pdf)  
+- [Node1111](examples/Kristina15/bic317_size10000/bicK15Raw_Node1111.pdf)  
+- [Node1112](examples/Kristina15/bic317_size10000/bicK15Raw_Node1112.pdf)  
+- [Node112](examples/Kristina15/bic317_size10000/bicK15Raw_Node112.pdf)  
+- [Node1121](examples/Kristina15/bic317_size10000/bicK15Raw_Node1121.pdf)  
+- [Node1122](examples/Kristina15/bic317_size10000/bicK15Raw_Node1122.pdf)  
+- [Node12](examples/Kristina15/bic317_size10000/bicK15Raw_Node12.pdf)  
+- [Node121](examples/Kristina15/bic317_size10000/bicK15Raw_Node121.pdf)  
+- [Node1211](examples/Kristina15/bic317_size10000/bicK15Raw_Node1211.pdf)  
+- [Node1212](examples/Kristina15/bic317_size10000/bicK15Raw_Node1212.pdf)  
+- [Node122](examples/Kristina15/bic317_size10000/bicK15Raw_Node122.pdf)  
+- [Node1221](examples/Kristina15/bic317_size10000/bicK15Raw_Node1221.pdf)  
+- [Node1222](examples/Kristina15/bic317_size10000/bicK15Raw_Node1222.pdf)  
+- [Node2](examples/Kristina15/bic317_size10000/bicK15Raw_Node2.pdf)  
+- [Node21](examples/Kristina15/bic317_size10000/bicK15Raw_Node21.pdf)  
+- [Node211](examples/Kristina15/bic317_size10000/bicK15Raw_Node211.pdf)  
+- [Node2111](examples/Kristina15/bic317_size10000/bicK15Raw_Node2111.pdf)  
+- [Node2112](examples/Kristina15/bic317_size10000/bicK15Raw_Node2112.pdf)  
+- [Node212](examples/Kristina15/bic317_size10000/bicK15Raw_Node212.pdf)  
+- [Node2121](examples/Kristina15/bic317_size10000/bicK15Raw_Node2121.pdf)  
+- [Node2122](examples/Kristina15/bic317_size10000/bicK15Raw_Node2122.pdf)  
+- [Node22](examples/Kristina15/bic317_size10000/bicK15Raw_Node22.pdf)  
+- [Node221](examples/Kristina15/bic317_size10000/bicK15Raw_Node221.pdf)  
+- [Node2211](examples/Kristina15/bic317_size10000/bicK15Raw_Node2211.pdf)  
+- [Node2212](examples/Kristina15/bic317_size10000/bicK15Raw_Node2212.pdf)  
+- [Node222](examples/Kristina15/bic317_size10000/bicK15Raw_Node222.pdf)  
+- [Node2221](examples/Kristina15/bic317_size10000/bicK15Raw_Node2221.pdf)  
+- [Node2222](examples/Kristina15/bic317_size10000/bicK15Raw_Node2222.pdf)  
+
+---
