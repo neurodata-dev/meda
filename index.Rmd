@@ -15,6 +15,7 @@ knit        : slidify::knit2slides #
 require(slidify)
 require(rmarkdown)
 render('index.Rmd')
+render('singles.Rmd')
 system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```

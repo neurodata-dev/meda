@@ -35,6 +35,20 @@ system('open singles.html')
 
 ---
 
+### This set is a run with a sample of size 10000 using various seeds for randomization
+
+#### Stacked Level mean plots (Seed 1234)
+- [6.4 Raw: Seed 1234](examples/Kristina15/figs/k15Raw_seed1234_size10000.png)  
+- [6.4 Log: Seed 1234](examples/Kristina15/figs/k15Log_seed1234_size10000.png)  
+- [6.4 01e3: Seed 1234](examples/Kristina15/figs/k1501e3_seed1234_size10000.png)  
+
+#### Stacked Level mean plots (Seed 317)
+- [6.4 Raw: Seed 317](examples/Kristina15/figs/k15Raw_seed317_size10000.png)  
+- [6.4 Log: Seed 317](examples/Kristina15/figs/k15Log_seed317_size10000.png)
+- [6.4 01e3: Seed 317](examples/Kristina15/figs/k1501e3_seed317_size10000.png)  
+
+---
+
 # Weiler Single Figures
 
 ### This set is a run with a sample of size 1000 using various seeds for randomization
@@ -48,6 +62,20 @@ system('open singles.html')
 - [6.4 Raw: Seed 317](examples/Weiler/figs/weilerRaw_seed317.png)  
 - [6.4 Log: Seed 317](examples/Weiler/figs/weilerLog_seed317.png)  
 - [6.4 01e3: Seed 317](examples/Weiler/figs/weiler01e3_seed317.png)  
+
+--- 
+
+### This set is a run with a sample of size 10000 using various seeds for randomization
+
+#### Stacked Level mean plots (Seed 1234)
+- [6.4 Raw: Seed 1234](examples/Weiler/figs/weilerRaw_seed1234_size10000.png)  
+- [6.4 Log: Seed 1234](examples/Weiler/figs/weilerLog_seed1234_size10000.png)  
+- [6.4 01e3: Seed 1234](examples/Weiler/figs/weiler01e3_seed1234_size10000.png)  
+
+#### Stacked Level mean plots (Seed 317)
+- [6.4 Raw: Seed 317](examples/Weiler/figs/weilerRaw_seed317_size10000.png)  
+- [6.4 Log: Seed 317](examples/Weiler/figs/weilerLog_seed317_size10000.png)  
+- [6.4 01e3: Seed 317](examples/Weiler/figs/weiler01e3_seed317_size10000.png)  
 
 ---
 ---
