@@ -4,7 +4,7 @@
 \alias{p.clusterMeans}
 \title{Generate cluster parameter plots}
 \usage{
-p.clusterMeans(modMeans, ccol = "black", cf = NULL)
+p.clusterMeans(modMeans, ccol = "black", cf = 1)
 }
 \arguments{
 \item{modMeans}{means from a model (clusters in columns)}
@@ -23,7 +23,10 @@ Generate cluster parameter plots
 dat <- iris[, -5]
 truth <- iris[, 5]
 L <- p.hmc(dat, truth = truth)
-p <- p.clusterMeans(L$means)
+modMeans <- L$means
+cf <- L$ClusterFraction
+p <- p.clusterMeans(modMeans, cf=cf)
 grid.arrange(p[[1]], p[[2]], ncol = 2)
+
 }
 

@@ -5,7 +5,8 @@
 \title{Generate an Rmarkdown with exploratory plots}
 \usage{
 genHTML(x, outfile, outdir, scale = FALSE, dmethod = "cur",
-  nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL, center)
+  nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL,
+  center = FALSE)
 }
 \arguments{
 \item{x}{data}

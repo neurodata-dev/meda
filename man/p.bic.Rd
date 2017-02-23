@@ -4,24 +4,23 @@
 \alias{p.bic}
 \title{Generate a BIC plot}
 \usage{
-p.bic(dat, timeLimit = 8 * 60, print = FALSE)
+p.bic(dat, print = FALSE, G = 1:10, modelNames = NULL)
 }
 \arguments{
 \item{dat}{data}
 
-\item{timeLimit}{Time limit for bic computation.}
-
 \item{print}{boolean for printing and plotting output.}
+
+\item{G}{Number of components to test in mclustBIC, default 1:10}
+
+\item{modelNames}{a list of models for bic to use, defaults to all.}
 }
 \value{
-A BIC plot and as a side-effect
+A BIC plot and as a side-effect a list of data and bic
+output.
 }
 \description{
 Generate a BIC plot
-}
-\details{
-Uses getElbows from
-\url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
 }
 \examples{
 out <- p.bic(iris[, -5])

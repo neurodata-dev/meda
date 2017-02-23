@@ -22,6 +22,7 @@ Generate stacked level mean plot
 \examples{
 dat <- iris[, -5]
 L <- hmcTree(dat)
+plot(as.dendrogram(L), center = TRUE)
 p <- p.stackM(L)
 print(p)
 }

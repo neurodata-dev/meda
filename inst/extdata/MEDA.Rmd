@@ -180,7 +180,7 @@ print(pslc)
 ## HMClust output: Cluster means
 ```{r meda-cmeans}
 #tryCatch(param <- p.clusterMeans(hmcL$mean, ccol = colCol))
-tryCatch(param <- p.clusterMeans(hmcL$means, ccol = colCol))
+tryCatch(param <- p.clusterMeans(hmcL$means, ccol = colCol, cf = hmcL$ClusterFraction))
 #grid.arrange(param[[1]], param[[2]], ncol = 2)
 param[[1]]
 param[[2]]

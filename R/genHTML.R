@@ -62,7 +62,7 @@
 genHTML <- function(x, outfile, outdir,  
                     scale = FALSE, dmethod = "cur", 
                     nmethod = "cur", truth = NULL, 
-                    colCol = NULL, colRow = NULL, center) {
+                    colCol = NULL, colRow = NULL, center = FALSE) {
 
   outdir <- outdir
   use.plotly <- FALSE ## Remove this later
@@ -638,26 +638,30 @@ p.pairs <- function(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE
 #' Generate a BIC plot
 #'
 #' @param dat data
-#' @param timeLimit Time limit for bic computation.
 #' @param print boolean for printing and plotting output.
+#' @param G Number of components to test in mclustBIC, default 1:10
+#' @param modelNames a list of models for bic to use, defaults to all.
 #'
-#' @return A BIC plot and as a side-effect
-#' @details Uses getElbows from
-#' \url{http://www.cis.jhu.edu/~parky/Synapse/getElbows.R}
+#' @return A BIC plot and as a side-effect a list of data and bic
+#' output.
 #'
 #' @importFrom mclust mclustBIC
 #' @examples
 #' out <- p.bic(iris[, -5])
 #' @export 
 ### BIC plot
-p.bic <- function(dat, timeLimit = 8*60, print = FALSE) {
-  #tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
-  #sv <- svd(dat, nu = 0, nv = 0)$d
-  #tryCatch(elb <- getElbows(sv, plot = FALSE))
+p.bic <- function(dat,  print = FALSE, 
+                  G = 1:10,modelNames = NULL ) {
 
   #setTimeLimit(cpu = timeLimit, transient = FALSE)
   out <- NULL
-  bicO <- mclust::mclustBIC(dat, G = 1:10)
+  bicO <- if(is.null(modelNames)){
+    mclust::mclustBIC(dat, G = G)
+  } else {
+    mclust::mclustBIC(dat, G = G, modelNames = modelNames)
+  }
+
+
   out <- list(bic = bicO, data = dat)
 
   if(print) print(summary(bicO))
@@ -876,11 +880,14 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- p.hmc(dat, truth = truth)
-#' p <- p.clusterMeans(L$means)
+#' modMeans <- L$means
+#' cf <- L$ClusterFraction
+#' p <- p.clusterMeans(modMeans, cf=cf)
 #' grid.arrange(p[[1]], p[[2]], ncol = 2)
+#' 
 #' @export 
 ### Model Parameter Plots
-p.clusterMeans <- function(modMeans, ccol = "black", cf = NULL) {
+p.clusterMeans <- function(modMeans, ccol = "black", cf = 1) {
   means <- as.matrix(modMeans)
   colnames(means) <- 
     if(!is.null(colnames(means))){
@@ -889,17 +896,23 @@ p.clusterMeans <- function(modMeans, ccol = "black", cf = NULL) {
       as.factor(paste0("C", 1:ncol(means)))
     }
 
+  cf <- cf/max(cf)
 
   d1 <- melt(means)
 
-  g1 <- ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
+  d1$ClusterFraction <- rep(cf, times = table(d1$Var2)) 
+
+  g1 <- 
+    ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
     coord_flip() + 
     theme(axis.title = element_blank(), 
           axis.text.y = element_text(color = ccol))
 
-  g2 <- ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2))) + 
-    geom_line(lwd = 1) + 
+  g2 <- 
+    #ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2), size = ClusterFraction)) + 
+    ggplot(d1, aes(x = Var1, y = value, group = Var2)) +
+    geom_line(aes(colour = as.factor(Var2), size = ClusterFraction, alpha = 1/ClusterFraction)) + 
     coord_flip() + 
     scale_color_discrete(name = "Cluster") + 
     theme(axis.title = element_blank(), 
@@ -1126,6 +1139,7 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' @examples
 #' dat <- iris[, -5]
 #' L <- hmcTree(dat)
+#' plot(as.dendrogram(L), center = TRUE)
 #' p <- p.stackM(L)
 #' print(p)
 #' @export 
@@ -1179,6 +1193,7 @@ p.stackM <- function(tree, ccol = "black", centered = FALSE){
 
   ln <- length(names(m[[1]]))
   levsep <- seq(ln, nrow(MM), ln)[1:(nrow(MM)/ln -1)] + 0.5
+
 
   p <- 
     ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 

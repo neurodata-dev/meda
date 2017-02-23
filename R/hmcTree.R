@@ -16,6 +16,7 @@
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
 #' plot(as.dendrogram(L), center = TRUE)
+#' p.stackM(L)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 hmcTree <- function(dat, maxDepth = 6){
@@ -26,6 +27,7 @@ hmcTree <- function(dat, maxDepth = 6){
        node$continue == TRUE && 
        isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
+       node$bic <- b
        mc <- Mclust(node$data, x = b)
        cont <- all(table(mc$classification) > 10)
        if(mc$G == 2 && cont){
@@ -36,24 +38,40 @@ hmcTree <- function(dat, maxDepth = 6){
          if(dim(dat1)[1] >= dim(dat2)[1]){
            big <- "1"
            little <- "2"
+           #
+           node$AddChild(paste0(node$name, big), 
+             data = dat1, dataid = rownames(dat1), 
+             continue = TRUE,
+             num = dim(dat1)[1]/tot,
+             mean = mc$parameters$mean[,1], 
+             cov = mc$parameters$variance$sigma[,,1],
+             cor = cov2cor(mc$parameters$variance$sigma[,,1]))
+           #
+           node$AddChild(paste0(node$name, little), 
+             data = dat2, dataid = rownames(dat2), continue = TRUE,
+             num = dim(dat2)[1]/tot,
+             mean = mc$parameters$mean[,2], 
+             cov = mc$parameters$variance$sigma[,,2],
+             cor = cov2cor(mc$parameters$variance$sigma[,,2]))
          } else {
            big <- "2"
            little <- "1"
+           #
+           node$AddChild(paste0(node$name, little), 
+             data = dat2, dataid = rownames(dat2), continue = TRUE,
+             num = dim(dat2)[1]/tot,
+             mean = mc$parameters$mean[,2], 
+             cov = mc$parameters$variance$sigma[,,2],
+             cor = cov2cor(mc$parameters$variance$sigma[,,2]))
+           #
+           node$AddChild(paste0(node$name, big), 
+             data = dat1, dataid = rownames(dat1), 
+             continue = TRUE,
+             num = dim(dat1)[1]/tot,
+             mean = mc$parameters$mean[,1], 
+             cov = mc$parameters$variance$sigma[,,1],
+             cor = cov2cor(mc$parameters$variance$sigma[,,1]))
          }
-         node$AddChild(paste0(node$name, big), 
-           data = dat1, dataid = rownames(dat1), 
-           continue = TRUE,
-           num = dim(dat1)[1]/tot,
-           mean = mc$parameters$mean[,1], 
-           cov = mc$parameters$variance$sigma[,,1],
-           cor = cov2cor(mc$parameters$variance$sigma[,,1]))
-#
-         node$AddChild(paste0(node$name, little), 
-           data = dat2, dataid = rownames(dat2), continue = TRUE,
-           num = dim(dat2)[1]/tot,
-           mean = mc$parameters$mean[,2], 
-           cov = mc$parameters$variance$sigma[,,2],
-           cor = cov2cor(mc$parameters$variance$sigma[,,2]))
        } else {
          node$continue = FALSE
        }
@@ -66,6 +84,7 @@ hmcTree <- function(dat, maxDepth = 6){
        node$continue == TRUE && 
        isLeaf(node)){
        b <- mclustBIC(node$data, G = 1:2)
+       node$bic <- b
        mc <- Mclust(node$data, x = b)
        cont <- all(table(mc$classification) > 10)
        if(mc$G == 2 && cont){
@@ -147,6 +166,7 @@ hmcTree <- function(dat, maxDepth = 6){
 
   outLabels <- mn[order(mn$value), ]
 
+  node$ClusterFraction <- node$Get("num", filterFun = isLeaf)
   node$means <- means
   node$sigma <- abind(h, along = 3)
   node$cor <- abind(k, along = 3)
