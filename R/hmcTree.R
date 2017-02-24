@@ -15,18 +15,18 @@
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
-#' plot(as.dendrogram(L), center = TRUE)
+#' p.dend(L)
 #' p.stackM(L)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-hmcTree <- function(dat, maxDepth = 6){
+hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
   ## Helper function
   splitNode = function(node){
     if(!is.null(dim(node$data)) && 
        dim(node$data)[1] > 5 && 
        node$continue == TRUE && 
        isLeaf(node)){
-       b <- mclustBIC(node$data, G = 1:2)
+       b <- mclustBIC(node$data, G = 1:2, modelNames = modelNames)
        node$bic <- b
        mc <- Mclust(node$data, x = b)
        cont <- all(table(mc$classification) > 10)
@@ -83,7 +83,7 @@ hmcTree <- function(dat, maxDepth = 6){
        dim(node$data)[1] > 5 && 
        node$continue == TRUE && 
        isLeaf(node)){
-       b <- mclustBIC(node$data, G = 1:2)
+       b <- mclustBIC(node$data, G = 1:2, modelNames = modelNames)
        node$bic <- b
        mc <- Mclust(node$data, x = b)
        cont <- all(table(mc$classification) > 10)

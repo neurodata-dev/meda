@@ -4,7 +4,7 @@
 \alias{hmcTree}
 \title{Generate a binary hierarchical mclust tree}
 \usage{
-hmcTree(dat, maxDepth = 6)
+hmcTree(dat, maxDepth = 6, modelNames = NULL)
 }
 \arguments{
 \item{dat}{a data matrix}
@@ -25,7 +25,7 @@ propagated down the tree.  If k = 1, then that node is frozen.
 dat <- iris[, -5]
 truth <- iris[, 5]
 L <- hmcTree(dat)
-plot(as.dendrogram(L), center = TRUE)
+p.dend(L)
 p.stackM(L)
 }
 

@@ -15,6 +15,7 @@
 #' @param colCol an n length vector of column colors.
 #' @param colRow an n length vector of column colors.
 #' @param center boolean to center feature columns
+#' @param modelNames list of models for MCLUST.
 #' 
 #' @return An html document via RMarkdown.
 #'
@@ -62,7 +63,8 @@
 genHTML <- function(x, outfile, outdir,  
                     scale = FALSE, dmethod = "cur", 
                     nmethod = "cur", truth = NULL, 
-                    colCol = NULL, colRow = NULL, center = FALSE) {
+                    colCol = NULL, colRow = NULL, center = FALSE,
+                    modelNames = NULL) {
 
   outdir <- outdir
   use.plotly <- FALSE ## Remove this later
