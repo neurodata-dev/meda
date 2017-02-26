@@ -13,7 +13,7 @@ colCol <- c("red", "green", "blue", "red")
 
 dat <- iris[, -5]
 
-genHTML(dat, outfile = outfile0, outdir = outdir0, truth = iris[, 5], colCol = colCol, center = TRUE)
+genHTML(dat, outfile = outfile0, outdir = outdir0, truth = iris[, 5], colCol = colCol, center = TRUE, modelNames = c("VVV"))
 system(paste("open", outfile0))
 
 
