@@ -6,7 +6,7 @@
 \usage{
 genHTML(x, outfile, outdir, scale = FALSE, dmethod = "cur",
   nmethod = "cur", truth = NULL, colCol = NULL, colRow = NULL,
-  center = FALSE)
+  center = FALSE, modelNames = NULL)
 }
 \arguments{
 \item{x}{data}
@@ -33,6 +33,8 @@ the true classes of the data.}
 \item{colRow}{an n length vector of column colors.}
 
 \item{center}{boolean to center feature columns}
+
+\item{modelNames}{list of models for MCLUST.}
 }
 \value{
 An html document via RMarkdown.

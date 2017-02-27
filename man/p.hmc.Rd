@@ -4,7 +4,7 @@
 \alias{p.hmc}
 \title{Generate binary hierarchical mclust tree}
 \usage{
-p.hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6)
+p.hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6, modelNames = NULL)
 }
 \arguments{
 \item{dat}{data}
@@ -14,6 +14,8 @@ p.hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6)
 \item{maxDim}{maximum dimensions to plot}
 
 \item{maxDepth}{maximum tree depth}
+
+\item{modelNames}{model names for mclust}
 }
 \value{
 binary hierarchical mclust classification output

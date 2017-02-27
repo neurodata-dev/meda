@@ -22,7 +22,7 @@ Generate cluster parameter plots
 \examples{
 dat <- iris[, -5]
 truth <- iris[, 5]
-L <- p.hmc(dat, truth = truth)
+L <- p.hmc(dat, truth = truth, modelNames = c("VVV"))
 modMeans <- L$means
 cf <- L$ClusterFraction
 p <- p.clusterMeans(modMeans, cf=cf)

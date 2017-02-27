@@ -831,6 +831,7 @@ p.dend <- function(tree) {
 #' @param truth true labels if any
 #' @param maxDim maximum dimensions to plot
 #' @param maxDepth maximum tree depth
+#' @param modelNames model names for mclust
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -842,7 +843,8 @@ p.dend <- function(tree) {
 #' L <- p.hmc(dat, truth = truth)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
-p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
+p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
+                  modelNames = NULL) {
 
   d <- dim(dat)[2]
   n <- dim(dat)[1]
@@ -856,7 +858,7 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 
   dmax <- ifelse(d > maxDim, maxDim, d)
 
-  L <- hmcTree(dat, maxDepth)
+  L <- hmcTree(dat, maxDepth, modelNames = modelNames)
 
   print("Fraction of points in each cluster:")
   print(table(L$labels$col)/length(L$labels$col))
@@ -881,7 +883,7 @@ p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
-#' L <- p.hmc(dat, truth = truth)
+#' L <- p.hmc(dat, truth = truth, modelNames = c("VVV"))
 #' modMeans <- L$means
 #' cf <- L$ClusterFraction
 #' p <- p.clusterMeans(modMeans, cf=cf)
@@ -898,12 +900,13 @@ p.clusterMeans <- function(modMeans, ccol = "black", cf = 1) {
       as.factor(paste0("C", 1:ncol(means)))
     }
 
-  cf <- cf/max(cf)
+  cf <- cf#/max(cf)
 
   d1 <- melt(means)
 
-  d1$ClusterFraction <- rep(cf, times = table(d1$Var2)) 
-
+  d1$ClusterFraction <- (rep(cf, times = table(d1$Var2)))
+  d1$alp <- (1 - d1$ClusterFraction) + min(d1$Cluster)
+  
   g1 <- 
     ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
@@ -914,14 +917,15 @@ p.clusterMeans <- function(modMeans, ccol = "black", cf = 1) {
   g2 <- 
     #ggplot(d1, aes(x = Var1, y = value, group = Var2, color = as.factor(Var2), size = ClusterFraction)) + 
     ggplot(d1, aes(x = Var1, y = value, group = Var2)) +
-    geom_line(aes(colour = as.factor(Var2), size = ClusterFraction, alpha = 1/ClusterFraction)) + 
+    geom_line(aes(colour = as.factor(Var2), alpha = alp, size = d1$ClusterFraction)) + 
     coord_flip() + 
     scale_color_discrete(name = "Cluster") + 
     theme(axis.title = element_blank(), 
           axis.text.y = element_text(color = ccol),
           #legend.direction = "horizontal", 
-          legend.position = "bottom")
-          
+          legend.position = "bottom") + 
+    guides(alpha = FALSE, size = FALSE)
+
 
   out <- list(pheat = g1, pline = g2)
   invisible(out)

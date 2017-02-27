@@ -1,6 +1,6 @@
 Package: meda
 Title: Matrix Exploratory Data Analysis
-Version: 0.1.1.9033
+Version: 0.1.1.9035
 Authors@R: person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre"))
 BugReports: https://github.com/neurodata/meda/issues
 Description: A toolbox for exploratory data analysis on matrices. 
