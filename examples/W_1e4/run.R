@@ -42,9 +42,9 @@ outfile4 <- "~/neurodata/GH-pages/meda-gh/examples/W_1e4/Raw/Ex10R55_Raw.html"
 outfile5 <- "~/neurodata/GH-pages/meda-gh/examples/W_1e4/Log10/Ex10R55_Log10.html"
 outfile6 <- "~/neurodata/GH-pages/meda-gh/examples/W_1e4/01e3/Ex10R55_01e3.html"
 
-#setwd(outdir4)
-#tryCatch(genHTML(datRaw, outfile4, outdir = './', colCol = ccolEx, center = TRUE))
-#tryCatch(system(paste("open", outfile4)))
+setwd(outdir4)
+tryCatch(genHTML(datRaw, outfile4, outdir = './', colCol = ccolEx, center = TRUE))
+tryCatch(system(paste("open", outfile4)))
 
 setwd(outdir5)
 tryCatch(genHTML(datLog, outfile5, outdir = './', colCol = ccolEx, center = TRUE))
