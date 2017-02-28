@@ -140,10 +140,11 @@ parameters for Mclust.
 out <- p.try(p.bic, dat)
 ```
 
-## Binary Hierarhical Mclust classifications
+## Binary Hierarhical GMM Classifications
+
 ```{r meda-hmcTree}
 #tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxDim = 8))
-tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 5,
+tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 4,
                        modelNames = modelNames))
 ```
 

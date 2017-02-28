@@ -831,7 +831,7 @@ p.dend <- function(tree) {
 #' @param truth true labels if any
 #' @param maxDim maximum dimensions to plot
 #' @param maxDepth maximum tree depth
-#' @param modelNames model names for mclust
+#' @param modelNames model names for mclust see \code{\link[mclust]{mclustModelNames}}
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -840,7 +840,7 @@ p.dend <- function(tree) {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- NULL #iris[,5]
-#' L <- p.hmc(dat, truth = truth)
+#' L <- p.hmc(dat, truth = truth, modelNames = c("VVV"))
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,

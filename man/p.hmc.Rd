@@ -31,6 +31,6 @@ If a singleton exists, the level takes a step back.
 \examples{
 dat <- iris[, -5]
 truth <- NULL #iris[,5]
-L <- p.hmc(dat, truth = truth)
+L <- p.hmc(dat, truth = truth, modelNames = c("VVV"))
 }
 
