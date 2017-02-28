@@ -3,7 +3,7 @@ require(meda)
 require(rhdf5)
 
 n <- 1e4
-seed <- 317
+seed <- 1234
 fresh <- TRUE
 
 if(fresh){
@@ -59,3 +59,19 @@ if(fresh){
   }
 }
   
+hmcL <- Ls[[1]]
+
+
+bic <- lapply(Ls, function(hmcL) hmcL$Get("bic", format = list, traversal = 'level', filterFun = isNotLeaf))
+bic <- hmcL$Get("bic", format = list, traversal = 'level', filterFun = isNotLeaf)
+
+setwd("~/neurodata/GH-pages/meda-gh/examples/Weiler/")
+for(i in 1:length(bic)){
+  pdf(paste0("bic317_size10000/bicWRaw_Node", names(bic)[i], ".pdf"))
+  plot(bic[[i]]) 
+  dev.off()
+}
+
+dev.off()
+
+
