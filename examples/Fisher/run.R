@@ -1,9 +1,9 @@
 #! /usr/local/bin/Rscript
-require(devtools)
-devtools::document('~/neurodata/meda/R')
-devtools::build("~/neurodata/meda/")
-devtools::check("~/neurodata/meda/")
-devtools::install("~/neurodata/meda/", dependancies = FALSE)
+#require(devtools)
+#devtools::document('~/neurodata/meda/R')
+#devtools::build("~/neurodata/meda/")
+#devtools::check("~/neurodata/meda/")
+#devtools::install("~/neurodata/meda/", dependancies = FALSE, quick = TRUE)
 
 require(meda)
 

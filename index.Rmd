@@ -20,9 +20,11 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-## [Selected Output Examples](singles.html)
-## [Kristina15 BIC plots](k15bic.html)
-## [Weiler BIC plots](weilerbic.html)
+### [Selected Output Examples](singles.html)
+### [Kristina15 BIC plots](k15bic.html)
+### [Weiler BIC plots](weilerbic.html)
+### [Multiple runs on different samples of size 1e4](multi.html)
+
 ## Complete Output Examples
 
 ### Toy example

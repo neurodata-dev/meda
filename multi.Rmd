@@ -1,0 +1,39 @@
+---
+title       : Matrix Exploratory Data Analysis
+subtitle    : MEDA
+author      : Neurodata
+job         : 
+framework   : html5slides   # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : draft # {standalone, draft}
+knit        : slidify::knit2slides #
+---
+
+```{r, echo=FALSE, eval=FALSE}
+require(slidify)
+require(rmarkdown)
+render('multi.Rmd')
+system('open multi.html')
+#slidify::knit2slides("index.Rmd")
+```
+
+# Kristina15 multiple runs on different samples of size 1e4
+
+### Scaled [0-1000] data
+- [K15 Set 1](examples/Kristina15/s1_01e3/s1_01e3K15.html)  
+- [K15 Set 2](examples/Kristina15/s2_01e3/s2_01e3K15.html)  
+- [K15 Set 3](examples/Kristina15/s3_01e3/s3_01e3K15.html)  
+
+
+# Weiler multiple runs on different samples of size 1e4
+
+### Scaled [0-1000] data
+- [W Set 1](examples/Weiler/s1_01e3/s1W01e3.html)  
+- [W Set 2](examples/Weiler/s2_01e3/s2W01e3.html)  
+- [W Set 3](examples/Weiler/s3_01e3/s3W01e3.html)  
+
+
+---
+---
