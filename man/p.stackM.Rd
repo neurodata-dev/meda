@@ -4,7 +4,7 @@
 \alias{p.stackM}
 \title{Generate stacked level mean plot}
 \usage{
-p.stackM(tree, ccol = "black", centered = FALSE)
+p.stackM(tree, ccol = "black", centered = FALSE, maxDepth = Inf)
 }
 \arguments{
 \item{tree}{the hmcTree object}
@@ -12,6 +12,8 @@ p.stackM(tree, ccol = "black", centered = FALSE)
 \item{ccol}{colors for feature labels}
 
 \item{centered}{boolen that skips level one if data was centered}
+
+\item{maxDepth}{maximum number of levels to plot}
 }
 \value{
 a stacked level mean plot

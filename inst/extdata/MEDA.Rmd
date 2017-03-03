@@ -144,7 +144,7 @@ out <- p.try(p.bic, dat)
 
 ```{r meda-hmcTree}
 #tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxDim = 8))
-tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 4,
+tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 5,
                        modelNames = modelNames))
 ```
 
@@ -168,8 +168,8 @@ The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
 ## Cluster Dendrogram 
 
 The dendrogram from hierarchical mclust.
-The default maxiumum tree depth is set to 6.
-```{r meda-dendro}
+The default maxiumum tree depth is set to 4, regardless of BIC.
+```{r meda-dendro, fig.height = 5}
 tryCatch(p.dend(hmcL))
 ```
 
@@ -184,14 +184,14 @@ print(pslc)
 #tryCatch(param <- p.clusterMeans(hmcL$mean, ccol = colCol))
 tryCatch(param <- p.clusterMeans(hmcL$means, ccol = colCol, cf = hmcL$ClusterFraction))
 #grid.arrange(param[[1]], param[[2]], ncol = 2)
-param[[1]]
+#param[[1]]
 param[[2]]
 ```
 
 
 ## HMClust output: Cluster correlation matrices
 ```{r meda-ccov, fig.height = 8 +ifelse(dim(hmcL$sigma)[3] %% 2==0,dim(hmcL$sigma)[3]- 2,dim(hmcL$sigma)[3])}
-#tryCatch(p.clusterCov(hmcL$sigma, ccol = colCol))
+allcor <- abind(hmcL$Get("cor", "level", filterFun = isNotRoot, format = list), along = 3)
 tryCatch(p.clusterCov(hmcL$cor, ccol = colCol))
 ```
 

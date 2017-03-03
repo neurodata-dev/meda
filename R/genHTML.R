@@ -924,7 +924,7 @@ p.clusterMeans <- function(modMeans, ccol = "black", cf = 1) {
           axis.text.y = element_text(color = ccol),
           #legend.direction = "horizontal", 
           legend.position = "bottom") + 
-    guides(alpha = FALSE, size = FALSE)
+    guides(alpha = FALSE, size = FALSE, colour = guide_legend(override.aes = list(size = 3)))
 
 
   out <- list(pheat = g1, pline = g2)
@@ -1138,6 +1138,7 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' @param tree the hmcTree object
 #' @param ccol colors for feature labels
 #' @param centered boolen that skips level one if data was centered
+#' @param maxDepth maximum number of levels to plot
 #'
 #' @return a stacked level mean plot
 #'
@@ -1149,15 +1150,17 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' p <- p.stackM(L)
 #' print(p)
 #' @export 
-p.stackM <- function(tree, ccol = "black", centered = FALSE){
+p.stackM <- function(tree, ccol = "black", centered = FALSE, maxDepth = Inf){
   node <- Clone(tree)
 
   node$Set(nlevel = node$Get('level'))
 
+  if(is.infinite(maxDepth)){ maxDepth <- node$height }
+
   iStart <- if(centered){ 2 } else { 1 }
   
   M <- list()
-  for(i in iStart:node$height){
+  for(i in iStart:maxDepth){
     travi <- Traverse(node, filterFun = function(x) x$nlevel == i)
   
     gi <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
