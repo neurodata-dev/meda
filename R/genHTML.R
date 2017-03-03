@@ -840,7 +840,7 @@ p.dend <- function(tree) {
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- NULL #iris[,5]
-#' L <- p.hmc(dat, truth = truth, modelNames = c("VVV"))
+#' L <- p.hmc(dat, truth = truth, modelNames = c("VVV"), maxDim = 6)
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
 p.hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
@@ -1156,6 +1156,7 @@ p.stackM <- function(tree, ccol = "black", centered = FALSE, maxDepth = Inf){
   node$Set(nlevel = node$Get('level'))
 
   if(is.infinite(maxDepth)){ maxDepth <- node$height }
+  if(maxDepth > node$height){maxDepth <- node$height }
 
   iStart <- if(centered){ 2 } else { 1 }
   
