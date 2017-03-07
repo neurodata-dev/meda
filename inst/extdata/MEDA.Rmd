@@ -168,14 +168,17 @@ The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
 ## Cluster Dendrogram 
 
 The dendrogram from hierarchical mclust.
-The default maxiumum tree depth is set to 4, regardless of BIC.
+The default maxiumum tree depth is set to 5, even if BIC suggests we
+continue.
 ```{r meda-dendro, fig.height = 5}
 tryCatch(p.dend(hmcL))
 ```
 
 ## HMClust output: Stacked Level Cluster means
+The plot below shows 5 levels even if even if the clustering terminated
+prior to reaching level 5. 
 ```{r meda-slcmeans}
-tryCatch(pslc <- p.stackM(hmcL, ccol = colCol, centered = center))
+tryCatch(pslc <- p.stackM(hmcL, ccol = colCol, centered = center, depth = 5))
 print(pslc)
 ```
 
