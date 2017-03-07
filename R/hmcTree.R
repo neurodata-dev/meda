@@ -30,6 +30,7 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
        node$bic <- b
        mc <- Mclust(node$data, x = b)
        cont <- all(table(mc$classification) > 10)
+       node$G <- mc$G
        if(mc$G == 2 && cont){
          node$model <- mc
          dat1 <- node$data[mc$classification == 1,]
@@ -86,6 +87,7 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
        b <- mclustBIC(node$data, G = 1:2, modelNames = modelNames)
        node$bic <- b
        mc <- Mclust(node$data, x = b)
+       node$G <- mc$G
        cont <- all(table(mc$classification) > 10)
        if(mc$G == 2 && cont){
          node$model <- mc

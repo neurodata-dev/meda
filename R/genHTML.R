@@ -816,10 +816,13 @@ p.hmclust <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6) {
 p.dend <- function(tree) {
   dend <- as.dendrogram(Sort(tree, "name"))
   num <- tree$Get("num")
-
+  cond <- as.numeric(tree$Get("G", by = "level"))
   dend <- dend %>%
                dendextend::set("branches_lwd", 10*as.numeric(num)) %>% 
-               dendextend::set("branches_lty", c(1))
+               dendextend::set("branches_lty", c(1)) %>%
+               dendextend::set("nodes_pch", c(15, 17)[cond]) %>%
+               dendextend::set("nodes_cex", 2.5) %>%
+               dendextend::set("nodes_col", c("red", "green")[cond])
 
   plot(dend, center = TRUE)
   round(tree$Get("num", filterFun=isLeaf), 4)
