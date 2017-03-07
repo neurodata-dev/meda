@@ -1139,18 +1139,19 @@ p.3dpca <- function(dat, colCol = NULL, web = TRUE) {
 #' @param ccol colors for feature labels
 #' @param centered boolen that skips level one if data was centered
 #' @param maxDepth maximum number of levels to plot
+#' @param depth forces via copying levels to show down to depth.
 #'
 #' @return a stacked level mean plot
 #'
 #' @importFrom ggplot2 ggplot
 #' @examples
-#' dat <- iris[, -5]
+#' dat <- scale(iris[, -5], center = TRUE, scale = FALSE)
 #' L <- hmcTree(dat)
-#' plot(as.dendrogram(L), center = TRUE)
-#' p <- p.stackM(L)
+#' p.dend(L)
+#' p <- p.stackM(L, centered = TRUE)
 #' print(p)
 #' @export 
-p.stackM <- function(tree, ccol = "black", centered = FALSE, maxDepth = Inf){
+p.stackM <- function(tree, ccol = "black", centered = FALSE, maxDepth = Inf, depth = 5){
   node <- Clone(tree)
 
   node$Set(nlevel = node$Get('level'))
@@ -1185,6 +1186,13 @@ p.stackM <- function(tree, ccol = "black", centered = FALSE, maxDepth = Inf){
 
     M[[i]] <- Reduce(cbind, asdf)
     rownames(M[[i]]) <- paste0("L", i, names(m[[i]]))
+  }
+ 
+  if(i < depth){
+    for(j in (i+1):depth){
+      M[[j]] <- M[[i]]
+      rownames(M[[j]]) <- paste0("L", j,"-",i, names(m[[1]]))
+    }
   }
   
   MM <- data.frame(Reduce(rbind, M))

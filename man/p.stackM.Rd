@@ -4,7 +4,8 @@
 \alias{p.stackM}
 \title{Generate stacked level mean plot}
 \usage{
-p.stackM(tree, ccol = "black", centered = FALSE, maxDepth = Inf)
+p.stackM(tree, ccol = "black", centered = FALSE, maxDepth = Inf,
+  depth = 5)
 }
 \arguments{
 \item{tree}{the hmcTree object}
@@ -14,6 +15,8 @@ p.stackM(tree, ccol = "black", centered = FALSE, maxDepth = Inf)
 \item{centered}{boolen that skips level one if data was centered}
 
 \item{maxDepth}{maximum number of levels to plot}
+
+\item{depth}{forces via copying levels to show down to depth.}
 }
 \value{
 a stacked level mean plot
@@ -22,10 +25,10 @@ a stacked level mean plot
 Generate stacked level mean plot
 }
 \examples{
-dat <- iris[, -5]
+dat <- scale(iris[, -5], center = TRUE, scale = FALSE)
 L <- hmcTree(dat)
-plot(as.dendrogram(L), center = TRUE)
-p <- p.stackM(L)
+p.dend(L)
+p <- p.stackM(L, centered = TRUE)
 print(p)
 }
 
