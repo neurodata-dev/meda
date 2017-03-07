@@ -16,8 +16,9 @@
 #' @param colRow an n length vector of column colors.
 #' @param center boolean to center feature columns
 #' @param modelNames list of models for MCLUST.
+#' @param rk 1: rmarkdown, 2: knitr
 #' 
-#' @return An html document via RMarkdown.
+#' @return An html document via RMarkdown or knitr.
 #'
 #' @details Generates an html file of various exploratory plots via
 #' RMarkdown. "There is no excuse for failing to plot and look." ~ J. W.
@@ -64,7 +65,7 @@ genHTML <- function(x, outfile, outdir,
                     scale = FALSE, dmethod = "cur", 
                     nmethod = "cur", truth = NULL, 
                     colCol = NULL, colRow = NULL, center = FALSE,
-                    modelNames = NULL) {
+                    modelNames = NULL, rk = 1) {
 
   outdir <- outdir
   use.plotly <- FALSE ## Remove this later
@@ -90,16 +91,22 @@ genHTML <- function(x, outfile, outdir,
    stop(paste("Feature columns", c(1:ncol(dat))[sd0], "have standard deviation = 0!"))
    }
 
-  rmd <- system.file("extdata", "MEDA.Rmd", package = "meda")
-  file.copy(rmd, outdir, overwrite = TRUE)
+  rmdr <- system.file("extdata", "MEDA.Rmd", package = "meda")
+  file.copy(rmdr, outdir, overwrite = TRUE)
+
+  rmdk <- system.file("extdata", "knitrMEDA.Rmd", package = "meda")
+  file.copy(rmdk, outdir, overwrite = TRUE)
 
   ## Colors and such 
   if(!exists("colCol") || is.null(colCol)){
     colCol <- "black"
   }
 
-  render(paste0(outdir, "/MEDA.Rmd"), output_file = outfile)
+  switch(rk, render(paste0(outdir, "/MEDA.Rmd"), output_file = outfile), 
+             knit2html(paste0(outdir, "/knitrMEDA.Rmd"), output = outfile))
+
   file.remove(paste0(outdir, "/MEDA.Rmd"))
+  file.remove(paste0(outdir, "/knitrMEDA.Rmd"))
 }
 
 #' Summary of data types

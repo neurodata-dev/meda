@@ -1,0 +1,243 @@
+```{r setup, echo = FALSE}
+opts_chunk$set(cache=FALSE, echo=FALSE, fig.height = 8, fig.width= 8,
+               warning=FALSE, message=FALSE, fig.show='hold',
+               comment="#", fig.keep='low', fig.path = outdir)
+```
+
+# Structure
+## Column types
+```{r meda-str1, results = 'hold'}
+print(colStr)
+```
+## Missing values, NAs, and Negatives
+```{r meda-str2, results = 'hold'}
+print(paste("Are all rows complete?:", complete))
+print(paste("Are there any NAs?:", nas))
+print(paste("Are any values negative?:", negs))
+```
+
+```{r meda-str3, results = 'hold'}
+n <- dim(dat)[1]
+d <- dim(dat)[2]
+if(d <= 12) { print("Structure"); str(dat) }
+```
+
+# Level 0
+
+## Heatmap
+The heatmap below is a representation of the data with values shown in
+color according to magnitude. Mouse hover for column names.
+
+[Heatmap](https://en.wikipedia.org/wiki/Heat_map)
+
+```{r meda-heatmap, fig.h = 12}
+tryCatch(p.heat(dat))
+```
+
+## First Moment Statistics
+
+The column means and medians are presented in combined 
+heatmap and lineplot below.
+
+```{r meda-locations, fig.width = 12}
+tryCatch(h1 <- p.location(dat, ccol = colCol))
+tryCatch(grid.arrange(h1[[1]], h1[[2]], ncol = 2))
+```
+
+# Second Moment Statistics
+## Correlation Matrix (heatmap)
+
+The correlation between two random variables is a measure of a specific
+type of dependence that involves not only the two variables themselves
+but also a random component.  It measures to what degree a linear
+relationship exists between then two random variables, where 1 is
+corresponds to a direct linear relationship, 0 corresponds to no linear
+relationship, and -1 corresponds to an inverse linear relationship.  
+
+1. [Correlation](https://www.encyclopediaofmath.org/index.php/Correlation_(in_statistics))
+2. [Correlation and dependence](https://en.wikipedia.org/wiki/Correlation_and_dependence)
+3. [Example graphic](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Correlation_examples2.svg/506px-Correlation_examples2.svg.png)
+
+```{r meda-corr}
+tryCatch(do.call(corrplot, p.cor(dat, colCol = colCol)))
+```
+
+# Density Estimates
+## Histogram (1D Heatmaps)
+
+For each feature column, the data are binned and a heatmap is produced
+with each bin colored according to count.
+
+```{r meda-1dheat}
+tryCatch(p.1dheat(dat, ccol = colCol))
+```
+
+## Marginals (2D Heatmaps)
+A pairs plot is a popular way of plotting high-dimensional data.  
+For every pair of dimensions are plotted showing the specific projection of
+the data along those two dimensions. 
+
+For readability a maximum of 8 dimensions are plotted. 
+
+```{r meda-pairs}
+tryCatch(p.pairs(dat, maxd = 8))
+```
+
+```{r meda-pairsFULL, fig.show='hide', dev='pdf', fig.width = max(8,dim(dat)[2]), fig.height = max(8,dim(dat)[2])}
+tryCatch(p.pairs(dat, maxd = Inf))
+```
+
+The full plot can be downloaded [here](./meda-pairsFULL-1.pdf)
+
+
+# Outlier Plots
+
+An outlier is a datapoint that lives relatively far away from the bulk
+of other observations. 
+Outliers can have unwanted effects on data analysis
+and therefore should be considered carefully. 
+
+We use the built-in method from the `randomForest` package in `R`.
+
+1. [randomForest](https://cran.r-project.org/web/packages/randomForest/index.html)
+1. [Outlier](https://en.wikipedia.org/wiki/Outlier)
+1. [randomForest_outlier](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#outliers)
+
+```{r meda-outlier}
+if(use.plotly){
+  ggplotly(p.try(p.outlier, dat))
+} else {
+  p.try(p.outlier, dat)
+}
+```
+
+# Cluster Analysis 
+
+## BIC Plots 
+The Bayesian Information Criterion is used to select the model
+parameters for Mclust. 
+
+1. [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion)
+2. [List of mclustModelNames p.88](https://cran.r-project.org/web/packages/mclust/mclust.pdf)
+
+```{r meda-bic}
+out <- p.try(p.bic, dat)
+```
+
+## Binary Hierarhical GMM Classifications
+
+```{r meda-hmcTree}
+#tryCatch(hmcL <- p.hmclust(dat, truth = truth, maxDim = 8))
+tryCatch(hmcL <- p.hmc(dat, truth = truth, maxDim = 8, maxDepth = 5,
+                       modelNames = modelNames))
+```
+
+```{r meda-hmclustFULL, fig.show = "hide", dev = "pdf", fig.height = max(8,dim(dat)[2]), fig.width = max(8,dim(dat)[2])}
+  shape <- if(!is.null(truth)){ 
+    as.numeric(factor(truth))
+  } else {
+    20
+  }
+
+pairs(dat, 
+      pch = shape, 
+      col =  hmcL$labels$col, 
+      cex = max(min(1.5/log10(dim(dat)[1]), 1.25), 0.05),
+      main = "Color is classification; if present, shape is truth"
+      )
+```
+
+The full plot can be downloaded [here](./meda-hmclustFULL-1.pdf)
+
+## Cluster Dendrogram 
+
+The dendrogram from hierarchical mclust.
+The default maxiumum tree depth is set to 4, regardless of BIC.
+```{r meda-dendro, fig.height = 5}
+tryCatch(p.dend(hmcL))
+```
+
+## HMClust output: Stacked Level Cluster means
+```{r meda-slcmeans}
+tryCatch(pslc <- p.stackM(hmcL, ccol = colCol, centered = center))
+print(pslc)
+```
+
+## HMClust output: Cluster means
+```{r meda-cmeans}
+#tryCatch(param <- p.clusterMeans(hmcL$mean, ccol = colCol))
+tryCatch(param <- p.clusterMeans(hmcL$means, ccol = colCol, cf = hmcL$ClusterFraction))
+#grid.arrange(param[[1]], param[[2]], ncol = 2)
+#param[[1]]
+param[[2]]
+```
+
+
+## HMClust output: Cluster correlation matrices
+```{r meda-ccov, fig.height = 8 +ifelse(dim(hmcL$sigma)[3] %% 2==0,dim(hmcL$sigma)[3]- 2,dim(hmcL$sigma)[3])}
+allcor <- abind(hmcL$Get("cor", "level", filterFun = isNotRoot, format = list), along = 3)
+tryCatch(p.clusterCov(allcor, ccol = colCol))
+```
+
+
+
+# Spectral Analysis
+
+## Cumulative Sum of Variance 
+
+The variance measure how spread out the data are from their mean.
+Cumulative variance measures, as a percentage, how much variation 
+each dimension contributes to the dataset. 
+
+In this implementation we use principal components analysis to select
+linear combinations of the features that explain the dataset best in
+low dimensions. 
+
+The plot below shows how much variance is explained when adding columns
+one at a time.  The elbows denote good "cut-off" points for dimension
+selection. 
+
+1. [Variance](https://www.encyclopediaofmath.org/index.php/Variance)
+2. [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis)
+3. [Elbows](http://dx.doi.org/10.1016/j.csda.2005.09.010)
+
+```{r meda-cumsum}
+if(use.plotly){
+  tryCatch(ggplotly(p.try(p.cumvar, dat)))
+} else {
+  p.try(p.cumvar, dat)
+}
+```
+
+
+## Right Singular Vectors Heatmap
+The right singular vectors of the data matrix are plotted below in a
+heatmap.
+```{r meda-rsvH}
+tryCatch(rsv <- p.rsv(dat, ccol = colCol, maxd = 8))
+rsv[[1]]
+```
+
+## Right Singular Vectors Pairs plot
+The right singular vectors are plotted below in a pairs plot.
+A maximum of 8 pairs will be plotted for readability. 
+```{r meda-rsvP}
+rsv[[2]]
+```
+
+```{r meda-rsvhFULL, fig.show = 'hide', fig.keep='all', dev = 'png', fig.height = max(8, dim(dat)[2]), fig.width = max(8, dim(dat)[2])}
+tryCatch(rsvFULL <- p.rsv(dat, ccol = colCol, maxd = Inf))
+rsvFULL[[1]]
+```
+```{r meda-rsvpFULL, fig.show = 'hide', fig.keep='all', dev = 'pdf', fig.height = max(8, dim(dat)[2]), fig.width = max(8, dim(dat)[2])}
+rsvFULL[[2]]
+```
+
+The full RSV plots can be downloaded [here](./meda-rsvhFULL-1.png)
+and [here](./meda-rsvpFULL-1.pdf).
+
+## 3D pca of correlation matrix
+```{r meda-3dpca}
+try(p.3dpca(dat, colCol = colCol))
+```
+
