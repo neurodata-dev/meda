@@ -32,7 +32,7 @@ tryCatch(genHTML(datRaw, outfile1, outdir ='./', colCol = ccol3, center = TRUE, 
 tryCatch(system(paste("open", outfile1)))
 
 setwd(outdir2)
-tryCatch(genHTML(datLog, outfile2, outdir = './',colCol = ccol3, center = TRUE, modelNames = c("VVV")))
+tryCatch(genHTML(datLog, outfile2, outdir = './',colCol = ccol3, center = TRUE))
 tryCatch(system(paste("open", outfile2)))
 
 setwd(outdir3)
