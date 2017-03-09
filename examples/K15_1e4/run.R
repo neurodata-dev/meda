@@ -26,6 +26,10 @@ outfile1 <- "~/neurodata/GH-pages/meda-gh/examples/K15_1e4/Raw/SynDataRaw.html"
 outfile2 <- "~/neurodata/GH-pages/meda-gh/examples/K15_1e4/Log10/SynDataLog10.html"
 outfile3 <- "~/neurodata/GH-pages/meda-gh/examples/K15_1e4/01e3/SynData01e3.html"
 
+setwd(outdir3)
+tryCatch(genHTML(dat01e3, outfile3, outdir = './', colCol = ccol3, center = TRUE, modelNames = c("VVV")))
+tryCatch(system(paste("open", outfile3)))
+
 setwd(outdir1)
 tryCatch(genHTML(datRaw, outfile1, outdir ='./', colCol = ccol3, center = TRUE, modelNames = c("VVV")))
 tryCatch(system(paste("open", outfile1)))
@@ -35,7 +39,4 @@ setwd(outdir2)
 tryCatch(genHTML(datLog, outfile2, outdir = './',colCol = ccol3, center = TRUE, modelNames = c("VVV")))
 tryCatch(system(paste("open", outfile2)))
 
-setwd(outdir3)
-tryCatch(genHTML(dat01e3, outfile3, outdir = './', colCol = ccol3, center = TRUE, modelNames = c("VVV")))
-tryCatch(system(paste("open", outfile3)))
 
