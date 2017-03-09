@@ -20,6 +20,7 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
+### [Notes on current conclusions: 201703](http://docs.neurodata.io/synaptome-stats/Draft/Notes201703)
 ### [Selected Output Examples](singles.html)
 ### [Kristina15 BIC plots](k15bic.html)
 ### [Weiler BIC plots](weilerbic.html)
