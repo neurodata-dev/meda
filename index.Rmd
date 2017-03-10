@@ -66,4 +66,19 @@ the data prior to analysis.
 - [Log_10](http://docs.neurodata.io/meda/examples/W_1e4/Log10/Ex10R55_Log10.html)
 - [Scaled 0-1000](http://docs.neurodata.io/meda/examples/W_1e4/01e3/Ex10R55_01e3.html)  
 
+### Weiler Dataset (Ex10R55) Using 1st PC of the DAPI features.
+#### Run on 10000 sample points with seed 123456 from the total ~190,000 points
+
+- [DAPI PCA](http://docs.neurodata.io/meda/examples/W_1e4/Explore/DAPI_explore.html)  
+- [Raw](http://docs.neurodata.io/meda/examples/W_1e4/Explore/Raw/dapiRaw_PCA.html)
+- [Log_10](http://docs.neurodata.io/meda/examples/W_1e4/Explore/Log10/dapiLog10_PCA.html)
+- [01e3](http://docs.neurodata.io/meda/examples/W_1e4/Explore/01e3/dapi01e3_PCA.html)
+
+
+
+
+
+---
+---
+
 
