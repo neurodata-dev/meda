@@ -1,0 +1,88 @@
+---
+title: "Weiler: DAPI Explorations"
+author: "MEDA"
+output:
+  html_document:
+    self_contained: true
+    fig_caption: yes
+    fig_height: 8
+    fig_width: 8
+    echo: FALSE
+    highlight: pygments
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+---
+
+# Weiler Data Explorations
+
+```{r getData, echo = FALSE, include = FALSE}
+require(meda)
+require(rhdf5)
+source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R")
+#rhdf5::h5ls("~/neurodata/synaptome-stats/Code/Notebooks/Ex10R55_F0.h5")
+base <- Sys.getenv("NEURODATA")
+datH5 <- rhdf5::h5read(paste0(base,"/synaptome-stats/Code/Notebooks/Ex10R55_F0.h5"),
+                       name = "F0")
+datEX <- t(datH5[,,1])
+
+namesEx <- read.csv(paste0(base,"/synaptome-stats/Code/Python/chan.csv"), head=FALSE, stringsAsFactors = FALSE)[,1]
+
+set.seed(1234)
+datRawEx <- as.data.frame(datEX)
+names(datRawEx) <- as.vector(namesEx)
+
+d <- c(3,26,1,25, 27:29)
+d <- c(d,setdiff(1:29, d))
+dat <- datRawEx[,d]
+
+ccolEx <- 
+  c("#197300", "#197300", "#197300", "#cc0000", "#cc0000", "#cc0000", 
+    "#cc0000", "#197300", "#0000cd", "#197300", "#197300", "#197300", 
+    "#0000cd", "#0000cd", "#197300", "#cc0000", "#cc0000", "#cc0000", 
+    "#197300", "#0000cd", "#197300", "#0000cd", "#0000cd", "#0000cd", 
+    "#0000cd", "#0000cd", "#0000cd", "#0000cd", "#0000cd")
+
+fac <- factor(ccolEx, levels = c("#197300", "#cc0000", "#0000cd"), 
+       ordered = TRUE)
+
+dat <- dat[, order(fac)]
+ccolEx <- ccolEx[order(fac)]
+
+datRaw <- as.data.table(dat)
+```
+
+
+```{r dapi}
+DAPI <- datRaw[, grep("DAPI*", colnames(datRaw), value = TRUE), with = FALSE]
+pca <- prcomp(as.matrix(DAPI), center = TRUE, scale = FALSE)
+pcax <- pca$x
+pc1 <- pcax[,1]
+pcn <- pc1 - min(pc1)
+plot(pcn, pch = 16, cex = .25, col = alpha("red", 0.25))
+```
+
+```{r scree}
+getElbows(pca$sdev)
+```
+
+
+```{r newDAPI}
+dat <- as.data.table(dat)
+dat[, DAPI_PC1 := pcn]
+names(dat)
+
+gn <- grep("DAPI.[^PC]", names(dat), value = TRUE)
+
+newDat <- dat[, !gn, with = FALSE]
+WeilerDAPIpca <- newDat
+```
+
+
+```{r save}
+save(WeilerDAPIpca, file = paste0(Sys.getenv("NEURODATA"), "/synaptome-stats/data/WeilerDAPIpca.RData"))
+```
+
+
+
+
