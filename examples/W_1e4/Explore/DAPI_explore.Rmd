@@ -14,6 +14,12 @@ output:
     toc: yes
 ---
 
+```{r render, eval=FALSE, echo=FALSE}
+require(rmarkdown)
+rmarkdown::render("DAPI_explore.Rmd")
+system('open DAPI_explore.html')
+```
+
 # Weiler Data Explorations
 
 ```{r getData, echo = FALSE, include = FALSE}
@@ -58,8 +64,8 @@ DAPI <- datRaw[, grep("DAPI*", colnames(datRaw), value = TRUE), with = FALSE]
 pca <- prcomp(as.matrix(DAPI), center = TRUE, scale = FALSE)
 pcax <- pca$x
 pc1 <- pcax[,1]
-pcn <- pc1 - min(pc1)
-plot(pcn, pch = 16, cex = .25, col = alpha("red", 0.25))
+pc1 <- pc1 - min(pc1)
+plot(pc1, pch = 16, cex = .25, col = alpha("red", 0.25))
 ```
 
 ```{r scree}
@@ -69,8 +75,6 @@ getElbows(pca$sdev)
 
 ```{r newDAPI}
 dat <- as.data.table(dat)
-dat[, DAPI_PC1 := pcn]
-names(dat)
 
 gn <- grep("DAPI.[^PC]", names(dat), value = TRUE)
 
