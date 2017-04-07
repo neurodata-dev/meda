@@ -10,6 +10,8 @@ hmcTree(dat, maxDepth = 6, modelNames = NULL)
 \item{dat}{a data matrix}
 
 \item{maxDepth}{maximum tree depth}
+
+\item{modelNames}{passed to mclust}
 }
 \value{
 binary hierarchical mclust classification output
@@ -25,7 +27,4 @@ propagated down the tree.  If k = 1, then that node is frozen.
 dat <- iris[, -5]
 truth <- iris[, 5]
 L <- hmcTree(dat)
-p.dend(L)
-p.stackM(L)
 }
-

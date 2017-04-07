@@ -46,4 +46,3 @@ tx <- transformData(X, type = c('1e3'),
 ties.method = 'average')
 
 }
-

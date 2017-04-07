@@ -2,6 +2,7 @@
 #'
 #' @param dat a data matrix
 #' @param maxDepth maximum tree depth
+#' @param modelNames passed to mclust
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -11,13 +12,11 @@
 #' @importFrom mclust mclustBIC Mclust
 #' @importFrom data.table melt
 #'
+#' @export 
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
-#' p.dend(L)
-#' p.stackM(L)
-#' @export 
 ### Binary Hierarchical Mclust Classifications 
 hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
   ## Helper function
@@ -170,9 +169,115 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
 
   node$ClusterFraction <- node$Get("num", filterFun = isLeaf)
   node$means <- means
-  node$sigma <- abind(h, along = 3)
+  node$sigma <- structure(list(dat =abind(h, along = 3)),
+                          class=c("clusterCov", "array"))
   node$cor <- abind(k, along = 3)
   node$labels <- outLabels
 
   return(node)
+}
+
+
+
+
+#' Generate binary hierarchical mclust tree
+#'
+#' @param dat data 
+#' @param truth true labels if any
+#' @param maxDim maximum dimensions to plot
+#' @param maxDepth maximum tree depth
+#' @param modelNames model names for mclust see \code{\link[mclust]{mclustModelNames}}
+#'
+#' @return binary hierarchical mclust classification output
+#' @details BIC is run for k = {1,2}, if k = 2 then each node is
+#' propagated down the tree.  If k = 1, then that node is frozen. 
+#' If a singleton exists, the level takes a step back. 
+#'
+#' @export 
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- NULL #iris[,5]
+#' maxDim = 6; modelNames = c("VVV"); maxDepth = 6
+#' d1 <- hmc(dat, truth = truth, modelNames = c("VVV"), maxDim = 6)
+#' plot(d1)
+#' plotDend(d1)
+### Binary Hierarchical Mclust Classifications 
+hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
+                  modelNames = NULL) {
+
+  d <- dim(dat)[2]
+  n <- dim(dat)[1]
+
+  size <- max(min(1.5/log10(n), 1.25), 0.05)
+  shape <- if(!is.null(truth)){ 
+    as.numeric(factor(truth))
+  } else {
+    20
+  }
+
+  dmax <- ifelse(d > maxDim, maxDim, d)
+
+  L <- hmcTree(dat, maxDepth, modelNames = modelNames)
+  
+  out <- structure(list(dat = L, dmax = dmax, shape = shape, size = size), class = "hmc")
+  
+  return(out)
+}
+
+#' Generate binary hierarchical mclust tree plot
+#'
+#' @param x an object of type hmc
+#' @param ... plotDend Boolean for dendrogram plot and maxd for max
+#' plotting dimension
+#'
+#' @method plot hmc
+#' @export 
+### Binary Hierarchical Mclust Classifications 
+plot.hmc <- function(x, ...){
+
+  dl <- x
+  L <- dl$dat
+  shape <- dl$shape
+  size <- dl$size
+  dmax <- ifelse(is.null(list(...)$maxd), dl$dmax, list(...)$maxd)
+
+  print("Fraction of points in each cluster:")
+  print(table(L$labels$col)/length(L$labels$col))
+  
+  pairs(dl$dat$data[, 1:dmax], 
+        pch = shape, 
+        col =  L$labels$col, 
+        cex = size, 
+        main = "Color is classification; if present, shape is truth"
+        )
+}
+
+
+#' plot a dendrogram from an hmc object
+#'
+#' @param dl an hmc object
+#'
+#' @return a dendrogram plot
+#' @import data.tree
+#' @import dendextend
+#'
+#' @export 
+plotDend <- function(dl){
+  if(class(dl) != "hmc"){
+    stop("must be of class hmc")
+  } else {
+    tree <- dl$dat 
+    dend <- as.dendrogram(Sort(tree, "name"))
+    num <- tree$Get("num")
+    cond <- as.numeric(tree$Get("G", by = "level"))
+    dend <- dend %>%
+                 dendextend::set("branches_lwd", 10*as.numeric(num)) %>% 
+                 dendextend::set("branches_lty", c(1)) %>%
+                 dendextend::set("nodes_pch", c(15, 17)[cond]) %>%
+                 dendextend::set("nodes_cex", 2.5) %>%
+                 dendextend::set("nodes_col", c("red", "green")[cond])
+
+    plot(dend, center = TRUE)
+    round(tree$Get("num", filterFun=isLeaf), 4)
+  }
 }

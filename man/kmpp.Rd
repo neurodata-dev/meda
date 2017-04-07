@@ -69,4 +69,3 @@ Mathematics, 2007.
 \seealso{
 \code{\link[stats]{kmeans}, \link{bhkmpp}}
 }
-
