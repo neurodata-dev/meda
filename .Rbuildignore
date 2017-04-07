@@ -4,5 +4,6 @@
 ^.*\.ig$
 ^.*\inst\extdata\*.html
 ^examples*
+^docker*
 ^python*
 ^rNd*
