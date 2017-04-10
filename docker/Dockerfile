@@ -16,7 +16,7 @@ RUN apt-get -y install r-base \
 
 #### Install needed R libraries
 RUN R -e "install.packages('devtools', repos = 'http://cran.rstudio.com/', dependencies = TRUE)"
-RUN R -e "require(devtools); devtools::install_github('neurodata/meda', ref = 'split', dependencies = TRUE)"
+RUN R -e "require(devtools); devtools::install_github('neurodata/meda', ref = 'v0.1.2.7003', dependencies = TRUE)"
 RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('rhdf5')"
 
 #### Add user
