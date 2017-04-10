@@ -237,9 +237,9 @@ plot.hmc <- function(x, ...){
 
   dl <- x
   L <- dl$dat
-  shape <- dl$shape
-  size <- dl$size
-  dmax <- ifelse(is.null(list(...)$maxd), dl$dmax, list(...)$maxd)
+  shape <- ifelse(is.null(list(...)$pch), 20, list(...)$pch)
+  size  <- ifelse(is.null(list(...)$cex), dl$size, list(...)$cex)
+  dmax  <- ifelse(is.null(list(...)$maxd), min(8,dl$dmax), list(...)$maxd)
 
   print("Fraction of points in each cluster:")
   print(table(L$labels$col)/length(L$labels$col))

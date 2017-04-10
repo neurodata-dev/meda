@@ -60,24 +60,27 @@ clusterMeans <- function(L, ccol = "black") {
 #' @param ... used for 'ccol' feature colors
 #'
 #' @return heatmaps of cluster covariances.
+#' @importFrom data.table melt
+#'
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmc(dat, truth = truth, modelNames = c("VVV"))
 #' plot(L, ccol = 1:4)
-#' plot(L$dat$sigma) 
+#' clusterCov(L)
 #' @export 
 #' @method plot clusterCov
 ### Cluster Covariance Plots
 plot.clusterCov <- function(x, ...){
   
-  ccov <- x$dat
+  ccov <- x
+  #ccov <- x$dat
   ccol <- if(!is.null(list(...)$ccol)){
     list(...)$ccol
   } else {
     "black"
   }
-  m1 <- melt(ccov)
+  m1 <- data.table::melt(ccov$dat)
   m1$Var2 <- ordered(m1$Var2, levels = rev(levels(m1$Var1)))
   m1$Var3 <- factor(sprintf("Cluster_%02d", m1$Var3))
  
@@ -98,9 +101,31 @@ plot.clusterCov <- function(x, ...){
 
   out <- g1
   return(out)
-} ### END clusterCov
+} ### END plot.clusterCov
 
 
+#' Generate cluster covariance plots
+#'
+#' @param x an object of type hmc of clusterCov
+#' 
+#' @return a cluster covariance plot
+#' 
+#' @examples
+#' dat <- iris[, -5]
+#' truth <- iris[, 5]
+#' L <- hmc(dat, truth = truth, modelNames = c("VVV"))
+#' clusterCov(L$dat$sigma)
+#' @export 
+clusterCov <- function(x){
+  ccov <- if(class(x)[[1]] == "hmc"){
+    x$dat$sigma
+  } else {
+    if(class(x)[[1]] == "clusterCov"){
+      x
+    }
+  }
+  plot(ccov)
+}
 
 
 #' Generate stacked level mean plot

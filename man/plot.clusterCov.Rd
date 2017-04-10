@@ -22,5 +22,5 @@ dat <- iris[, -5]
 truth <- iris[, 5]
 L <- hmc(dat, truth = truth, modelNames = c("VVV"))
 plot(L, ccol = 1:4)
-plot(L$dat$sigma) 
+clusterCov(L)
 }

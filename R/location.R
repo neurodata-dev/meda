@@ -63,7 +63,7 @@ plot.mlocation <- function(x, ...){
           theme(legend.title = element_blank(),
                 axis.title = element_blank())
 
-  if(dim(dat)[2] > 8){
+  if(dim(dm)[2] > 8){
     p1 <- p1 + coord_flip() + 
       theme(axis.text.y=element_text(color=ccol))
     p2 <- p2 + coord_flip() +

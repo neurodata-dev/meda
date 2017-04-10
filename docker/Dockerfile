@@ -1,11 +1,11 @@
 # Commencing 
 FROM ubuntu:16.04
-MAINTAINER Jesse Patsolic <studiojlp+p@gmail.com>
+MAINTAINER Jesse Patsolic <studiojlp@gmail.com>
 
 RUN apt-get update && apt-get install -y openssh-server 
 
 RUN apt-get update
-RUN apt-get install -y git cmake g++ libcurl4-openssl-dev libxml2-dev
+RUN apt-get install -y git libcurl4-openssl-dev libxml2-dev
 
 RUN apt-get update
 RUN apt-get install -y libssl-dev libssh2-1-dev 
@@ -30,4 +30,6 @@ RUN mkdir /data
 RUN chown meda:meda -R /data
 USER meda
 
-ENTRYPOINT ["Rscript", "/home/meda/genData.R"]
+#ENTRYPOINT ["Rscript", "/home/meda/genData.R"]
+ENTRYPOINT ["/launcher.sh"]
+

@@ -22,16 +22,38 @@ ccol <- h5read(infile, "colors/ccol")
 H5close()
 
 outL <- list()
-outL[[1]] <- mlocation(dat, ccol = ccol)
-outL[[2]] <- d1heat(dat, ccol = ccol)
-outL[[3]] <- pairhex(dat, colramp = magent, maxd = 8)
-outL[[4]] <- cumvar(dat)
-outL[[5]] <- outliers(dat)
-outL[[6]] <- hmc(scale(dat, center = TRUE, scale = FALSE))
-outL[[7]] <- stackM(outL[[6]], centered = TRUE, ccol = ccol)
-outL[[8]] <- clusterMeans(outL[[6]], ccol = ccol)
+print("Running mlocation")
+outL[[1]] <- mlocationDat <- mlocation(dat, ccol = ccol)
+print("Saving")
+save(mlocationDat, file = paste0(outdir, "mlocation.RData"))
+
+print("Running d1heat")
+outL[[2]] <- d1heatDat <- d1heat(dat, ccol = ccol)
+print("Saving")
+save(d1heatDat, file = paste0(outdir, "d1heat.RData"))
+
+print("Running pairhex")
+outL[[3]] <- pairhexDat <- pairhex(dat, colramp = magent, maxd = 8)
+print("Saving")
+save(pairhexDat, file = paste0(outdir, "pairhex.RData"))
+
+print("Running cumvar")
+outL[[4]] <- cumvarDat <- cumvar(dat)
+print("Saving")
+save(cumvarDat, file = paste0(outdir, "cumvar.RData"))
+
+print("Running outliers")
+outL[[5]] <- outliersDat <- outliers(dat)
+print("Saving")
+save(outliersDat, file = paste0(outdir, "outliers.RData"))
+
+print("Running hmc")
+outL[[6]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE))
+print("Saving")
+save(hmcDat, file = paste0(outdir, "hmc.RData"))
 
 
+print("Saving")
 save(outL, file = outfile)
 
 
