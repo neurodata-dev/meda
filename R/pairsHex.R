@@ -31,7 +31,7 @@ pairhex <- function(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE
   }
 
   ### the following from https://procomun.wordpress.com/2011/03/18/splomr/
-  splom(tmp,
+  outplot <- splom(tmp,
    as.matrix = TRUE,
    panel=panel.hexbinplot,
    colramp=colramp,
@@ -50,4 +50,5 @@ pairhex <- function(dat, maxd = Inf, colramp = BTC, ccol = "black", loess = TRUE
    },
    pscale=0, varname.cex=0.7
    )
+  return(outplot)
 } ## END FUNCTION

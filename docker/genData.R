@@ -11,6 +11,7 @@
 args <- commandArgs(trailingOnly = TRUE)
 suppressPackageStartupMessages(require(meda))
 suppressPackageStartupMessages(require(rhdf5))
+suppressPackageStartupMessages(require(htmlwidgets))
 
 genData <- function(dat, ccol, outdir, basedir){
 
@@ -42,7 +43,7 @@ genData <- function(dat, ccol, outdir, basedir){
   print("Running Heatmap")
   setwd(outdir)
   heatout <- "heatmap.html"
-  heatmaply(dat) %>% saveWidget(file = heatout, selfcontained = TRUE)
+  heatmaply(dat) %>% saveWidget(file = heatout, selfcontained = FALSE)
   setwd(basedir)
   
   print("Done")
@@ -52,7 +53,6 @@ infile <- args[1]
 outdir <- args[2]
 
 basedir <- getwd()
-outfile <- paste0(outdir, "/meda.rds")
 
 dat <- data.table(h5read(infile, "data/d1"))
 ccol <- h5read(infile, "colors/ccol")

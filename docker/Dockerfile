@@ -26,6 +26,10 @@ RUN apt-get update && apt-get install -y vim wget tmux
 RUN useradd -ms /bin/bash meda 
 RUN chown meda:meda /home/meda & addgroup meda staff
 
+## A few more R libraries 
+RUN R -e "install.packages(c('htmlwidgets', 'jsonlite', 'base64enc', 'png', 'viridis'),\
+ repos = 'http://cran.rstudio.com/', dependencies = 'Depends')"
+
 COPY ./launcher.sh /launcher.sh
 COPY ./genData.R /home/meda/genData.R 
 COPY ./genPlots.R /home/meda/genPlots.R 
