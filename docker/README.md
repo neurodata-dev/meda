@@ -17,3 +17,7 @@ You may then run:
 
 `docker run -v /mydata/:/data/ -t neurodata/meda data/inputs/myfile.h5 /data/outputs/`
 
+Then to plot teh results:
+
+`docker run -v /mydata/:/data/ -t neurodata/meda plot data/outputs/ /data/outputs/plots`
+
