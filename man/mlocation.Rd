@@ -21,4 +21,5 @@ Generate location estimates
 dat <- iris[, -5]
 loc <- mlocation(dat, ccol = 1:4)
 plot(loc)
+
 }

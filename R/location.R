@@ -7,11 +7,12 @@
 #' 
 #' @importFrom data.table melt
 #' 
-#' @export 
 #' @examples
 #' dat <- iris[, -5]
 #' loc <- mlocation(dat, ccol = 1:4)
 #' plot(loc)
+#'
+#' @export 
 ### Location Estimates 
 mlocation <- function(dat, ccol = NULL){
 

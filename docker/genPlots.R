@@ -30,6 +30,7 @@ for(i in 1:length(L)){
 }
 
 if(any(grepl("hmc.rds", files))){
+  ind <- which(grepl("hmc.rds", files))
   hmcDat <- L[grepl("hmc.rds", files)][[1]]
 
   png(paste0(outdir, "dend.png"), height = 720, width = 720)
@@ -40,15 +41,16 @@ if(any(grepl("hmc.rds", files))){
                   dim(hmcDat$dat$sigma$dat)[3]- 2,dim(hmcDat$dat$sigma$dat)[3])
 
   png(paste0(outdir, "corr.png"), height = h, width = 8, units = "in", res = 72)
-  plot(hmcDat$dat$sigma, ccol = L[[4]]$ccol)
+  plot(hmcDat$dat$sigma, ccol = L[[ind]]$ccol)
   dev.off()
 
-  hmcDat$dat$
   png(paste0(outdir, "clusterMeans.png"), height = 8, width = 18, units = "in", res = 300)
-  clusterMeans(L[grepl("hmc.rds", files)][[1]], ccol = L[[4]]$ccol)
+  show(clusterMeans(hmcDat, ccol = L[[ind]]$ccol))
   dev.off()
 
-  stackM(hmcDat, centered = TRUE, ccol = L[[4]]$ccol)
+  png(paste0(outdir, "stackM.png"), height = 8, width = 8, units = "in", res = 300)
+  show(stackM(hmcDat, centered = TRUE, ccol = L[[ind]]$ccol))
+  dev.off()
 }
 
 #   Time:

@@ -3,6 +3,8 @@
 #' @param dat data
 #' @param ccol colors for column labels
 #'
+#' @importFrom corrplot corrplot
+#'
 #' @return A correlation plot
 #' @examples 
 #' dat <- iris[, -5]
@@ -13,7 +15,6 @@
 medacor <- function(dat, ccol = "black") {
   out <- structure(list(corr = cor(dat), method = "color", tl.cex=1, tl.col = ccol),
                    class = "medacor")
-  return(out)
 }
 
 #' Generate correlation plots
@@ -25,8 +26,8 @@ medacor <- function(dat, ccol = "black") {
 #'
 #' @importFrom corrplot corrplot
 #'
-#' @export 
 #' @method plot medacor
-plot.medacor <- function(x, ...){
-  p <- do.call(corrplot, x)
+#' @export 
+plot.medacor <- function(x, ...) {
+  do.call(corrplot, x)
 }

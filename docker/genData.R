@@ -41,8 +41,8 @@ genData <- function(dat, ccol, outdir, basedir){
   saveRDS(pairHexDat, file = paste0(outdir, "pairhexDat.rds"))
 
   print("Running correlation")
-  outL[[7]] <- corDat <- cor(dat)
-  saveRDS(corDat, file = paste0(outdir, "cor.rds"))
+  outL[[7]] <- corDat <- medacor(dat)
+  saveRDS(corDat, file = paste0(outdir, "medacor.rds"))
   
   print("Running Heatmap")
   setwd(outdir)
