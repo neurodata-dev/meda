@@ -11,7 +11,6 @@
 #' mean are considred outliers.  Need to add case for n > 1e4.
 #' @import ggplot2
 #' @importFrom randomForest randomForest outlier
-#' @importFrom rflann Neighbour
 #' 
 #' @export 
 #' @examples
@@ -46,7 +45,6 @@ outliers <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 #' @return An outlier plot
 #' @import ggplot2
 #' @importFrom randomForest randomForest outlier
-#' @importFrom rflann Neighbour
 #' 
 #' @export 
 #' @method plot outliers
