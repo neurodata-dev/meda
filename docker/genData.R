@@ -39,6 +39,10 @@ genData <- function(dat, ccol, outdir, basedir){
   print("Running pairHex")
   outL[[6]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
   saveRDS(pairHexDat, file = paste0(outdir, "pairhexDat.rds"))
+
+  print("Running correlation")
+  outL[[7]] <- corDat <- cor(dat)
+  saveRDS(corDat, file = paste0(outdir, "cor.rds"))
   
   print("Running Heatmap")
   setwd(outdir)
