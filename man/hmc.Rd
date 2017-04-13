@@ -4,7 +4,8 @@
 \alias{hmc}
 \title{Generate binary hierarchical mclust tree}
 \usage{
-hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6, modelNames = NULL)
+hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6, modelNames = NULL,
+  ccol = "black")
 }
 \arguments{
 \item{dat}{data}
@@ -16,6 +17,8 @@ hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6, modelNames = NULL)
 \item{maxDepth}{maximum tree depth}
 
 \item{modelNames}{model names for mclust see \code{\link[mclust]{mclustModelNames}}}
+
+\item{ccol}{colors for feature labels}
 }
 \value{
 binary hierarchical mclust classification output

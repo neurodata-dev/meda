@@ -187,6 +187,7 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
 #' @param maxDim maximum dimensions to plot
 #' @param maxDepth maximum tree depth
 #' @param modelNames model names for mclust see \code{\link[mclust]{mclustModelNames}}
+#' @param ccol colors for feature labels
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -203,7 +204,7 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
 #' plotDend(d1)
 ### Binary Hierarchical Mclust Classifications 
 hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
-                  modelNames = NULL) {
+                  modelNames = NULL, ccol = "black") {
 
   d <- dim(dat)[2]
   n <- dim(dat)[1]
@@ -219,7 +220,7 @@ hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
 
   L <- hmcTree(dat, maxDepth, modelNames = modelNames)
   
-  out <- structure(list(dat = L, dmax = dmax, shape = shape, size = size), class = "hmc")
+  out <- structure(list(dat = L, dmax = dmax, shape = shape, size = size, ccol = ccol), class = "hmc")
   
   return(out)
 }
