@@ -33,6 +33,7 @@ clusterMeans <- function(L, ccol = "black") {
     geom_raster() + 
     coord_flip() + 
     theme(axis.title = element_blank(), 
+          axis.text.x = element_text(angle = 90),
           axis.text.y = element_text(color = ccol))
 
   g2 <- 
