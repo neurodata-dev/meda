@@ -1,28 +1,29 @@
-### building
+### Code
+The source code for this project lives [here](https://github.com/neurodata/meda) on GitHub. 
 
-From **this** directory, run the following:
+### Pulling the image
 
-`docker build -t neurodata/meda:latest .`
+`docker pull neurodata/meda`
 
-### running
+### Running
 
-We expect the following to be true:
+The following are expected to be true:
 
-- you have run MrAE's code generating an HDF5 file which you plan to process
-- said HDF5 file is assumed to be stored as `/mydata/inputs/myfile.h5`
+- You have a data matrix/spreadsheet where rows correspond to
+observation/subject and columns correspond to features and a separate
+csv file with one column of feature colors for plotting.
+- you have run [MrAE's code](https://gist.github.com/MrAE/57a4a5a95ad89413d492e5c62c5db497) on your data generating an HDF5 file which you plan to process.
+- the resulting HDF5 file is assumed to be stored as `/mydata/inputs/myfile.h5`
 - you want derivatives to be stored in `/mydata/outputs/`
 - you want plots to be stored in `/mydata/plots/`
 
-
 You may then run:
 
-`docker run -v /mydata/:/data/ -t neurodata/meda data/inputs/myfile.h5 /data/outputs/`
+`docker run -v /mydata/:/data/ -t neurodata/meda inputs/myfile.h5 outputs/`
 
 Then to plot the results:
 
 `docker run -v /mydata/:/data/ -t neurodata/meda plot data/outputs/ /data/outputs/plots/`
 
-To run synaptograms on the clustering results:
-
-`docker run -v /mydata/:/data/ -t neurodata/meda synaptograms locationFile.rbin /data/outputs/plots/`
+[Issues, bugs, feature requests?](https://github.com/neurodata/meda/issues)
 
