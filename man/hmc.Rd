@@ -4,7 +4,7 @@
 \alias{hmc}
 \title{Generate binary hierarchical mclust tree}
 \usage{
-hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 6, modelNames = NULL,
+hmc(dat, truth = NULL, maxDim = Inf, maxDepth = 5, modelNames = NULL,
   ccol = "black")
 }
 \arguments{

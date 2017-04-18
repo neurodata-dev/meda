@@ -12,6 +12,9 @@
 #' @importFrom abind abind
 #' @importFrom mclust mclustBIC Mclust
 #' @importFrom data.table melt
+#' @importFrom stats cov
+#' @importFrom stats cor
+#' @importFrom stats cov2cor
 #'
 #' @export 
 #' @examples
@@ -231,6 +234,7 @@ hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 5,
 #' @param ... plotDend Boolean for dendrogram plot and maxd for max
 #' plotting dimension
 #'
+#' @importFrom graphics pairs
 #' @method plot hmc
 #' @export 
 ### Binary Hierarchical Mclust Classifications 
@@ -261,6 +265,7 @@ plot.hmc <- function(x, ...){
 #' @return a dendrogram plot
 #' @import data.tree
 #' @import dendextend
+#' @importFrom stats as.dendrogram
 #'
 #' @export 
 plotDend <- function(dl){

@@ -3,7 +3,8 @@
 #' @param dat data
 #' @param ccol colors for column labels
 #'
-#' @importFrom corrplot corrplot
+#' @importFrom stats cor
+#' @importFrom stats cov
 #'
 #' @return A correlation plot
 #' @examples 
@@ -19,7 +20,7 @@ medacor <- function(dat, ccol = "black") {
 
 #' Generate correlation plots
 #'
-#' @param x an object of type d1heat
+#' @param x an object of type medacor
 #' @param ... unused
 #' 
 #' @return a corrplot

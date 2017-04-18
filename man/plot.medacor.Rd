@@ -7,7 +7,7 @@
 \method{plot}{medacor}(x, ...)
 }
 \arguments{
-\item{x}{an object of type d1heat}
+\item{x}{an object of type medacor}
 
 \item{...}{unused}
 }

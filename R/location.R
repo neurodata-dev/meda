@@ -6,6 +6,7 @@
 #' @return a list of ggplot objects, see details. 
 #' 
 #' @importFrom data.table melt
+#' @importFrom stats median
 #' 
 #' @examples
 #' dat <- iris[, -5]

@@ -4,14 +4,15 @@
 \alias{hmcTree}
 \title{Generate a binary hierarchical mclust tree}
 \usage{
-hmcTree(dat, maxDepth = 6, modelNames = NULL)
+hmcTree(dat, maxDepth = 5, modelNames = c("VVV"))
 }
 \arguments{
 \item{dat}{a data matrix}
 
-\item{maxDepth}{maximum tree depth}
+\item{maxDepth}{maximum tree depth, defaults to 5}
 
-\item{modelNames}{passed to mclust}
+\item{modelNames}{passed to mclust, defaults to
+unrestricted GMM i.e. "VVV"}
 }
 \value{
 binary hierarchical mclust classification output

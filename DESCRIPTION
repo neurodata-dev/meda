@@ -1,8 +1,8 @@
 Package: meda
 Title: Matrix Exploratory Data Analysis
-Version: 0.1.2.7009
-Authors@R: person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre")),
-person("Youngser", "Park", email = "youngser@jhu.edu", role = c("aut", "cre"))
+Version: 0.1.2.9000
+Authors@R: c(person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre")),
+             person("Youngser", "Park", role = c("aut")))
 BugReports: https://github.com/neurodata/meda/issues
 Description: A toolbox for exploratory data analysis on matrices. 
 Depends:
@@ -12,24 +12,23 @@ Depends:
   data.table,
   data.tree,
   dendextend,
-  energy,
-  foreach,
   ggplot2,
   gplots,
   graphics,
   gridExtra,
-  heatmaply,
   hexbin,
-  htmlwidgets,
-  irlba,
-  knitr,
   lattice,
   mclust,
-  plotly,
   randomForest,
-  RColorBrewer,
-  rmarkdown,
   stats
+Suggests:  
+  foreach,
+  rmarkdown,
+  plotly,
+  knitr,
+  heatmaply,
+  htmlwidgets, 
+  RColorBrewer
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true

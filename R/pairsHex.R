@@ -10,6 +10,7 @@
 #' @return A lattice splom
 #' @importFrom hexbin BTC
 #' @importFrom lattice splom
+#' @importFrom stats density
 #'
 #' @examples
 #' dat <- iris[,-5]

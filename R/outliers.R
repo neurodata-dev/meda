@@ -11,6 +11,9 @@
 #' mean are considred outliers.  Need to add case for n > 1e4.
 #' @import ggplot2
 #' @importFrom randomForest randomForest outlier
+#' @importFrom graphics plot
+#' @importFrom graphics points
+#' @importFrom stats sd
 #' 
 #' @export 
 #' @examples
