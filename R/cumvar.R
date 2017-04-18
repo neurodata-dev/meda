@@ -50,7 +50,7 @@ plot.cumvar <- function(x, ...){
     geom_point(aes(size = as.integer(col), color = col)) + 
     scale_size_continuous(guide = FALSE) + 
     ylab("% Cumulative Variance") + 
-    ggtitle("Cumulative Sum of variace in PC's")
+    ggtitle("Cumulative Sum of variance in PC's")
 
   return(ggcumvar)
 } ## END plot.cumvar

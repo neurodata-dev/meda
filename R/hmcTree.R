@@ -1,8 +1,9 @@
 #' Generate a binary hierarchical mclust tree
 #'
 #' @param dat a data matrix
-#' @param maxDepth maximum tree depth
-#' @param modelNames passed to mclust
+#' @param maxDepth maximum tree depth, defaults to 5
+#' @param modelNames passed to mclust, defaults to
+#' unrestricted GMM i.e. "VVV"
 #'
 #' @return binary hierarchical mclust classification output
 #' @details BIC is run for k = {1,2}, if k = 2 then each node is
@@ -18,8 +19,7 @@
 #' truth <- iris[, 5]
 #' L <- hmcTree(dat)
 ### Binary Hierarchical Mclust Classifications 
-hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
-  ## Helper function
+hmcTree <- function(dat, maxDepth = 5, modelNames = c("VVV")){ ## Helper function
   splitNode = function(node){
     if(!is.null(dim(node$data)) && 
        dim(node$data)[1] > 5 && 
@@ -203,7 +203,7 @@ hmcTree <- function(dat, maxDepth = 6, modelNames = NULL){
 #' plot(d1)
 #' plotDend(d1)
 ### Binary Hierarchical Mclust Classifications 
-hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 6,
+hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 5,
                   modelNames = NULL, ccol = "black") {
 
   d <- dim(dat)[2]

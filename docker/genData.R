@@ -17,37 +17,55 @@ genData <- function(dat, ccol, outdir, basedir){
 
   outL <- list()
   print("Running mlocation")
+  print(system.time({
   outL[[1]] <- mlocationDat <- mlocation(dat, ccol = ccol)
+  }))
   saveRDS(mlocationDat, file = paste0(outdir, "mlocation.rds"))
   
   print("Running d1heat")
+  print(system.time({
   outL[[2]] <- d1heatDat <- d1heat(dat, ccol = ccol)
+  }))
   saveRDS(d1heatDat, file = paste0(outdir, "d1heat.rds"))
   
   print("Running cumvar")
+  print(system.time({
   outL[[3]] <- cumvarDat <- cumvar(dat)
+  }))
   saveRDS(cumvarDat, file = paste0(outdir, "cumvar.rds"))
   
   print("Running outliers")
+  print(system.time({
   outL[[4]] <- outliersDat <- outliers(dat)
+  }))
   saveRDS(outliersDat, file = paste0(outdir, "outliers.rds"))
   
   print("Running hmc")
-  outL[[5]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE))
+  print(system.time({
+  outL[[5]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE), maxDepth = 6, modelNames = "VVV")
+  }))
   saveRDS(hmcDat, file = paste0(outdir, "hmc.rds"))
   
   print("Running pairHex")
+  print(system.time({
   outL[[6]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
+  }))
   saveRDS(pairHexDat, file = paste0(outdir, "pairhexDat.rds"))
 
   print("Running correlation")
+  print(system.time({
   outL[[7]] <- corDat <- medacor(dat)
+  }))
   saveRDS(corDat, file = paste0(outdir, "medacor.rds"))
   
   print("Running Heatmap")
   setwd(outdir)
-  heatout <- "heatmap.html"
-  heatmaply(dat) %>% saveWidget(file = heatout, selfcontained = FALSE)
+  print(system.time({
+  h <- heatmaply(dat, file = paste0("heatmap.html"))
+  }))
+  setwd(basedir)
+  save(h, file = paste0(outdir, "heatmap.RData"))
+  #h %>% saveWidget(file = heatout, selfcontained = FALSE)
   setwd(basedir)
   
   print("Done")
@@ -58,11 +76,13 @@ outdir <- args[2]
 
 basedir <- getwd()
 
-dat <- data.table(h5read(infile, "data/d1"))
+dat <- data.table(h5read(infile, name="data/d1"))
 ccol <- h5read(infile, "colors/ccol")
 H5close()
 
-genData(dat, ccol, outdir, basedir)
+#system.time(
+  genData(dat, ccol, outdir, basedir)
+#)
 
 #   Time:
 ##  Working status:

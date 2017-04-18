@@ -16,6 +16,7 @@ indir <- args[1]
 outdir <- args[2]
 
 files <- grep(".rds$", dir(indir, full.names = TRUE), value = TRUE)
+heatFile <- grep("heatmap.RData", dir(indir, full.names = TRUE), value = TRUE)
 
 L <- list()
 
@@ -52,6 +53,10 @@ if(any(grepl("hmc.rds", files))){
   show(stackM(hmcDat, centered = TRUE, ccol = L[[ind]]$ccol))
   dev.off()
 }
+
+load(heatFile)
+h %>% saveWidget(file = heatout, selfcontained = FALSE)
+
 
 #   Time:
 ##  Working status:

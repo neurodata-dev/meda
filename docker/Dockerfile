@@ -41,7 +41,7 @@ RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('rhdf5')"
 #### Install meda
 RUN R -e "require(devtools);\
          devtools::install_github('neurodata/meda',\
-         ref = '12312e6f535af64cb5e9823324af45c1becbcdb8',\
+         ref = '0910833b2c01b15390bdb54ed97b300deda22557',\
          dependencies = FALSE)"
 
 COPY ./launcher.sh /launcher.sh
