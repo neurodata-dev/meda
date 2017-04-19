@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' d <- d1heat(dat, breaks = "Scott", ccol = 1:5, trunc = NULL)
+#' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NULL)
 #' plot(d)
 #' @export 
 ### 1D heatmap
@@ -69,18 +69,19 @@ d1heat <- function(dat, breaks = "Scott", ccol = "black", trunc = NULL) {
 #' @importFrom data.table data.table 
 #' @importFrom data.table melt
 #'
-#' @method plot d1heat
 #' @export 
+#' @method plot d1heat
 plot.d1heat <- function(x, ...){
 
   d1heat <- x
   df <- d1heat$dat
-  ccol <- d1heat$ccol
+  ccol <- rev(d1heat$ccol)
 
   mycol <- colorpanel(255, "white", "#094620")
   sc <- scale_fill_gradientn(colours = mycol)
   
   p <- ggplot(df, aes(x, y, fill = Count)) + 
+         scale_y_discrete(name="", limits = rev(levels(df$y))) +
          geom_tile() + 
          theme(axis.title = element_blank(),
                axis.text.y=element_text(color=ccol)) + 

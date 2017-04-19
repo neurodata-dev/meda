@@ -21,5 +21,5 @@ Generate cluster parameter plots
 dat <- iris[, -5]
 truth <- iris[, 5]
 L <- hmc(dat, truth = truth, modelNames = c("VVV"))
-clusterMeans(L)
+clusterMeans(L, ccol = 1:4)
 }

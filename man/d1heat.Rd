@@ -28,6 +28,6 @@ plotted as a geom_tile object.
 }
 \examples{
 dat <- iris[, -5]
-d <- d1heat(dat, breaks = "Scott", ccol = 1:5, trunc = NULL)
+d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NULL)
 plot(d)
 }

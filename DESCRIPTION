@@ -1,6 +1,6 @@
 Package: meda
 Title: Matrix Exploratory Data Analysis
-Version: 0.1.2.9000
+Version: 0.1.2.9002
 Authors@R: c(person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre")),
              person("Youngser", "Park", role = c("aut")))
 BugReports: https://github.com/neurodata/meda/issues
@@ -16,6 +16,7 @@ Depends:
   gplots,
   graphics,
   gridExtra,
+  heatmaply,
   hexbin,
   lattice,
   mclust,
@@ -26,7 +27,6 @@ Suggests:
   rmarkdown,
   plotly,
   knitr,
-  heatmaply,
   htmlwidgets, 
   RColorBrewer
 License: GPL-3 + file LICENSE

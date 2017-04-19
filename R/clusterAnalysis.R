@@ -9,11 +9,12 @@
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
 #' L <- hmc(dat, truth = truth, modelNames = c("VVV"))
-#' clusterMeans(L)
+#' clusterMeans(L, ccol = 1:4)
 ### Model Parameter Plots
 clusterMeans <- function(L, ccol = "black") {
   modMeans <- L$dat$means
   cf <- L$dat$ClusterFraction
+  ccol <- rev(ccol)
 
   means <- as.matrix(modMeans)
   colnames(means) <- 
@@ -32,6 +33,7 @@ clusterMeans <- function(L, ccol = "black") {
     ggplot(d1, aes(x = Var1, y = Var2, fill = value)) + 
     geom_raster() + 
     coord_flip() + 
+    scale_x_discrete(name="", limits = rev(levels(d1$Var1))) +
     theme(axis.title = element_blank(), 
           axis.text.x = element_text(angle = 90),
           axis.text.y = element_text(color = ccol))
@@ -41,6 +43,7 @@ clusterMeans <- function(L, ccol = "black") {
     ggplot(d1, aes(x = Var1, y = value, group = Var2)) +
     geom_line(aes(colour = as.factor(Var2), alpha = alp, size = d1$ClusterFraction)) + 
     coord_flip() + 
+    scale_x_discrete(name="", limits = rev(levels(d1$Var1))) +
     scale_color_discrete(name = "Cluster") + 
     theme(axis.title = element_blank(), 
           axis.text.y = element_text(color = ccol),

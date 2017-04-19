@@ -38,11 +38,15 @@ RUN R -e "install.packages(c('RColorBrewer', 'rCUR',\
 RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('rhdf5')"
 
 
-#### Install meda
-RUN R -e "require(devtools);\
-         devtools::install_github('neurodata/meda',\
-         ref = '0910833b2c01b15390bdb54ed97b300deda22557',\
-         dependencies = FALSE)"
+#### Install meda from github
+#RUN R -e "require(devtools);\
+#         devtools::install_github('neurodata/meda',\
+#         ref = '92fdd5ce13c54c85b3272d6ed1230280765d3a39',\
+#         dependencies = FALSE)"
+
+#### Install meda from tarball
+COPY ./meda_0.1.2.9002.tar.gz /home/meda/meda_0.1.2.9002.tar.gz
+RUN R CMD INSTALL /home/meda/meda_0.1.2.9002.tar.gz
 
 COPY ./launcher.sh /launcher.sh
 COPY ./genData.R /home/meda/genData.R 
