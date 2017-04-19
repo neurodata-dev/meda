@@ -27,7 +27,9 @@ outliers <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 
   if(n > 1e4){
     s1 <- sample(1:n, 1e4)
-    rf1 <- randomForest(dat[s1,], proximity = TRUE)
+    nd <- dat[s1,]
+    rownames(nd) <- s1
+    rf1 <- randomForest(nd, proximity = TRUE)
   } else {
     rf1 <- randomForest(dat, proximity = TRUE)
   }
@@ -62,7 +64,7 @@ plot.outliers <- function(x, ...){
     ylab("Outlier Measure") + xlab("index") + 
     ggtitle("Outliers 3*sd from mean")
     
+  #ggplotly(p)
   return(p)
   NextMethod("plot")
 } ## END plot.outliers
-

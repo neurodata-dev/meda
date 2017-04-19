@@ -19,12 +19,12 @@
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NULL)
+#' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NA)
 #' plot(d)
 #' @export 
 ### 1D heatmap
 d1heat <- function(dat, breaks = "Scott", 
-                   ccol = "black", trunc = c(0.01, 0.99) {
+                   ccol = "black", trunc = c(0.01, 0.99)) {
 
   dat <- data.table(data.frame(apply(dat, 2, as.numeric)))
 

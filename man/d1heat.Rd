@@ -4,7 +4,7 @@
 \alias{d1heat}
 \title{Generate 1d heatmaps}
 \usage{
-d1heat(dat, breaks = "Scott", ccol = "black", trunc = NULL)
+d1heat(dat, breaks = "Scott", ccol = "black", trunc = c(0.01, 0.99))
 }
 \arguments{
 \item{dat}{the data}
@@ -14,7 +14,7 @@ d1heat(dat, breaks = "Scott", ccol = "black", trunc = NULL)
 \item{ccol}{colors for features.}
 
 \item{trunc}{numeric vector of length 2 to truncate bottom and top
-respectively}
+respectively, defaults to c(0.01,0.99), set to NA for no truncation.}
 }
 \value{
 an object of type d1heat
@@ -28,6 +28,6 @@ plotted as a geom_tile object.
 }
 \examples{
 dat <- iris[, -5]
-d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NULL)
+d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NA)
 plot(d)
 }
