@@ -4,7 +4,7 @@
 #' @param breaks see \code{\link[graphics]{hist}}
 #' @param ccol colors for features.
 #' @param trunc numeric vector of length 2 to truncate bottom and top
-#' respectively
+#' respectively, defaults to c(0.01,0.99), set to NA for no truncation.
 #' 
 #' @return an object of type d1heat
 #'
@@ -23,11 +23,12 @@
 #' plot(d)
 #' @export 
 ### 1D heatmap
-d1heat <- function(dat, breaks = "Scott", ccol = "black", trunc = NULL) {
+d1heat <- function(dat, breaks = "Scott", 
+                   ccol = "black", trunc = c(0.01, 0.99) {
 
   dat <- data.table(data.frame(apply(dat, 2, as.numeric)))
 
-  if(!is.null(trunc)){
+  if(!is.na(trunc)){
     qs <- apply(dat, 2, quantile, probs = c(trunc[1],trunc[2]))
 
     x <- dat[, lapply(.SD, 
