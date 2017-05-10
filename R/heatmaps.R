@@ -19,7 +19,7 @@
 #'
 #' @examples
 #' dat <- iris[, -5]
-#' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = NA)
+#' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = c(0.01,0.99))
 #' plot(d)
 #' @export 
 ### 1D heatmap
@@ -28,7 +28,7 @@ d1heat <- function(dat, breaks = "Scott",
 
   dat <- data.table(data.frame(apply(dat, 2, as.numeric)))
 
-  if(!is.na(trunc)){
+  if(!any(is.na(trunc))){
     qs <- apply(dat, 2, quantile, probs = c(trunc[1],trunc[2]))
 
     x <- dat[, lapply(.SD, 

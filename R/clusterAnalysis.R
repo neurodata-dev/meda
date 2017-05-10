@@ -231,3 +231,42 @@ stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth
   return(p)
 } ## END stackM
 
+
+#' Get K closest points to each cluster mean
+#'
+#' @param L of class hmc
+#' @param K nearest neighbors to the mean
+#' @param locs a matrix of point locations or IDs to use for results,
+#' see details.
+#'
+#' @return a list of the K closest points to the mean in each cluster.
+#' @details In real applications the locs i.e. locations would be some
+#' sort of identifier other than the rownames which distinguish points,
+#' say x y z locations, or some 
+#' @export 
+#' @examples
+#' dat <- iris[, -5]
+#' locs <- 1:nrow(dat) # in real applications this
+#' truth <- iris[, 5]
+#' L <- hmc(dat, truth = truth, modelNames = c("VVV"))
+#' cl5 <- closestK(L, K = 5, locs)
+#'
+### Model Parameter Plots
+closestK <- function(L, K = 10, locs) {
+
+  cMeans <- L$dat$means
+  clDat <-  L$dat$Get("data", filterFun = isLeaf, format = list)
+  
+  ## Compute distances from each synapse to it's cluster mean.
+  yd <- mapply(function(x,y){ (apply(y, 1, function(yr){ dist(rbind(t(x), yr)) }))}, cMeans, clDat)
+  syd <- lapply(yd, function(x) names(sort(x))[1:K]) ## Get top K synapses from each cluster
+#  
+  if(!is.null(dim(locs))){
+    ll <- lapply(syd, function(s){ locs[as.numeric(s),] })
+  } else {
+    ll <- lapply(syd, function(s){ locs[as.numeric(s)] })
+  }
+
+  return(ll)
+} ### END closestK
+

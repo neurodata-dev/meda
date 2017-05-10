@@ -33,26 +33,27 @@ genData <- function(dat, ccol, outdir, basedir){
   outL[[4]] <- outliersDat <- outliers(dat)
   saveRDS(outliersDat, file = paste0(outdir, "outliers.rds"))
   
-  print("Running hmc")
-  outL[[5]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE), maxDepth = 6, modelNames = "VVV")
-  saveRDS(hmcDat, file = paste0(outdir, "hmc.rds"))
-  
   print("Running pairHex")
-  outL[[6]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
+  outL[[5]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
   saveRDS(pairHexDat, file = paste0(outdir, "pairhexDat.rds"))
 
   print("Running correlation")
-  outL[[7]] <- corDat <- medacor(dat)
+  outL[[6]] <- corDat <- medacor(dat, ccol = ccol)
   saveRDS(corDat, file = paste0(outdir, "medacor.rds"))
+
+  print("Running hmc")
+  outL[[7]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE), 
+                             maxDepth = 6, modelNames = "EEE", ccol = ccol)
+  saveRDS(hmcDat, file = paste0(outdir, "hmc.rds"))
   
   print("Running Heatmap")
-  setwd(outdir)
-  h <- heatmaply(dat, file = paste0("heatmap.html"))
-  setwd(basedir)
+  #setwd(outdir)
+  h <- heatmaply(dat, file = "heatmap.html", selfcontained = FALSE)
+  #setwd(basedir)
 
-  save(h, file = paste0(outdir, "heatmap.RData"), selfcontained = FALSE)
+  save(h, file = paste0(outdir, "heatmap.RData"))
   #h %>% saveWidget(file = heatout, selfcontained = FALSE)
-  setwd(basedir)
+  #setwd(basedir)
   
   print("Done")
 }

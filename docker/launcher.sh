@@ -1,16 +1,16 @@
 #!/bin/bash
 if [ "${1}" == "plot" ]
 then
-  mkdir -p /data/${3}
+  mkdir -p ${3}
   ls -R /data
-  Rscript /home/meda/genPlots.R ${2} ${3}/
+  Rscript /home/meda/genPlots.R ${2} ${3}
 elif [ "${1}" == "synaptograms" ]
 then 
   echo "Synaptograms are under construction"
 else 
-  mkdir -p /data/${2}
-  ls -R /data
-  Rscript /home/meda/genData.R /data/${1} /data/${2}/
+  mkdir -p ${2}
+  #ls -R /data
+  Rscript /home/meda/genData.R ${1} ${2}
 fi
 
 
