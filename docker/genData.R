@@ -42,8 +42,9 @@ genData <- function(dat, ccol, outdir, basedir){
   saveRDS(corDat, file = paste0(outdir, "medacor.rds"))
 
   print("Running hmc")
-  outL[[7]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE), 
-                             maxDepth = 6, modelNames = "EEE", ccol = ccol)
+  outL[[7]] <- hmcDat <- hmc(dat,
+                             #scale(dat, center = TRUE, scale = TRUE), 
+                             maxDepth = 6, modelNames = "VVV", ccol = ccol)
   saveRDS(hmcDat, file = paste0(outdir, "hmc.rds"))
   
   print("Running Heatmap")
@@ -60,12 +61,21 @@ genData <- function(dat, ccol, outdir, basedir){
 
 infile <- args[1]
 outdir <- args[2]
+if(length(args) > 2){inlabs <- args[3]}
 
 basedir <- getwd()
 
-dat <- data.table(h5read(infile, name="data/d1"))
-ccol <- h5read(infile, "colors/ccol")
-H5close()
+if(grepl("*.csv$", infile)){
+  dat <- read.csv(infile, header = FALSE)
+  truth <- read.csv(inlabs, header = FALSE)
+  ccol <- "black"
+}
+
+if(grepl("*.h5$", infile)){
+  dat <- data.table(h5read(infile, name="data/d1"))
+  ccol <- h5read(infile, "colors/ccol")
+  H5close()
+}
 
 #system.time(
   genData(dat, ccol, outdir, basedir)
