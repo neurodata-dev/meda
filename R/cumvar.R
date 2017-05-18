@@ -15,12 +15,11 @@
 #' plot(c1)
 ### Cumulative variance
 cumvar <- function(dat){
-  tryCatch(source("http://www.cis.jhu.edu/~parky/Synapse/getElbows.R"))   
   
   n  <- dim(dat)[1]
 
   sv <- svd(dat, nu = 0, nv = 0)$d
-  tryCatch(elb <- getElbows(sv, plot = FALSE))
+  elb <- getElbows(sv, plot = FALSE)
 
   CS <- data.frame(index = 1:length(sv), cs = (100*cumsum(sv / sum(sv))))
   CS$col <- "" 
