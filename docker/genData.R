@@ -16,34 +16,39 @@ suppressPackageStartupMessages(require(htmlwidgets))
 
 genData <- function(dat, ccol, outdir, basedir){
 
+  i <- 0
+
   outL <- list()
+  print("Running colStats")
+  outL[[i+1]] <- cs <- colStats(dat)
+  saveRDS(cs, file = paste0(outdir, "colStats.rds"))
+
   print("Running mlocation")
-  outL[[1]] <- mlocationDat <- mlocation(dat, ccol = ccol)
+  outL[[i+1]] <- mlocationDat <- mlocation(dat, ccol = ccol)
   saveRDS(mlocationDat, file = paste0(outdir, "mlocation.rds"))
   
   print("Running d1heat")
-  outL[[2]] <- d1heatDat <- d1heat(dat, ccol = ccol)
+  outL[[i+1]] <- d1heatDat <- d1heat(dat, ccol = ccol)
   saveRDS(d1heatDat, file = paste0(outdir, "d1heat.rds"))
   
   print("Running cumvar")
-  outL[[3]] <- cumvarDat <- cumvar(dat)
+  outL[[i+1]] <- cumvarDat <- cumvar(dat)
   saveRDS(cumvarDat, file = paste0(outdir, "cumvar.rds"))
   
   print("Running outliers")
-  outL[[4]] <- outliersDat <- outliers(dat)
+  outL[[i+1]] <- outliersDat <- outliers(dat)
   saveRDS(outliersDat, file = paste0(outdir, "outliers.rds"))
   
   print("Running pairHex")
-  outL[[5]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
+  outL[[i+1]] <- pairHexDat <- invisible(pairhex(dat, maxd = 6))
   saveRDS(pairHexDat, file = paste0(outdir, "pairhexDat.rds"))
 
   print("Running correlation")
-  outL[[6]] <- corDat <- medacor(dat, ccol = ccol)
+  outL[[i+1]] <- corDat <- medacor(dat, ccol = ccol)
   saveRDS(corDat, file = paste0(outdir, "medacor.rds"))
 
   print("Running hmc")
-  outL[[7]] <- hmcDat <- hmc(dat,
-                             #scale(dat, center = TRUE, scale = TRUE), 
+  outL[[i+1]] <- hmcDat <- hmc(scale(dat, center = TRUE, scale = FALSE), 
                              maxDepth = 6, modelNames = "VVV", ccol = ccol)
   saveRDS(hmcDat, file = paste0(outdir, "hmc.rds"))
   
@@ -61,13 +66,11 @@ genData <- function(dat, ccol, outdir, basedir){
 
 infile <- args[1]
 outdir <- args[2]
-if(length(args) > 2){inlabs <- args[3]}
 
 basedir <- getwd()
 
 if(grepl("*.csv$", infile)){
-  dat <- read.csv(infile, header = FALSE)
-  truth <- read.csv(inlabs, header = FALSE)
+  dat <- read.csv(infile, header = TRUE)
   ccol <- "black"
 }
 
