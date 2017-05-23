@@ -24,26 +24,33 @@ s1 <- s[1:10000]
 
 datRaw <- WeilerDAPIpca[s1,]
 dat01e3 <- transformData(WeilerDAPIpca, type = c("1e3"))$d01e3[s1,]
-datLog10 <- transformData(WeilerDAPIpca, type = c("log10"))$log10[s1,]
+
+datLog10FULL <- transformData(WeilerDAPIpca, type = c("log10"))$log10
+set.seed(123456)
+sl <- sample(nrow(datLog10FULL), 1e4)
+datLog10 <- datLog10FULL[sl,]
 
 outfile1 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/01e3/dapi01e3_PCA.html")
 outfile2 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/Raw/dapiRaw_PCA.html")
-outfile3 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/Raw/dapiLog10_PCA.html")
+outfile3 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/Log10/dapiLog10_PCA.html")
 
 outdir1 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/01e3/")
 outdir2 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/Raw/")
 outdir3 <- paste0(Sys.getenv("NEURODATA"), "/GH-pages/meda-gh/examples/W_1e4/Explore/Log10/")
 
 setwd(outdir1)
+set.seed(21218)
 tryCatch(genHTML(dat01e3, outfile1, outdir = './', colCol = ccolEx, center = TRUE, modelNames = c("VVV")))
 tryCatch(system(paste("open", outfile1)))
 
 setwd(outdir2)
+set.seed(21218)
 tryCatch(genHTML(datRaw, outfile2, outdir = './', colCol = ccolEx, center = TRUE, modelNames = c("VVV")))
 tryCatch(system(paste("open", outfile2)))
 
 setwd(outdir3)
-tryCatch(genHTML(datLog10, outfile3, outdir = './', colCol = ccolEx, center = TRUE, modelNames = c("VVV")))
+set.seed(21218)
+tryCatch(genHTML(as.data.table(datLog10), outfile3, outdir = './', colCol = ccolEx, center = TRUE, modelNames = c("VVV")))
 tryCatch(system(paste("open", outfile3)))
 
 

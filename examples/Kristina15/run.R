@@ -27,13 +27,13 @@ outfile1 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Raw/SynDataRaw.h
 outfile2 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/Log10/SynDataLog10.html")
 outfile3 <- paste0(base, "/GH-pages/meda-gh/examples/Kristina15/01e3/SynData01e3.html")
 
-setwd(outdir1)
-tryCatch(genHTML(datRaw, outfile1, outdir ='./', colCol = ccol3, center = TRUE, modelNames = c("VVV")))
-tryCatch(system(paste("open", outfile1)))
-
-setwd(outdir2)
-tryCatch(genHTML(datLog, outfile2, outdir = './',colCol = ccol3, center = TRUE))
-tryCatch(system(paste("open", outfile2)))
+#setwd(outdir1)
+#tryCatch(genHTML(datRaw, outfile1, outdir ='./', colCol = ccol3, center = TRUE, modelNames = c("VVV")))
+#tryCatch(system(paste("open", outfile1)))
+#
+#setwd(outdir2)
+#tryCatch(genHTML(datLog, outfile2, outdir = './',colCol = ccol3, center = TRUE))
+#tryCatch(system(paste("open", outfile2)))
 
 setwd(outdir3)
 tryCatch(genHTML(dat01e3, outfile3, outdir = './', colCol = ccol3, center = TRUE, modelNames = c("VVV")))

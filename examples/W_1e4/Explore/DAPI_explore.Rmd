@@ -75,13 +75,12 @@ getElbows(pca$sdev)
 
 ```{r newDAPI}
 dat <- as.data.table(dat)
-
 gn <- grep("DAPI.[^PC]", names(dat), value = TRUE)
 
 newDat <- dat[, !gn, with = FALSE]
+newDat[, DAPI_PCA := pc1]
 WeilerDAPIpca <- newDat
 ```
-
 
 ```{r save}
 save(WeilerDAPIpca, file = paste0(Sys.getenv("NEURODATA"), "/synaptome-stats/data/WeilerDAPIpca.RData"))
