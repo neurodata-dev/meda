@@ -21,6 +21,10 @@ require(rmarkdown)
 rm(list=ls()); 
 rmarkdown::render("k15_201706.Rmd")
 system("open k15_201706.html")
+if(FALSE){
+  system("cp k15_201706.html index.html")
+  system("open index.html")
+}
 ```
 
 ```{r setup,include=FALSE,results='asis',message=FALSE,warning=FALSE, echo = FALSE}
