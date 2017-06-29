@@ -10,7 +10,7 @@ output:
     number_sections: yes
     theme: cerulean
     toc: yes
-    toc_depth: 3
+    toc_depth: 1
 ---
 ```{r knitOPTS, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE, dev = "png")
@@ -24,37 +24,37 @@ system("open k15_201706.html")
 ```
 
 ```{r setup,include=FALSE,results='asis',message=FALSE,warning=FALSE, echo = FALSE}
-### Library calls here.
+# Library calls here.
 require(rmarkdown)
 require(knitr)
 suppressMessages(require(meda))
 ```
 
-### 1-d Heatmap
+# 1-d Heatmap
 ![](./plots/2.png)
 
-### Location ./plots
+# Location plots
 ![](./plots/raw5.png)
 
-### Outliers as given by randomForest
+# Outliers as given by randomForest
 ![](./plots/6.png)
 
-### Correlation Matrix
+# Correlation Matrix
 ![](./plots/4.png)
 
-### Cumulative Variance with Elbows
+# Cumulative Variance with Elbows
 ![](./plots/1.png)
 
-### Paired Hex-binned plot
+# Paired Hex-binned plot
 ![](./plots/7.png)
 
-### Hierarchical GMM Classifications
+# Hierarchical GMM Classifications
 ![](./plots/3.png)
 
-### Hierarchical GMM Dendrogram
+# Hierarchical GMM Dendrogram
 ![](./plots/dend.png)
 
-### Stacked Cluster Means plot
+# Stacked Cluster Means plot
 ```{r stackM, include = FALSE, eval = FALSE}
 suppressPackageStartupMessages(require(meda))
 h <- readRDS("hmc.rds")
@@ -64,7 +64,7 @@ dev.off()
 ```
 ![](./plots/stackMM.png)
 
-### Cluster Means
+# Cluster Means
 ![](./plots/clusterMeans.png)
 
 
