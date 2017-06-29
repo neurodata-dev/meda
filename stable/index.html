@@ -1,0 +1,73 @@
+---
+title: "MEDA: Current State"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 5
+    highlight: pygments
+    number_sections: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+---
+```{r knitOPTS, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE, dev = "png")
+```
+
+```{r render, eval=FALSE, echo=FALSE}
+require(rmarkdown)
+rm(list=ls()); 
+rmarkdown::render("k15_201706.Rmd")
+system("open k15_201706.html")
+```
+
+```{r setup,include=FALSE,results='asis',message=FALSE,warning=FALSE, echo = FALSE}
+### Library calls here.
+require(rmarkdown)
+require(knitr)
+suppressMessages(require(meda))
+```
+
+### 1-d Heatmap
+![](./plots/2.png)
+
+### Location ./plots
+![](./plots/raw5.png)
+
+### Outliers as given by randomForest
+![](./plots/6.png)
+
+### Correlation Matrix
+![](./plots/4.png)
+
+### Cumulative Variance with Elbows
+![](./plots/1.png)
+
+### Paired Hex-binned plot
+![](./plots/7.png)
+
+### Hierarchical GMM Classifications
+![](./plots/3.png)
+
+### Hierarchical GMM Dendrogram
+![](./plots/dend.png)
+
+### Stacked Cluster Means plot
+```{r stackM, include = FALSE, eval = FALSE}
+suppressPackageStartupMessages(require(meda))
+h <- readRDS("hmc.rds")
+png("./plots/stackMM.png", height = 1800, width = 800)
+plot(stackM(h, ccol = h$ccol, centered = TRUE)) 
+dev.off()
+```
+![](./plots/stackMM.png)
+
+### Cluster Means
+![](./plots/clusterMeans.png)
+
+
+
+--- 
+---
