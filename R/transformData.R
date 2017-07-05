@@ -18,7 +18,7 @@
 #' same as 'slog10' but for base \eqn{e}. And 'all' performs all of the
 #' above.
 #'
-#' @import data.table
+#' @importFrom data.table data.table
 #' 
 #' @examples
 #' set.seed(13)

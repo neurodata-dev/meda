@@ -10,24 +10,28 @@
 #' dat <- data.frame(dat0, dat1, let = paste0(letters, 1:150), cplx = z,stringsAsFactors = FALSE)
 #' cs <- colStats(dat)
 #' plot(cs)
+#' @importFrom utils head
 ### Cumulative variance
 colStats <- function(dat){
-  
+
+  dat <- as.data.frame(dat)  
   n <- dim(dat)[1]
   d <- dim(dat)[2]
 
-  if("data.frame" %in% class(dat)){
-    cl <- Reduce(rbind, lapply(dat, typeof))
-  }
-  if("matrix" %in% class(dat)){
-    cl <- apply(dat, 2, typeof)
-  }
+  cl <- Reduce(rbind, lapply(dat, typeof))
+
+  wh <- cl %in% c("numeric", "double","complex")
 
   if(d <= 12){
     h <- head(dat)
   } else {
     s1 <- sample(ncol(dat), 12)
     h <- head(dat[, s1])
+  }
+
+  ### Rounding for display purposes 
+  if(any(wh)){
+    h[wh] <- round(h[wh], 3)
   }
 
   tab <- table(cl)
@@ -61,7 +65,7 @@ plot.colstats <- function(x, ...){
   
   tab <- tableGrob(h)
   
-  lay <- matrix(c(NA,2,1,2,NA,2), 2,3)
+  lay <- matrix(c(1,2,1,2,1,2), 2,3)
   p <- arrangeGrob(gg, tab, ncol = 1, layout_matrix = lay)
 
   invisible(plot(p))

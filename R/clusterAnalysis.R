@@ -243,6 +243,8 @@ stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth
 #' @details In real applications the locs i.e. locations would be some
 #' sort of identifier other than the rownames which distinguish points,
 #' say x y z locations, or some 
+#'
+#' @importFrom stats dist
 #' @export 
 #' @examples
 #' dat <- iris[, -5]

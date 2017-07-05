@@ -45,9 +45,9 @@ RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('rhdf5')"
 #         dependencies = FALSE)"
 
 #### Install meda from tarball
-COPY ./meda_0.1.2.9009.tar.gz /home/meda/meda_0.1.2.9009.tar.gz
+COPY ./meda_0.1.2.9011.tar.gz /home/meda/meda_0.1.2.9011.tar.gz
 RUN pwd
-RUN R CMD INSTALL /home/meda/meda_0.1.2.9009.tar.gz
+RUN R CMD INSTALL /home/meda/meda_0.1.2.9011.tar.gz
 
 COPY ./launcher.sh /launcher.sh
 COPY ./genData.R /home/meda/genData.R 

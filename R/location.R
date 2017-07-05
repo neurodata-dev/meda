@@ -2,11 +2,12 @@
 #'
 #' @param dat data
 #' @param ccol colors for features. 
+#' @param CI specified confidence interval about mean.
 #'
 #' @return a list of ggplot objects, see details. 
 #' 
 #' @importFrom data.table melt
-#' @importFrom stats median
+#' @importFrom stats median qnorm
 #' 
 #' @examples
 #' dat <- iris[, -5]
@@ -15,12 +16,21 @@
 #'
 #' @export 
 ### Location Estimates 
-mlocation <- function(dat, ccol = NULL){
+mlocation <- function(dat, ccol = NULL, CI = 0.95){
 
+  n <- nrow(dat)
   Mean <- apply(dat, 2, mean)
   Median <- apply(dat, 2, median)
+  SD <- apply(dat, 2, sd)
+ 
+  zs <- qnorm(CI + (1- CI)/2)
 
+  lci <- c(Mean - zs*SD/sqrt(n), rep(NA, length(Median)))
+  uci <- c(Mean + zs*SD/sqrt(n), rep(NA, length(Median)))
+ 
   loc1 <- melt(cbind(Mean, Median))
+
+  loc1 <- cbind(loc1, l = lci, u = uci)
 
   loc <- structure(list(dat = loc1, ccol = ccol), 
                    class = c("mlocation"))
@@ -62,6 +72,7 @@ plot.mlocation <- function(x, ...){
     ggplot(dm, aes(x = Var1, y = value, 
                    group = Var2, color = Var2)) + 
           geom_line(alpha = 0.7, size = 1) + 
+          geom_errorbar(aes(ymin = l, ymax = u), width = 0.5, size = 1) + 
           theme(legend.title = element_blank(),
                 axis.title = element_blank())
 

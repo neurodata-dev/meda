@@ -4,12 +4,14 @@
 \alias{mlocation}
 \title{Generate location estimates}
 \usage{
-mlocation(dat, ccol = NULL)
+mlocation(dat, ccol = NULL, CI = 0.95)
 }
 \arguments{
 \item{dat}{data}
 
 \item{ccol}{colors for features.}
+
+\item{CI}{specified confidence interval about mean.}
 }
 \value{
 a list of ggplot objects, see details.
