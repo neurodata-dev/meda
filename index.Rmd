@@ -20,10 +20,9 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-### [Working version of Notes](http://docs.neurodata.io/synaptome-stats/Draft/Notes/Notes201705.html)
+### [Current State of MEDA](http://neurodata-dev.github.io/meda/stable/)
 
-### Output examples to come
-
+### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201705.html)
 
 ---
 ---
