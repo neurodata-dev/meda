@@ -1,0 +1,156 @@
+---
+title: "HGMM test runs"
+author: "Jesse Leigh Patsolic"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r render, eval=FALSE, echo=FALSE}
+require(rmarkdown)
+rmarkdown::render("hgmm.Rmd")
+system('open hgmm.html')
+```
+
+```{r lib}
+suppressPackageStartupMessages(require(meda))
+require(foreach)
+require(parallel)
+require(combinat)
+```
+
+
+```{r gendata}
+mc <- 1000
+#set.seed(21218)
+set.seed(317)
+Y <- foreach(i = 1:mc) %do% {
+  N <- 100
+  mu0 <- c(0,1,10,11)
+  sig20 <- c(0.1,0.1,0.1,0.1)
+  pi0 <- c(1/4,1/4,1/4,1/4)
+  
+  #Z <-  apply(rmultinom(N, 1, c(1/4,1/4,1/4,1/4)), 1, sum)
+  Z <- rep(25,4)
+  
+  lab <- Reduce(c, mapply(function(x,y) rep(x, each = y),1:4, Z)) 
+  
+  tmp <- list()
+  for(i in 1:length(Z)){
+    tmp[[i]] <- 
+      rnorm(Z[i], mean = mu0[i], sd = sqrt(sig20[i]))
+  }
+  
+  X <- Reduce(c, tmp)
+  XZ <- data.frame(cbind(X,lab))
+  list(XZ = XZ, N=N, mu0=mu0, sig20=sig20, pi0=pi0, lab=lab)
+}
+```
+
+
+
+
+```{r pdat}
+p <- Y[[7]]$XZ
+plot(density(p$X), main = "Joint KDE, with sample points as a rug below,\n colored by class label.")
+rug(p$X[p$lab == 1], col = 1)
+rug(p$X[p$lab == 2], col = 2, ticksize = 0.05)
+rug(p$X[p$lab == 3], col = 3)
+rug(p$X[p$lab == 4], col = 4, ticksize = 0.05)
+```
+
+
+
+```{r hgmm}
+V <- lapply(lapply(Y, '[[', 1), '[[', 1)
+Labs <- lapply(lapply(Y, '[[', 1), '[[', 2)
+
+f <- function(dat, truth){ 
+  gh <- hmc(dat, truth, maxDepth = 3, modelNames = c("E","V"))
+  return(gh)
+}
+      
+h <- mclapply(1:length(V),function(i){ f(V[[i]], Labs[[i]]) }, mc.cores=6)
+```
+
+```{r lhat}
+
+y <- Y[[1]]$XZ
+
+LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
+  y <- Y[[i]]$XZ
+
+  a <- c()
+  a[1] <- sum(y[y$X < 5 & y$X < 0.5,]$lab == 2)
+  a[2] <- sum(y[y$X < 5 & y$X > 0.5,]$lab == 1)
+  a[3] <- sum(y[y$X > 5 & y$X < 10.5,]$lab == 4)
+  a[4] <- sum(y[y$X > 5 & y$X > 10.5,]$lab == 3)
+  
+  b <- paste0('a', h[[i]]$dat$labels$col)
+  perm <-  permn(length(mu0))
+  
+  subP <- function(p,B=b){
+      B[B == "a1"] <- p[1]
+      B[B == "a2"] <- p[2]
+      B[B == "a3"] <- p[3]
+      B[B == "a4"] <- p[4]
+      B <- as.numeric(B)
+      return(B)
+    }
+  
+  BB <- lapply(perm, subP)
+  
+  lhathat <- min(Reduce(c,lapply(lapply(BB, function(w) which(y$lab != w)), length)))
+  lhathat/100
+}
+
+summary(LLHat)
+mean(LLHat) + c(-1,1) * sd(LLHat)
+hist(LLHat, prob = TRUE)
+abline(v = mean(LLHat), col = "red", lwd=2)
+abline(v = mean(LLHat) + c(-1,1) * sd(LLHat), col = "blue", lwd =2)
+```
+
+## ARI
+```{r lhat2}
+gf <- function(j){
+  a1 <- j$truth
+  a2 <- j$dat$labels$col
+  ad <- adjustedRandIndex(a1,a2)
+  return(ad)
+}
+
+AD <- Reduce(c, lapply(h, gf))
+hist(AD, breaks = "Scott", main = "Histogram of ARI values with mean in red", prob = TRUE)
+abline(v = mean(AD), col = "red", lwd = 2)
+```
+
+```{r wari}
+sh1 <- rep(1:4, each = 25)
+
+sf <- mclapply(1:5e3, function(x) sample(sh1), mc.cores = 8)
+m <- t(Reduce(rbind, sf))
+
+A <- mclapply(data.frame(m, row.names = NULL), 
+              function(x) adjustedRandIndex(sh1,x), mc.cores=8)
+
+H <- Reduce(c, A)
+```
+
+```{r ariP}
+plot(density(H), xlim = c(min(H), 1),
+     main = 
+     "KDE of ARI from approx. (5e3) permutation test
+     with histogram of ARI_i.")
+abline(v = quantile(H, p = 0.99), col = 'red', lwd=2)
+text(x = quantile(H, prob =0.9999), y = quantile(density(H)$y, prob = 0.85), labels = "<- 99th percentile", col = 'red', pos = 4)
+
+hist(AD, add = TRUE, prob = TRUE, breaks = 50)
+```
+
+
+
+
+
+
+
