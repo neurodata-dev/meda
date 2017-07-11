@@ -22,6 +22,8 @@ system('open index.html')
 
 ### [Current State of MEDA](http://neurodata-dev.github.io/meda/stable/)
 
+#### [HGMM test](./tests/hgmm.html)
+
 ### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201705.html)
 
 ---
