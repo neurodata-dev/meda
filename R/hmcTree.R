@@ -247,6 +247,7 @@ hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 5,
                   modelNames = NULL, ccol = "black") {
 
   if(!is.null(dim(dat))){
+    dat <- as.data.frame(dat)
     d <- dim(dat)[2]
     n <- dim(dat)[1]
     dmax <- ifelse(d > maxDim, maxDim, d)

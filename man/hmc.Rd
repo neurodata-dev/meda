@@ -33,10 +33,11 @@ If a singleton exists, the level takes a step back.
 }
 \examples{
 
+set.seed(54321)
 dat <- rnorm(1e3, mean = rep(c(0,1,10,11), each=250), sd = sqrt(0.1))
 truth <- rep(1:4, each = 250)
 modelNames = c("E", "V"); maxDepth = 3
-d0 <- hmc(dat, truth, modelName = modelNames)
+d0 <- hmc(dat, truth, modelName = modelNames, maxDepth = maxDepth)
 plot(d0, pch = truth)
 plotDend(d0)
 
