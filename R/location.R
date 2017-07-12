@@ -25,8 +25,8 @@ mlocation <- function(dat, ccol = NULL, CI = 0.95){
  
   zs <- qnorm(CI + (1- CI)/2)
 
-  lci <- c(Mean - zs*SD/sqrt(n), rep(NA, length(Median)))
-  uci <- c(Mean + zs*SD/sqrt(n), rep(NA, length(Median)))
+  lci <- c(Mean - zs*SD/sqrt(n), Median - mad(Median))
+  uci <- c(Mean + zs*SD/sqrt(n), Median + mad(Median))
  
   loc1 <- melt(cbind(Mean, Median))
 
@@ -69,12 +69,15 @@ plot.mlocation <- function(x, ...){
             axis.title = element_blank())
 
   p2 <- 
-    ggplot(dm, aes(x = Var1, y = value, 
+    ggplot(dm, aes(x = Var1, y = value, ymin = l, ymax = u, 
                    group = Var2, color = Var2)) + 
           geom_line(alpha = 0.7, size = 1) + 
-          geom_errorbar(aes(ymin = l, ymax = u), width = 0.5, size = 1) + 
+          geom_errorbar(aes(ymin = l, ymax = u), width = 0.5, size = 1, 
+                        alpha=0.6) + 
+          scale_color_discrete(
+            labels = c("Mean \u00B1sd", "Median \u00B1MAD")) + 
           theme(legend.title = element_blank(),
-                axis.title = element_blank())
+                axis.title = element_blank()) 
 
   if(dim(dm)[2] > 8){
     p1 <- p1 + coord_flip() + 
