@@ -17,12 +17,6 @@ RUN apt-get update && apt-get -y install r-base \
 #### Install package dependencies for meda
 RUN R -e "install.packages('devtools', repos = 'http://cran.rstudio.com/', dependencies = TRUE)"
 
-RUN R -e "install.packages(c('abind', 'corrplot', 'data.table',\
-          'data.tree', 'dendextend', 'energy', 'foreach',\
-          'ggplot2', 'gplots', 'graphics', 'gridExtra'),\
-          repos = 'http://cran.rstudio.com/',\
-          dependencies = c('Depends', 'Imports'))"
-
 RUN R -e "install.packages(c('heatmaply', 'hexbin',\ 
          'htmlwidgets', 'irlba', 'knitr', 'lattice',\ 
          'mclust', 'plotly', 'randomForest'),\ 
@@ -35,19 +29,27 @@ RUN R -e "install.packages(c('RColorBrewer', 'rCUR',\
           repos = 'http://cran.rstudio.com/',\
           dependencies = TRUE)"
 
+RUN R -e "install.packages(c('abind', 'corrplot', 'data.table',\
+          'data.tree', 'dendextend', 'energy', 'foreach',\
+          'ggplot2', 'gplots', 'graphics', 'gridExtra'),\
+          repos = 'http://cran.rstudio.com/',\
+          dependencies = c('Depends', 'Imports'))"
+
 RUN R -e "source('https://bioconductor.org/biocLite.R'); biocLite('rhdf5')"
 
 
 #### Install meda from github
 #RUN R -e "require(devtools);\
 #         devtools::install_github('neurodata/meda',\
-#         ref = '92fdd5ce13c54c85b3272d6ed1230280765d3a39',\
+#         ref = '0a438b0ac24599c2194d6b7caf9426101ccfb23e',\
 #         dependencies = FALSE)"
 
 #### Install meda from tarball
-COPY ./meda_0.1.2.9011.tar.gz /home/meda/meda_0.1.2.9011.tar.gz
-RUN pwd
-RUN R CMD INSTALL /home/meda/meda_0.1.2.9011.tar.gz
+COPY ./meda_0.1.2.9013.tar.gz /home/meda/meda_0.1.2.9013.tar.gz
+RUN R -e "install.packages('/home/meda/meda_0.1.2.9013.tar.gz',\
+           type = 'source', repos = NULL)"
+
+#RUN R CMD INSTALL /home/meda/meda_0.1.2.9013.tar.gz
 
 COPY ./launcher.sh /launcher.sh
 COPY ./genData.R /home/meda/genData.R 

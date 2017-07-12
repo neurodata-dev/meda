@@ -7,6 +7,9 @@ then
 elif [ "${1}" == "synaptograms" ]
 then 
   echo "Synaptograms are under construction"
+elif [ "${1}" == "hdf5" ]
+then
+  echo "HDF5 script under construction"
 else 
   mkdir -p ${2}
   #ls -R /data
