@@ -6,8 +6,10 @@ data in the form of matrices.
 
 ### INSTALLATION
 
-To download and install run the following in R:
+Currently there seems to be a problem installing in RStudio.
+The best way seems to be installing from R via command line. 
 
+To download and install run the following in R:
 
 ```R
 require(devtools)
