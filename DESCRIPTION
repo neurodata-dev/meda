@@ -16,7 +16,6 @@ Depends:
   gplots,
   graphics,
   gridExtra,
-  heatmaply,
   hexbin,
   lattice,
   mclust,
@@ -26,6 +25,7 @@ Suggests:
   foreach,
   rmarkdown,
   plotly,
+  heatmaply,
   knitr,
   htmlwidgets, 
   RColorBrewer
