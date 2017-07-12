@@ -8,19 +8,21 @@
 #' dat1 <- data.frame(matrix(as.integer(rbinom(150*5, 10, 0.5)), nrow=150,ncol=5))
 #' z <- complex(real = stats::rnorm(150), imaginary = stats::rnorm(150))
 #' dat <- data.frame(dat0, dat1, let = paste0(letters, 1:150), cplx = z,stringsAsFactors = FALSE)
-#' cs <- colStats(dat)
+#' cs <- colStats(dat0)
 #' plot(cs)
 #' @importFrom utils head
 ### Cumulative variance
 colStats <- function(dat){
 
-  dat <- as.data.frame(dat)  
+  dat <- as.data.frame(dat, stringsAsFactors = FALSE) 
   n <- dim(dat)[1]
   d <- dim(dat)[2]
 
   cl <- Reduce(rbind, lapply(dat, typeof))
 
   wh <- cl %in% c("numeric", "double","complex")
+
+  anyna <- anyNA(dat)
 
   if(d <= 12){
     h <- head(dat)

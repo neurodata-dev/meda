@@ -19,9 +19,9 @@ genData <- function(dat, ccol, outdir, basedir){
   i <- 0
 
   outL <- list()
-  print("Running colStats")
-  outL[[i+1]] <- cs <- colStats(dat)
-  saveRDS(cs, file = paste0(outdir, "colStats.rds"))
+  #print("Running colStats")
+  #outL[[i+1]] <- cs <- colStats(dat)
+  #saveRDS(cs, file = paste0(outdir, "colStats.rds"))
 
   print("Running mlocation")
   outL[[i+1]] <- mlocationDat <- mlocation(dat, ccol = ccol)

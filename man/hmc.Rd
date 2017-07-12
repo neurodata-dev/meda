@@ -32,7 +32,15 @@ propagated down the tree.  If k = 1, then that node is frozen.
 If a singleton exists, the level takes a step back.
 }
 \examples{
-dat <- iris[, -5]
+
+dat <- rnorm(1e3, mean = rep(c(0,1,10,11), each=250), sd = sqrt(0.1))
+truth <- rep(1:4, each = 250)
+modelNames = c("E", "V"); maxDepth = 3
+d0 <- hmc(dat, truth, modelName = modelNames)
+plot(d0, pch = truth)
+plotDend(d0)
+
+dat <- iris[,-5] 
 truth <- NULL #iris[,5]
 maxDim = 6; modelNames = c("VVV"); maxDepth = 6
 d1 <- hmc(dat, truth = truth, modelNames = c("VVV"), maxDim = 6)
