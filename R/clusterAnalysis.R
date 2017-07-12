@@ -144,8 +144,8 @@ clusterCov <- function(x){
 #'
 #' @importFrom ggplot2 ggplot
 #' @examples
-#' dat <- scale(iris[, -5], center = TRUE, scale = FALSE)
-#' L <- hmc(dat)
+#' dat <- as.data.frame(scale(iris[, -5], center = TRUE, scale = TRUE))
+#' L <- hmc(dat, modelNames = "VVV")
 #' plot(L, plotDend = TRUE)
 #' stackM(L, centered = TRUE)
 #' @export 

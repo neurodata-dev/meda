@@ -4,15 +4,14 @@
 \alias{hmcTree}
 \title{Generate a binary hierarchical mclust tree}
 \usage{
-hmcTree(dat, maxDepth = 5, modelNames = c("VVV"))
+hmcTree(dat, maxDepth = 5, modelNames)
 }
 \arguments{
 \item{dat}{a data matrix}
 
 \item{maxDepth}{maximum tree depth, defaults to 5}
 
-\item{modelNames}{passed to mclust, defaults to
-unrestricted GMM i.e. "VVV"}
+\item{modelNames}{passed to mclust}
 }
 \value{
 binary hierarchical mclust classification output
@@ -27,5 +26,5 @@ propagated down the tree.  If k = 1, then that node is frozen.
 \examples{
 dat <- iris[, -5]
 truth <- iris[, 5]
-L <- hmcTree(dat)
+L <- hmcTree(dat, modelNames = "VVV")
 }
