@@ -1,10 +1,15 @@
 ---
-title: "HGMM test runs"
-author: "Jesse Leigh Patsolic"
-output: 
-  html_document:
-    keep_md: true
+title: Matrix Exploratory Data Analysis - HGMM Test
+author: Neurodata
+output: beamer_presentation
+
 ---
+
+```{r, echo=FALSE, eval=FALSE}
+require(rmarkdown)
+render('hgmm.Rmd')
+system('open hgmm.pdf')
+```
 
 ```{r render, eval=FALSE, echo=FALSE}
 require(rmarkdown)
@@ -12,11 +17,11 @@ rmarkdown::render("hgmm.Rmd")
 system('open hgmm.html')
 ```
 
-```{r lib}
+```{r lib, echo = FALSE}
 suppressPackageStartupMessages(require(meda))
-require(foreach)
-require(parallel)
-require(combinat)
+suppressPackageStartupMessages(require(foreach))
+suppressPackageStartupMessages(require(parallel))
+suppressPackageStartupMessages(require(combinat))
 ```
 
 
@@ -47,10 +52,9 @@ Y <- foreach(i = 1:mc) %do% {
 }
 ```
 
+----
 
-
-
-```{r pdat}
+```{r pdat, echo = FALSE}
 p <- Y[[7]]$XZ
 plot(density(p$X), main = "Joint KDE, with sample points as a rug below,\n colored by class label.")
 rug(p$X[p$lab == 1], col = 1)
@@ -60,6 +64,7 @@ rug(p$X[p$lab == 4], col = 4, ticksize = 0.05)
 ```
 
 
+----
 
 ```{r hgmm}
 V <- lapply(lapply(Y, '[[', 1), '[[', 1)
@@ -73,13 +78,12 @@ f <- function(dat, truth){
 h <- mclapply(1:length(V),function(i){ f(V[[i]], Labs[[i]]) }, mc.cores=6)
 ```
 
+----
+
 ```{r lhat}
-
 y <- Y[[1]]$XZ
-
 LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
   y <- Y[[i]]$XZ
-
   a <- c()
   a[1] <- sum(y[y$X < 5 & y$X < 0.5,]$lab == 2)
   a[2] <- sum(y[y$X < 5 & y$X > 0.5,]$lab == 1)
@@ -103,14 +107,19 @@ LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
   lhathat <- min(Reduce(c,lapply(lapply(BB, function(w) which(y$lab != w)), length)))
   lhathat/100
 }
+```
 
+
+---- 
+
+```{r llhatp}
 summary(LLHat)
 mean(LLHat) + c(-1,1) * sd(LLHat)
 hist(LLHat, prob = TRUE)
 abline(v = mean(LLHat), col = "red", lwd=2)
 abline(v = mean(LLHat) + c(-1,1) * sd(LLHat), col = "blue", lwd =2)
 ```
-
+----
 ## ARI
 ```{r lhat2}
 gf <- function(j){
@@ -121,11 +130,16 @@ gf <- function(j){
 }
 
 AD <- Reduce(c, lapply(h, gf))
+```
+----
+
+```{r ADP}
 hist(AD, breaks = "Scott", main = "Histogram of ARI values with mean in red", prob = TRUE)
 abline(v = mean(AD), col = "red", lwd = 2)
 ```
 
-```{r wari}
+
+```{r wari, echo = FALSE}
 sh1 <- rep(1:4, each = 25)
 
 sf <- mclapply(1:5e3, function(x) sample(sh1), mc.cores = 8)
@@ -137,7 +151,10 @@ A <- mclapply(data.frame(m, row.names = NULL),
 H <- Reduce(c, A)
 ```
 
-```{r ariP}
+----
+
+
+```{r ariP, echo = FALSE}
 plot(density(H), xlim = c(min(H), 1),
      main = 
      "KDE of ARI from approx. (5e3) permutation test
