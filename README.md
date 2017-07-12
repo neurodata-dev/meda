@@ -20,9 +20,8 @@ Supposing your data is in a csv file with a header:
 ```R
 require(meda)
 dat <- read.csv("fileName.csv", header=TRUE)
-outFile <- "output.html"
 
-meda::genHTML(dat, outFile)
+plot(mlocation(dat))
 ```
 
 
