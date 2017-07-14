@@ -93,7 +93,8 @@ KHAT <- data.frame(khat = c(khat, mckhat), cla = rep(c("HGMM", "MCkhat"),each=1e
 
 str(KHAT)
 gg1 <- ggplot(dat = KHAT, aes(x = khat, fill = as.factor(cla))) +
-       geom_histogram(position = "dodge", bins = 10)
+       geom_histogram(position = "dodge", bins = 10) + 
+       ggtitle("Frequency plot of Khats")
 
 print(gg1)
 ```
@@ -101,7 +102,7 @@ print(gg1)
 ----
 
 ```{r mc-hgmm}
-hist(khat - mckhat)
+hist(khat - mckhat, main = "HGMM_khat - Mclust_khat")
 ```
 
 
@@ -129,7 +130,7 @@ LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
 ```{r llhatp}
 summary(LLHat)
 mean(LLHat) + c(-1,1) * sd(LLHat)
-hist(LLHat, prob = TRUE)
+hist(LLHat, prob = TRUE, main = "Lhat for X_i ~ Unif[0,1]")
 abline(v = mean(LLHat), col = "red", lwd=2)
 abline(v = mean(LLHat) + c(-1,1) * sd(LLHat), col = "blue", lwd =2)
 ```

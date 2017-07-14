@@ -7,14 +7,11 @@ output:
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
+rm(list = ls())
 require(rmarkdown)
+require(doMC)
+registerDoMC(4)
 render('hgmm.Rmd')
-system('open hgmm.pdf')
-```
-
-```{r render, eval=FALSE, echo=FALSE}
-require(rmarkdown)
-rmarkdown::render("hgmm.Rmd")
 system('open hgmm.html')
 ```
 
@@ -29,7 +26,8 @@ suppressPackageStartupMessages(require(combinat))
 ```{r gendata}
 mc <- 1000
 #set.seed(21218)
-set.seed(317)
+#set.seed(317)
+set.seed(301)
 Y <- foreach(i = 1:mc) %do% {
   N <- 100
   mu0 <- c(0,1,10,11)
@@ -53,10 +51,16 @@ Y <- foreach(i = 1:mc) %do% {
 }
 ```
 
+
+For each of `r mc` Monte Carlo iterates we sample `r N` points from a
+mixture of four Gaussians with means `r mu0` and equal variances of `r sig20[1]`.
+
+
+
 ----
 
 ```{r pdat, echo = FALSE}
-p <- Y[[7]]$XZ
+p <- Y[[3]]$XZ
 plot(density(p$X), main = "Joint KDE, with sample points as a rug below,\n colored by class label.")
 rug(p$X[p$lab == 1], col = 1)
 rug(p$X[p$lab == 2], col = 2, ticksize = 0.05)
@@ -82,7 +86,6 @@ h <- mclapply(1:length(V),function(i){ f(V[[i]], Labs[[i]]) }, mc.cores=6)
 ----
 
 ```{r lhat, echo = FALSE}
-y <- Y[[1]]$XZ
 LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
   y <- Y[[i]]$XZ
   a <- c()
@@ -120,7 +123,47 @@ hist(LLHat, prob = TRUE)
 abline(v = mean(LLHat), col = "red", lwd=2)
 abline(v = mean(LLHat) + c(-1,1) * sd(LLHat), col = "blue", lwd =2)
 ```
+
 ----
+
+## Khat
+
+
+
+```{r mclust, echo = FALSE}
+fmc <- function(y, truth){ 
+  dat <- y$X$X 
+  mc <- Mclust(dat, G = 1:9, modelNames = "V")
+  return(mc)
+}
+
+
+mcU <- mclapply(1:length(Y), function(i) { fmc(Y[[i]]) }, mc.cores=6)
+```
+
+
+```{r mckhat}
+mckhat <- sapply(mcU, '[[', 6)
+#hist(mckhat, main = "Khat from MClust")
+```
+
+```{r khat}
+kh <- sapply(h, function(x) max(unique(x$dat$labels$col)))
+kh[which(is.na(kh))] <- 1
+khat <- kh
+
+KHAT <- data.frame(khat = c(khat, mckhat), cla = rep(c("HGMM", "MCkhat"),each=1e3))
+
+str(KHAT)
+gg1 <- ggplot(dat = KHAT, aes(x = khat, fill = as.factor(cla))) +
+       geom_histogram(position = "dodge", bins = 10) + 
+       ggtitle("Frequency plot of Khats")
+
+print(gg1)
+```
+
+----
+
 ## ARI
 ```{r lhat2, echo = FALSE}
 gf <- function(j){
@@ -132,7 +175,15 @@ gf <- function(j){
 
 AD <- Reduce(c, lapply(h, gf))
 ```
+
 ----
+
+```{r mc-hgmm}
+hist(khat - mckhat, main = "HGMM_khat - Mclust_khat")
+```
+
+
+
 
 ```{r ADP, echo = FALSE}
 hist(AD, breaks = "Scott", main = "Histogram of ARI values with mean in red", prob = TRUE)
@@ -143,14 +194,19 @@ abline(v = mean(AD), col = "red", lwd = 2)
 ```{r wari, echo = FALSE}
 sh1 <- rep(1:4, each = 25)
 
-sf <- mclapply(1:5e3, function(x) sample(sh1), mc.cores = 8)
+NN <- 5e3
+
+sf <- mclapply(1:NN, function(x) sample(sh1), mc.cores = 8)
+
 m <- t(Reduce(rbind, sf))
+
 
 A <- mclapply(data.frame(m, row.names = NULL), 
               function(x) adjustedRandIndex(sh1,x), mc.cores=8)
 
 H <- Reduce(c, A)
 ```
+
 
 ----
 

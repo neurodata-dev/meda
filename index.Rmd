@@ -20,11 +20,23 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-### [Current State of MEDA](http://neurodata-dev.github.io/meda/stable/)
+# [Current State of MEDA](http://neurodata-dev.github.io/meda/stable/)
 
-#### [HGMM test](./tests/hgmm.html)
 
-### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201705.html)
+## Hierarchical GMM Tests
+
+We have conducted some tests on our hierarchical GMM (via
+[mclust](http://www.stat.washington.edu/mclust/)) algorithm.  
+The first was a test where the data are sampled from a mixture of 4
+Gaussians.  
+The second was a test where the data are sampled from $Unif[0,1]$.  
+Notebooks can be found at the links below.
+
+#### [HGMM test: 4-GMM](./tests/hgmm.html)
+
+#### [HGMM test: Unif(0,1)](./tests/hgmm.html)
+
+### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201706.html)
 
 ---
 ---
