@@ -1,12 +1,14 @@
 ---
 title: Matrix Exploratory Data Analysis - HGMM Test
 author: Neurodata
-output: html_document 
-
+output: 
+  html_document:
+    keep_md: yes
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
 require(rmarkdown)
+rm(list = ls())
 render('hgmm.Rmd')
 system('open hgmm.pdf')
 ```

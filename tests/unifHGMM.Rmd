@@ -4,6 +4,8 @@ author: Neurodata
 output: 
   html_document:
     keep_md: yes
+  pdf_document:
+    keep_tex: yes
 
 ---
 
@@ -11,12 +13,13 @@ output:
 rm(list = ls())
 require(rmarkdown)
 render('unifHGMM.Rmd', output_format = "all")
-#system('open unifHGMM.pdf')
+system('open unifHGMM.html')
 ```
 
 
 ```{r lib, echo = FALSE}
 suppressPackageStartupMessages(require(meda))
+suppressPackageStartupMessages(require(viridis))
 suppressPackageStartupMessages(require(foreach))
 suppressPackageStartupMessages(require(parallel))
 suppressPackageStartupMessages(require(combinat))
@@ -65,6 +68,39 @@ h <- mclapply(1:length(V),function(i){ f(V[[i]], Labs[[i]]) }, mc.cores=6)
 ```
 
 ----
+
+```{r mclust, echo = FALSE}
+fmc <- function(y, truth){ 
+  dat <- y$X$X 
+  mc <- Mclust(dat, G = 1:9, modelNames = "V")
+  return(mc)
+}
+
+
+mcU <- mclapply(1:length(Y), function(i) { fmc(Y[[i]]) }, mc.cores=6)
+```
+
+----
+
+```{r mckhat}
+mckhat <- sapply(mcU, '[[', 6)
+#hist(mckhat, main = "Khat from MClust")
+```
+
+```{r khat}
+kh <- sapply(h, function(x) max(unique(x$dat$labels$col)))
+kh[which(is.na(kh))] <- 1
+khat <- kh
+
+KHAT <- data.frame(khat = c(khat, mckhat), cla = rep(c("HGMM", "MCkhat"),each=1e3))
+
+str(KHAT)
+gg1 <- ggplot(dat = KHAT, aes(x = khat, fill = as.factor(cla))) +
+       geom_histogram(position = "dodge", bins = 10)
+
+print(gg1)
+```
+
 
 ```{r lhat, echo = FALSE}
 LLHat <- foreach(i = 1:length(Y), .combine = c) %do% {
@@ -137,6 +173,98 @@ text(x = quantile(H, prob =0.9999), y = quantile(density(H)$y, prob = 0.85), lab
 
 hist(AD, freq = FALSE, add = TRUE)
 ```
+
+
+
+## KDE with GMM+BIC
+
+For the test below we consider two cases: sample size n = 100, and
+sample size n = 1000.  We use `BIC` and `Mclust` to pick `K` and to
+cluster.  We plot the data (blue) with the density estimate given by
+`Mclust` (black curve), a kernel density estimate (red curve, using the
+default bandwidth), and a histogram of the data.  
+
+```{r n100}
+n <- 100
+set.seed(317)
+Xi <- runif(n, 0,1)
+
+seqBW <- seq(density(Xi)$bw, 0.5*density(Xi)$bw, length=30)
+
+m1 <- mclustBIC(Xi, modelNames = "V")
+
+M1 <- Mclust(Xi, x = m1)
+
+plot(M1, ylim = c(0,3), what = "density",main = "", add=TRUE)
+hist(Xi, prob = TRUE, add = TRUE)
+rug(Xi, col = 'blue')
+v <- viridis(length(seqBW))
+v <- gray.colors(length(seqBW))
+#for(i in 1:length(seqBW)){
+#  lines(density(Xi, bw = seqBW[i]), col = v[i])
+#}
+
+lines(density(Xi), col = "red")
+```
+
+The above plot shows the 100 sample points as a rug plot (blue), the Kernel
+Density Estimate (red) uses the default bandwidth `r density(Xi)$bw`,
+the black curve is the density estimate as given by `Mclust` using `BIC`
+to choose `K =` `r M1$G`. 
+
+
+```{r n1000}
+n <- 1000
+set.seed(3172)
+Xi <- runif(n, 0,1)
+
+seqBW <- seq(density(Xi)$bw, 0.5*density(Xi)$bw, length=30)
+
+m1 <- mclustBIC(Xi, modelNames = "V")
+M1 <- Mclust(Xi, x = m1)
+
+plot(M1, what = "density",main = "", add=TRUE)
+hist(Xi, prob = TRUE, add = TRUE)
+rug(Xi, col = 'blue')
+#v <- viridis(length(seqBW))
+v <- gray.colors(length(seqBW))
+#for(i in 1:length(seqBW)){
+#  lines(density(Xi, bw = seqBW[i]), col = v[i])
+#}
+
+lines(density(Xi), col = "red")
+```
+
+The above plot is the same as the previous one except using 1000 sample points.
+The bandwidth for the kde (red) is `r density(Xi)$bw`. 
+The number of estimated clusters using `BIC` is `r M1$G`.
+
+
+```{r n10000}
+n <- 10000
+set.seed(3172)
+Xi <- runif(n, 0,1)
+
+seqBW <- seq(density(Xi)$bw, 0.5*density(Xi)$bw, length=30)
+
+m1 <- mclustBIC(Xi, modelNames = "V")
+M1 <- Mclust(Xi, x = m1)
+
+plot(M1, what = "density",main = "", add=TRUE)
+hist(Xi, prob = TRUE, add = TRUE)
+rug(Xi, col = 'blue')
+#v <- viridis(length(seqBW))
+v <- gray.colors(length(seqBW))
+#for(i in 1:length(seqBW)){
+#  lines(density(Xi, bw = seqBW[i]), col = v[i])
+#}
+
+lines(density(Xi), col = "red")
+```
+
+The above plot is the same as the previous one except using 1000 sample points.
+The bandwidth for the kde (red) is `r density(Xi)$bw`. 
+The number of estimated clusters using `BIC` is `r M1$G`.
 
 
 
