@@ -15,13 +15,12 @@ knit        : slidify::knit2slides #
 require(slidify)
 require(rmarkdown)
 render('index.Rmd')
-render('singles.Rmd')
+#render('singles.Rmd')
 system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-# [Current State of MEDA](http://neurodata-dev.github.io/meda/stable/)
-
+# [Current State of MEDA](https://docs.neurodata.io/meda/stable/)
 
 ## Hierarchical GMM Tests
 
@@ -39,6 +38,9 @@ Notebooks can be found at the links below.
 ### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201706.html)
 
 ---
+
+## [Synaptome-Stats pages](https://neurodata-dev.github.io/synaptome-stats/)
+
 ---
 
 
