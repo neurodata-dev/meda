@@ -178,6 +178,7 @@ hmcTree <- function(dat, maxDepth = 5, modelNames){ ## Helper function
   #h <- node$Get("cov", "level", format = list)[-1]
   h <- node$Get("cov", "level", format = list, filterFun = isLeaf)
   mn <- melt(n)
+  rownames(mn) <- mn$value
   mn$L1 <- as.factor(mn$L1)
   mn$col <- as.numeric(mn$L1)
 
