@@ -14,6 +14,7 @@
 #' loc <- mlocation(dat, ccol = 1:4)
 #' plot(loc)
 #'
+#' @importFrom stats mad
 #' @export 
 ### Location Estimates 
 mlocation <- function(dat, ccol = NULL, CI = 0.95){

@@ -14,8 +14,8 @@ interest.}
 tree to compute.}
 }
 \value{
-An object of type `'data.frame'' with the cluster labels 
-of the \code{j}th level in the \code{j}th column. Labels are numbered
+A list with the cluster labels '$L' and level means
+'$levelMeans'.
 }
 \description{
 Binary Hierarchical k-means++
@@ -34,9 +34,9 @@ kdf <- bhkmpp(x, 2)
 par(mfrow = c(3,1))
 plot(x, as.factor(z), col = as.factor(z), pch = '|')
 title('Original Data')
-plot(x, kdf[,1], col = kdf[,1], pch = '|')
+plot(x, kdf$L[,1], col = kdf$L[,1], pch = '|')
 title('Clustered Data: Level 1')
-plot(x, kdf[,2], col = kdf[,2], pch = '|')
+plot(x, kdf$L[,2], col = kdf$L[,2], pch = '|')
 title('Clustered Data: Level 2')
 
 set.seed(23)
@@ -48,9 +48,9 @@ par(mfrow = c(3,1))
 opal <- palette(adjustcolor(palette(), alpha.f = 0.55))
 plot(xy, col = s1, pch = 19)
 title('Original Data')
-plot(xy, col = kdf2[,1], pch = 17)
+plot(xy, col = kdf2$L[,1], pch = 17)
 title('Clustered Data: Level 1')
-plot(xy, col = kdf2[,2], pch = 17)
+plot(xy, col = kdf2$L[,2], pch = 17)
 title('Clustered Data: Level 2')
 palette('default')
 }

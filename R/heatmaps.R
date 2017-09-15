@@ -90,3 +90,30 @@ plot.d1heat <- function(x, ...){
 
   return(p)
 }
+
+
+
+
+#' Create representative heatmap with kmeanspp initialization
+#'
+#' @param x data
+#' @param num number of points to show
+#' 
+#' @return a heatmap plot
+#'
+#' @import viridis
+#' @export 
+repHeat <- function(x, num = 1000){   
+  
+  x <- as.matrix(x)
+
+  if(num > nrow(x)){
+    num <- nrow(x)
+  }
+
+  kv <- Kmeans(x, centers = num, iter.max = 0, init = "kmeanspp")
+  colnames(kv$centers) <- colnames(x)
+
+  heatmap(kv$centers, col = viridis(255))
+}
+

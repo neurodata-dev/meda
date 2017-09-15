@@ -46,7 +46,7 @@ plot(cumvar(dat))
 pairhex(dat)
 
 h <- hmc(dat, ccol = ccol)
-plot(h, truth = truth)
+plot(h, pch = truth)
 plotDend(h)
 stackM(h, centered = TRUE, ccol = ccol, depth = h$dat$height)
 stackM(h, centered = TRUE, ccol = ccol)

@@ -5,8 +5,8 @@
 #' @param blevels An integer specifying how many levels in the binary
 #' tree to compute.
 #'
-#' @return An object of type `'data.frame'' with the cluster labels 
-#' of the \code{j}th level in the \code{j}th column. Labels are numbered 
+#' @return A list with the cluster labels '$L' and level means
+#' '$levelMeans'.
 #'
 #' @details Runs the kmeans algorithm with the kmeans++ initialization
 #' in a binary hieracrhical fasion. 
@@ -30,9 +30,9 @@
 #' par(mfrow = c(3,1))
 #' plot(x, as.factor(z), col = as.factor(z), pch = '|')
 #' title('Original Data')
-#' plot(x, kdf[,1], col = kdf[,1], pch = '|')
+#' plot(x, kdf$L[,1], col = kdf$L[,1], pch = '|')
 #' title('Clustered Data: Level 1')
-#' plot(x, kdf[,2], col = kdf[,2], pch = '|')
+#' plot(x, kdf$L[,2], col = kdf$L[,2], pch = '|')
 #' title('Clustered Data: Level 2')
 #' 
 #' set.seed(23)
@@ -44,16 +44,17 @@
 #' opal <- palette(adjustcolor(palette(), alpha.f = 0.55))
 #' plot(xy, col = s1, pch = 19)
 #' title('Original Data')
-#' plot(xy, col = kdf2[,1], pch = 17)
+#' plot(xy, col = kdf2$L[,1], pch = 17)
 #' title('Clustered Data: Level 1')
-#' plot(xy, col = kdf2[,2], pch = 17)
+#' plot(xy, col = kdf2$L[,2], pch = 17)
 #' title('Clustered Data: Level 2')
 #' palette('default')
 #' }
 #'
+#' @importFrom knor Kmeans
 #' @export
 bhkmpp <- function(x, blevels) {
-    k0 <- kmpp(x, 2, runkm = TRUE)
+    k0 <- Kmeans(as.matrix(x), centers = 2,  init = "kmeanspp")
     dx <- !is.null(dim(x))
     L <- data.frame(lv1 = k0$cluster)
     
@@ -65,9 +66,9 @@ bhkmpp <- function(x, blevels) {
     for (j in 1:(blevels - 1)) {
         for (i in sort(unique(L[[j]]))) {
             kv <- if (dx) {
-                kmpp(x[L[[j]] == i, ], k = 2, runkm = TRUE)
+                Kmeans(x[L[[j]] == i, ], centers = 2, init = "kmeanspp")
             } else {
-                kmpp(x[L[[j]] == i], k = 2, runkm = TRUE)
+                Kmeans(as.matrix(x[L[[j]] == i]), centers = 2, init = "kmeanspp")
             }
             
             if (i != 1) {
@@ -77,7 +78,28 @@ bhkmpp <- function(x, blevels) {
             L[L[[j]] == i, ][[j + 1]] <- kv$cluster
         }
     }
-    return(L)
+
+    means <- list()
+    for(i in 1:ncol(L)){
+      cluster <- list()
+      for(uj in 1:max(L[[i]])){
+        ind <- which(L[[i]] == uj)
+  
+        if(!is.null(dim(x))){
+          cluster[[uj]] <- apply(x[ind,], 2, mean)
+        } else {
+          cluster[[uj]] <- mean(x[ind])
+        }
+      }
+      tmp <- Reduce(rbind, cluster)
+      rownames(tmp) <- NULL
+
+      means[[i]] <- tmp
+    }
+
+    out <- list(L = L, levelMeans = means)
+
+    return(out)
 }
 # Time: About 3-6 hours. Working status: Works as expected.  Comments: Might need
 # work to be robust against messy data.  Soli Deo Gloria

@@ -306,7 +306,7 @@ plot.hmc <- function(x, ...){
   if(dim(dl$dat$data)[2] > 1){
     pairs(dl$dat$data[, 1:dmax], 
           pch = shape, 
-          col =  L$labels$col, 
+          col =  viridis(max(L$labels$col))[L$labels$col], 
           cex = size, 
           main = "Color is classification; if present, shape is truth"
           )
@@ -317,7 +317,7 @@ plot.hmc <- function(x, ...){
     #plot(log1p(tmp$dat),tmp$col + 0.25 * shape,
     plot(X$dat,X$classification + 0.25 * shape,
          pch = shape,
-         col = X$classification,
+         col = viridis(max(X$classification))[X$classification],
          cex = 1,
          #ylim = c(1,length(unique(tmp$col))),
          main = "Color is classification; if present, shape is truth"
