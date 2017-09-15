@@ -1,6 +1,6 @@
 Package: meda
 Title: Matrix Exploratory Data Analysis
-Version: 0.1.2.9017
+Version: 0.1.3
 Authors@R: c(person("Jesse", "Patsolic", email = "jpatsolic@jhu.edu", role = c("aut", "cre")),
              person("Youngser", "Park", role = c("aut")))
 BugReports: https://github.com/neurodata/meda/issues
