@@ -35,11 +35,11 @@ Notebooks can be found at the links below.
 
 #### [HGMM test: Unif(0,1)](./tests/hgmm.html)
 
-### [Working version of Notes](http://neurodata-dev.github.io/synaptome-stats/Draft/Notes/Notes201706.html)
+### [Working version of Notes](http://docs.neurodata.io/synaptome-stats/Draft/Notes/Notes201706.html)
 
 ---
 
-## [Synaptome-Stats pages](https://neurodata-dev.github.io/synaptome-stats/)
+## [Synaptome-Stats pages](https://docs.neurodata.io/synaptome-stats/)
 
 ---
 
