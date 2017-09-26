@@ -62,6 +62,8 @@ d1heat <- function(dat, breaks = "Scott",
 #'
 #' @param x an object of type d1heat
 #' @param ... unused
+#' @param mycol a colorpanel or gradient e.g. \code{colorpanel(255,"white","darkgreen")}
+#' @param bincount boolean to plot bin count (might be messy if bins are small)
 #' 
 #' @return a ggplot object 
 #'
@@ -72,13 +74,16 @@ d1heat <- function(dat, breaks = "Scott",
 #'
 #' @export 
 #' @method plot d1heat
-plot.d1heat <- function(x, ...){
+plot.d1heat <- function(x, ..., mycol = NULL, bincount = FALSE){
 
   d1heat <- x
   df <- d1heat$dat
   ccol <- rev(d1heat$ccol)
 
-  mycol <- colorpanel(255, "white", "#094620")
+  if(is.null(list(...)$mycol)){
+    mycol <- colorpanel(255, "white", "#094620")
+  }
+
   sc <- scale_fill_gradientn(colours = mycol)
   
   p <- ggplot(df, aes(x, y, fill = Count)) + 
@@ -88,7 +93,14 @@ plot.d1heat <- function(x, ...){
                axis.text.y=element_text(color=ccol)) + 
          sc
 
-  return(p)
+  if(bincount){
+    df$Count[df$Count == 0] <- NA
+    p0 <- p + geom_text(data = na.omit(df), aes(label = Count), fontface="bold")
+    p0
+    return(p0)
+  } else {
+    return(p)
+  }
 }
 
 

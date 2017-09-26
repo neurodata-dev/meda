@@ -4,12 +4,16 @@
 \alias{plot.d1heat}
 \title{Generate 1d heatmap plots}
 \usage{
-\method{plot}{d1heat}(x, ...)
+\method{plot}{d1heat}(x, ..., mycol = NULL, bincount = FALSE)
 }
 \arguments{
 \item{x}{an object of type d1heat}
 
 \item{...}{unused}
+
+\item{mycol}{a colorpanel or gradient e.g. \code{colorpanel(255,"white","darkgreen")}}
+
+\item{bincount}{boolean to plot bin count (might be messy if bins are small)}
 }
 \value{
 a ggplot object
