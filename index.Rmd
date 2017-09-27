@@ -20,7 +20,7 @@ system('open index.html')
 #slidify::knit2slides("index.Rmd")
 ```
 
-# [Current State of MEDA](https://docs.neurodata.io/meda/stable/)
+# [Current State of MEDA](http://docs.neurodata.io/meda/stable/)
 
 ## Hierarchical GMM Tests
 
@@ -39,7 +39,7 @@ Notebooks can be found at the links below.
 
 ---
 
-## [Synaptome-Stats pages](https://docs.neurodata.io/synaptome-stats/)
+## [Synaptome-Stats pages](http://docs.neurodata.io/synaptome-stats/)
 
 ---
 
