@@ -21,6 +21,7 @@
 #' dat <- iris[, -5]
 #' d <- d1heat(dat, breaks = "Scott", ccol = 1:4, trunc = c(0.01,0.99))
 #' plot(d)
+#' plot(d, mycol = colorpanel(255, "white", "blue"))
 #' @export 
 ### 1D heatmap
 d1heat <- function(dat, breaks = "Scott", 
@@ -71,6 +72,7 @@ d1heat <- function(dat, breaks = "Scott",
 #' @importFrom gplots colorpanel
 #' @importFrom data.table data.table 
 #' @importFrom data.table melt
+#' @importFrom stats na.omit
 #'
 #' @export 
 #' @method plot d1heat
@@ -80,7 +82,7 @@ plot.d1heat <- function(x, ..., mycol = NULL, bincount = FALSE){
   df <- d1heat$dat
   ccol <- rev(d1heat$ccol)
 
-  if(is.null(list(...)$mycol)){
+  if(is.null(mycol)){
     mycol <- colorpanel(255, "white", "#094620")
   }
 
@@ -114,6 +116,7 @@ plot.d1heat <- function(x, ..., mycol = NULL, bincount = FALSE){
 #' @return a heatmap plot
 #'
 #' @import viridis
+#' @importFrom stats heatmap
 #' @export 
 repHeat <- function(x, num = 1000){   
   

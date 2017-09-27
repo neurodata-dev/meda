@@ -57,7 +57,7 @@ transformData <- function(x, type = c("1e3"), t98 = FALSE, ...) {
         x <- x[complete.cases(x), ]
     }
     
-    out <- list(raw = x)
+    out <- list()
     
     if ("zscore" %in% type) {
         dZscore <- x[, lapply(.SD, scale, center = TRUE, scale = TRUE)]
@@ -129,7 +129,8 @@ transformData <- function(x, type = c("1e3"), t98 = FALSE, ...) {
         dSlog <- data.table(scale(dlog, center = TRUE, scale = TRUE))
         out[["slog"]] <- dSlog
     }
-    
+
+    out$raw <- x   
     return(out)
     
 }
