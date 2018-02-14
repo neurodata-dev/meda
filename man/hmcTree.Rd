@@ -26,5 +26,5 @@ propagated down the tree.  If k = 1, then that node is frozen.
 \examples{
 dat <- iris[, -5]
 truth <- iris[, 5]
-L <- hmcTree(dat, modelNames = "VVV")
+L <- hmcTree(dat, modelNames = c("VVV", "EEE"))
 }

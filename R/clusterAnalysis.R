@@ -145,9 +145,12 @@ clusterCov <- function(x){
 #' @importFrom ggplot2 ggplot
 #' @examples
 #' dat <- as.data.frame(scale(iris[, -5], center = TRUE, scale = TRUE))
-#' L <- hmc(dat, modelNames = "VVV")
-#' plot(L, plotDend = TRUE)
-#' stackM(L, centered = TRUE)
+#' hmcL <- hmc(dat, modelNames = "VVV")
+#' plot(hmcL, plotDend = TRUE)
+#' stackM(hmcL, centered = TRUE)
+#' centered = TRUE
+#' maxDepth = Inf
+#' depth = 5
 #' @export 
 stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth = 5){
 
@@ -235,7 +238,7 @@ stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth
 #' Generate stacked level mean plot from raw data
 #'
 #' @param matrix or data.frame of data
-#' @param level labels by column
+#' @param labels, expected in format from hmc$dat$labels$L1
 #' @param ccol colors for feature labels
 #' @param centered boolen that skips level one if data was centered
 #' @param maxDepth maximum number of levels to plot
@@ -248,61 +251,53 @@ stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth
 #' dat <- as.data.frame(scale(iris[, -5], center = TRUE, scale = TRUE))
 #' L <- hmc(dat, modelNames = c("VVV", "EEE"))
 #' plot(dat, plotDend = TRUE)
-#' stackM(dat, centered = TRUE)
+#' stackM(L, centered = TRUE)
 #' hmcL <- L
+#' L1 <- L$dat$labels$L1
 #' @export 
-stackMraw <- function(dat, hlabels, ccol = "black", centered = FALSE, maxDepth = Inf, depth = 5){
-stackMraw <- function(){
+stackMraw <- function(dat, L1, ccol = "black", centered = FALSE, maxDepth = Inf, depth = 5){
 
+  levA <- levels(L1)
+  lenA <- lapply(levA,nchar)
 
-  dat <- dat 
-  L1 <- hlabels
-  centered = FALSE
-  maxDepth = Inf
-  depth = 5
-
-  lev <- levels(L1)
-  len <- lapply(lev,nchar)
-
-  firstLev <- Reduce(c, unique(lapply(lev, substring, 1, 1)))
+  firstLev <- Reduce(c, unique(lapply(levA, substring, 1, 1)))
 
   ll <- list()
-  for(i in 1:length(lev)){
-    nc <- nchar(lev[i])
-    ll[[i]] <- lapply(1:nc, function(x) substr(lev[i], 1,x))
+  for(i in 1:length(levA)){
+    nc <- nchar(levA[i])
+    ll[[i]] <- lapply(1:nc, function(x) substr(levA[i], 1,x))
   }
 
   uL <- unique(Reduce(c, Reduce(c, ll)))
   uLgrep <- paste0("^", uL)
 
-  datLev <- lapply(uL, function(x) grepl(x, L1))
+  datLev <- lapply(uLgrep, function(x) grepl(x, L1))
   names(datLev) <- uL
 
 
-  node <- Node$new("", data = dat, 
-                   dataid = rownames(dat))
+  node <- Node$new("", 
+                   data = dat, 
+                   dataid = rownames(dat), 
+                   mean = colMeans(dat))
   
   for(i in firstLev){
-    node$AddChild(i, data = dat[datLev[[i]],], dataid = rownames(dat[datLev[[i]],]),
-      mean = colMeans(dat[datLev[[i]],]))
+    node$AddChild(i, 
+                  data = dat[datLev[[i]],], 
+                  dataid = rownames(dat[datLev[[i]],]), 
+                  mean = colMeans(dat[datLev[[i]],]))
   }
 
   for(j in ll){ 
     if(length(j) > 1){
       for(k in 2:length(j)){
         node[[j[[k-1]]]]$AddChild(j[[k]], 
-                                  data = dat[datLev[[j[[k]]]],],
-                                  dataid = rownames(dat[datLev[[j[[k]]]],]),
-                                  mean = colMeans(dat[datLev[[j[[k]]]],])
-                                  )
-        }
-      } else {
-        node[[j[[1]]]]$Set(data = dat[datLev[[j[[1]]]],],
-                            dataid = rownames(dat[datLev[[j[[1]]]],]),
-                            mean = colMeans(dat[datLev[[j[[1]]]],]))
+                          data = dat[datLev[[j[[k]]]],],
+                          dataid = rownames(dat[datLev[[j[[k]]]],]),
+                          mean = colMeans(dat[datLev[[j[[k]]]],])
+                          )
       }
-    }
-
+    }     
+  }
 
   node$Set(nlevel = node$Get('level'))
 

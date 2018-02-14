@@ -26,7 +26,10 @@ Generate stacked level mean plot
 }
 \examples{
 dat <- as.data.frame(scale(iris[, -5], center = TRUE, scale = TRUE))
-L <- hmc(dat, modelNames = "VVV")
-plot(L, plotDend = TRUE)
-stackM(L, centered = TRUE)
+hmcL <- hmc(dat, modelNames = "VVV")
+plot(hmcL, plotDend = TRUE)
+stackM(hmcL, centered = TRUE)
+centered = TRUE
+maxDepth = Inf
+depth = 5
 }

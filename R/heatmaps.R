@@ -112,13 +112,15 @@ plot.d1heat <- function(x, ..., mycol = NULL, bincount = FALSE){
 #'
 #' @param x data
 #' @param num number of points to show
+#' @param ccol character vector of colors for columns/features.
 #' 
 #' @return a heatmap plot
 #'
 #' @import viridis
+#' @import knor
 #' @importFrom stats heatmap
 #' @export 
-repHeat <- function(x, num = 1000){   
+repHeat <- function(x, num = 1000, ccol = NULL){   
   
   x <- as.matrix(x)
 
@@ -129,6 +131,10 @@ repHeat <- function(x, num = 1000){
   kv <- Kmeans(x, centers = num, iter.max = 0, init = "kmeanspp")
   colnames(kv$centers) <- colnames(x)
 
-  heatmap(kv$centers, col = viridis(255))
+  if(!is.null(ccol) && class(ccol) == "character"){
+    heatmap(kv$centers, col = viridis(255), ColSideColors = ccol)
+  } else {
+    heatmap(kv$centers, col = viridis(255))
+  }
 }
 

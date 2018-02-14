@@ -19,7 +19,7 @@
 #' @examples
 #' dat <- iris[, -5]
 #' truth <- iris[, 5]
-#' L <- hmcTree(dat, modelNames = "VVV")
+#' L <- hmcTree(dat, modelNames = c("VVV", "EEE"))
 ### Binary Hierarchical Mclust Classifications 
 hmcTree <- function(dat, maxDepth = 5, modelNames){ ## Helper function
   
@@ -272,6 +272,20 @@ hmc <- function(dat, truth = NULL, maxDim = Inf, maxDepth = 5,
   out <- structure(list(dat = L, dmax = dmax, shape = shape, size = size, ccol = ccol, truth = truth), class = "hmc")
   
   return(out)
+}
+
+#' Find K closest points to each cluster mean
+#'
+#' @param x an object of type hmc
+#' @param ... plotDend Boolean for dendrogram plot and maxd for max
+#' plotting dimension
+#'
+#' @importFrom graphics pairs
+#' @method plot hmc
+#' @export 
+### Binary Hierarchical Mclust Classifications 
+closestK <- function(x, ...){
+
 }
 
 #' Generate binary hierarchical mclust tree plot
