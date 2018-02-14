@@ -232,6 +232,156 @@ stackM <- function(hmcL, ccol = "black", centered = FALSE, maxDepth = Inf, depth
 } ## END stackM
 
 
+#' Generate stacked level mean plot from raw data
+#'
+#' @param matrix or data.frame of data
+#' @param level labels by column
+#' @param ccol colors for feature labels
+#' @param centered boolen that skips level one if data was centered
+#' @param maxDepth maximum number of levels to plot
+#' @param depth forces via copying levels to show down to depth.
+#'
+#' @return a stacked level mean plot
+#'
+#' @importFrom ggplot2 ggplot
+#' @examples
+#' dat <- as.data.frame(scale(iris[, -5], center = TRUE, scale = TRUE))
+#' L <- hmc(dat, modelNames = c("VVV", "EEE"))
+#' plot(dat, plotDend = TRUE)
+#' stackM(dat, centered = TRUE)
+#' hmcL <- L
+#' @export 
+stackMraw <- function(dat, hlabels, ccol = "black", centered = FALSE, maxDepth = Inf, depth = 5){
+stackMraw <- function(){
+
+
+  dat <- dat 
+  L1 <- hlabels
+  centered = FALSE
+  maxDepth = Inf
+  depth = 5
+
+  lev <- levels(L1)
+  len <- lapply(lev,nchar)
+
+  firstLev <- Reduce(c, unique(lapply(lev, substring, 1, 1)))
+
+  ll <- list()
+  for(i in 1:length(lev)){
+    nc <- nchar(lev[i])
+    ll[[i]] <- lapply(1:nc, function(x) substr(lev[i], 1,x))
+  }
+
+  uL <- unique(Reduce(c, Reduce(c, ll)))
+  uLgrep <- paste0("^", uL)
+
+  datLev <- lapply(uL, function(x) grepl(x, L1))
+  names(datLev) <- uL
+
+
+  node <- Node$new("", data = dat, 
+                   dataid = rownames(dat))
+  
+  for(i in firstLev){
+    node$AddChild(i, data = dat[datLev[[i]],], dataid = rownames(dat[datLev[[i]],]),
+      mean = colMeans(dat[datLev[[i]],]))
+  }
+
+  for(j in ll){ 
+    if(length(j) > 1){
+      for(k in 2:length(j)){
+        node[[j[[k-1]]]]$AddChild(j[[k]], 
+                                  data = dat[datLev[[j[[k]]]],],
+                                  dataid = rownames(dat[datLev[[j[[k]]]],]),
+                                  mean = colMeans(dat[datLev[[j[[k]]]],])
+                                  )
+        }
+      } else {
+        node[[j[[1]]]]$Set(data = dat[datLev[[j[[1]]]],],
+                            dataid = rownames(dat[datLev[[j[[1]]]],]),
+                            mean = colMeans(dat[datLev[[j[[1]]]],]))
+      }
+    }
+
+
+  node$Set(nlevel = node$Get('level'))
+
+  if(is.infinite(maxDepth)){ maxDepth <- node$height }
+  if(maxDepth > node$height){maxDepth <- node$height }
+
+  iStart <- if(centered){ 2 } else { 1 }
+  
+  M <- list()
+  for(i in iStart:maxDepth){
+    travi <- Traverse(node, filterFun = function(x) x$nlevel == i)
+  
+    gi <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
+    id <- Get(travi, "dataid", format = function(x) list(as.numeric(x)))
+  
+    len <- Get(travi, "dataid", format = function(x) length(x))
+  
+    lvU <- Get(travi,"isLeaf")
+  
+    newLv <- i + lvU
+    Set(travi, nlevel=newLv)
+  
+    m <- Get(travi, "mean", format = list)
+  
+    asdf <- mapply(function(x,y) {
+              matrix(rep(x,each=y), 
+                     nrow =length(x), 
+                     ncol = y, 
+                     byrow=TRUE)
+              }, m, len, SIMPLIFY = FALSE)
+
+    M[[i]] <- Reduce(cbind, asdf)
+    rownames(M[[i]]) <- paste0("L", i, names(m[[i]]))
+  }
+ 
+  if(i < depth){
+    for(j in (i+1):depth){
+      M[[j]] <- M[[i]]
+      rownames(M[[j]]) <- paste0("L", j,"-",i, names(m[[1]]))
+    }
+  }
+  
+  MM <- data.frame(Reduce(rbind, M))
+
+  mt <- melt(MM, id.var = NULL)
+  mt$variable <- as.numeric(gsub("X", "", mt$variable))
+  
+  gd <- expand.grid(rownames(MM), 1:ncol(MM))[,1]
+
+  ggd <- data.frame(mt,gd)
+  ggd$gd <- factor(gd, levels = rev(levels(gd)), ordered = TRUE)
+
+  #pal <- rainbow(255, start = 0,end = 0.5, v = 0.5, s = 0.8)
+  pal <- colorpanel(255, "black", "pink")
+  pal <- colorpanel(255, "darkorchid4", "gray99", "darkgreen")
+
+  ln <- length(names(m[[1]]))
+  levsep <- seq(ln, nrow(MM), ln)[1:(nrow(MM)/ln -1)] + 0.5
+
+
+  p <- 
+    ggplot(ggd, aes(x = variable, y = gd, fill = value)) + 
+         scale_fill_gradient2(low = "darkorchid4", 
+                              mid = "gray99", 
+                              high = "darkorange3",
+                              midpoint = 0) + 
+         #scale_fill_viridis() + 
+         #scale_fill_gradientn(colours = pal) + 
+         geom_tile() + 
+         theme(axis.title = element_blank(),
+               axis.text.y = element_text(color = rev(ccol)),
+               panel.background = element_blank(),
+               panel.grid.major.y =element_blank(),
+               panel.ontop = FALSE) + 
+         geom_hline(yintercept = levsep, size = 1)
+  return(p)
+} ## END stackMraw
+
+
 #' Get K closest points to each cluster mean
 #'
 #' @param L of class hmc
