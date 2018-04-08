@@ -1,8 +1,10 @@
 # README
 
-## R
 meda: Matrix Exploratory Data Analysis is an R package for exploring
 data in the form of matrices.
+
+for the python version, go here https://github.com/neurodata-nomads/pymeda
+
 
 ### INSTALLATION
 
@@ -61,8 +63,5 @@ clusterMeans(h)
 
 follow instructions [here](https://github.com/neurodata/checklists/blob/master/matrix.md)
 
-## Python 
-
-[README here](python/README.md)
 
 
