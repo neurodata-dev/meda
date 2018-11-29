@@ -29,7 +29,7 @@ outliers <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 
   out <- outlier(rf1)
   l1 <- mean(out) + 3*sd(out)
-  if any(out > l1){
+  if (any(out > l1)) {
     status <- factor(out < l1, labels = c("outlier", "inlier"))
   } else {
     status <- factor(out < l1, labels = c("inlier"))
