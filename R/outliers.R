@@ -6,7 +6,7 @@
 #'
 #' @return An outlier plot
 #' @details
-#' For sample size <= 1e4 an outlier measure is calculated from the 
+#' For sample size <= 1e4 an outlier measure is calculated from the
 #' randomForest package, points with measure greater than 3 sd from the
 #' mean are considred outliers.  Need to add case for n > 1e4.
 #' @import ggplot2
@@ -14,8 +14,8 @@
 #' @importFrom graphics plot
 #' @importFrom graphics points
 #' @importFrom stats sd
-#' 
-#' @export 
+#'
+#' @export
 #' @examples
 #' dat <- iris[, -5]
 #' out <- outliers(dat)
@@ -29,8 +29,12 @@ outliers <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 
   out <- outlier(rf1)
   l1 <- mean(out) + 3*sd(out)
-  status <- factor(out < l1, labels = c("outlier", "inlier"))
-  df1 <- data.frame(x = 1:length(out), outD = out, status = status) 
+  if any(out > l1){
+    status <- factor(out < l1, labels = c("outlier", "inlier"))
+  } else {
+    status <- factor(out < l1, labels = c("inlier"))
+  }
+  df1 <- data.frame(x = 1:length(out), outD = out, status = status)
 
   out <- structure(list(dat = df1, l1=l1), class = "outliers")
 } ## END meaa::outliers
@@ -43,20 +47,20 @@ outliers <- function(dat, k = sqrt(dim(dat)[1]), ...) {
 #' @return An outlier plot
 #' @import ggplot2
 #' @importFrom randomForest randomForest outlier
-#' 
-#' @export 
+#'
+#' @export
 #' @method plot outliers
 plot.outliers <- function(x, ...){
 
   outliers <- x
   df1 <- outliers$dat
   l1 <- outliers$l1
-  p <- 
-    ggplot(data = df1, aes(x = x, y = outD, color = status)) + 
-    geom_point() + geom_hline(yintercept = l1, aes(label = l1), show.legend = TRUE) + 
-    ylab("Outlier Measure") + xlab("index") + 
+  p <-
+    ggplot(data = df1, aes(x = x, y = outD, color = status)) +
+    geom_point() + geom_hline(yintercept = l1, aes(label = l1), show.legend = TRUE) +
+    ylab("Outlier Measure") + xlab("index") +
     ggtitle("Outliers 3*sd from mean")
-    
+
   #ggplotly(p)
   return(p)
   NextMethod("plot")
